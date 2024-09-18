@@ -1,3 +1,4 @@
+/Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug/CMakeFiles/shadowState.dir
 /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug/CMakeFiles/edit_cache.dir
 /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug/CMakeFiles/rebuild_cache.dir
 /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug/CMakeFiles/list_install_components.dir

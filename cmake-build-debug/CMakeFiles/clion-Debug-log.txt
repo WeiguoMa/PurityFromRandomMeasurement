@@ -1,13 +1,9 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S /Users/weiguo_ma/CppProjects/PurityFromShadow -B /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug
 -- Using Python 3: /opt/anaconda3/bin/python3.12
 -- pybind11 v2.14.0 dev1
--- Found PythonInterp: /opt/anaconda3/bin/python3.12 (found suitable version "3.12.4", minimum required is "3.12.4") 
--- Found PythonLibs: /opt/anaconda3/lib/libpython3.12.dylib
--- Performing Test HAS_FLTO_THIN
--- Performing Test HAS_FLTO_THIN - Success
 -- 
 -- Configured Eigen 3.4.90
 -- 
--- Configuring done (0.3s)
+-- Configuring done (0.2s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug

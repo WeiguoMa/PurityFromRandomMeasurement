@@ -40,6 +40,41 @@ include CMakeFiles/rules.ninja
 # Logical path to working directory; prefix for absolute paths.
 
 cmake_ninja_workdir = /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug/
+# =============================================================================
+# Object build statements for MODULE_LIBRARY target shadowState
+
+
+#############################################
+# Order-only phony target for shadowState
+
+build cmake_object_order_depends_target_shadowState: phony || CMakeFiles/shadowState.dir
+
+build CMakeFiles/shadowState.dir/src/cpp/ShadowState.cpp.o: CXX_COMPILER__shadowState_unscanned_Release /Users/weiguo_ma/CppProjects/PurityFromShadow/src/cpp/ShadowState.cpp || cmake_object_order_depends_target_shadowState
+  DEFINES = -DshadowState_EXPORTS
+  DEP_FILE = CMakeFiles/shadowState.dir/src/cpp/ShadowState.cpp.o.d
+  FLAGS = -O3 -DNDEBUG -O3 -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fPIC -fvisibility=hidden -fcolor-diagnostics -flto
+  INCLUDES = -I/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen -isystem /Users/weiguo_ma/CppProjects/PurityFromShadow/extern/pybind11/include -isystem /opt/anaconda3/include/python3.12
+  OBJECT_DIR = CMakeFiles/shadowState.dir
+  OBJECT_FILE_DIR = CMakeFiles/shadowState.dir/src/cpp
+
+
+# =============================================================================
+# Link build statements for MODULE_LIBRARY target shadowState
+
+
+#############################################
+# Link the shared module shadowState.cpython-312-darwin.so
+
+build shadowState.cpython-312-darwin.so: CXX_MODULE_LIBRARY_LINKER__shadowState_Release CMakeFiles/shadowState.dir/src/cpp/ShadowState.cpp.o
+  ARCH_FLAGS = -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk
+  LANGUAGE_COMPILE_FLAGS = -O3 -DNDEBUG -O3
+  LINK_FLAGS = -Xlinker -undefined -Xlinker dynamic_lookup -flto
+  OBJECT_DIR = CMakeFiles/shadowState.dir
+  POST_BUILD = cd /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug && /opt/anaconda3/bin/strip -x /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug/shadowState.cpython-312-darwin.so
+  PRE_LINK = :
+  TARGET_FILE = shadowState.cpython-312-darwin.so
+  TARGET_PDB = shadowState.cpython-312-darwin.so.dbg
+
 
 #############################################
 # Utility command for edit_cache
@@ -458,6 +493,8 @@ build extern/eigen/unsupported/Eigen/CXX11/install/strip: phony extern/eigen/uns
 # =============================================================================
 # Target aliases.
 
+build shadowState: phony shadowState.cpython-312-darwin.so
+
 # =============================================================================
 # Folder targets.
 
@@ -466,7 +503,7 @@ build extern/eigen/unsupported/Eigen/CXX11/install/strip: phony extern/eigen/uns
 #############################################
 # Folder: /Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug
 
-build all: phony extern/pybind11/all extern/eigen/all
+build all: phony shadowState.cpython-312-darwin.so extern/pybind11/all extern/eigen/all
 
 # =============================================================================
 

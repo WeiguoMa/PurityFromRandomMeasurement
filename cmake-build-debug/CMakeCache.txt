@@ -189,7 +189,7 @@ CMAKE_OSX_DEPLOYMENT_TARGET:STRING=
 
 //The product will be built against the headers and libraries located
 // inside the indicated SDK.
-CMAKE_OSX_SYSROOT:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
+CMAKE_OSX_SYSROOT:PATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
@@ -372,6 +372,15 @@ PurityFromShadow_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 PurityFromShadow_SOURCE_DIR:STATIC=/Users/weiguo_ma/CppProjects/PurityFromShadow
+
+//Value Computed by CMake
+ShadowPyExpect_BINARY_DIR:STATIC=/Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug
+
+//Value Computed by CMake
+ShadowPyExpect_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+ShadowPyExpect_SOURCE_DIR:STATIC=/Users/weiguo_ma/CppProjects/PurityFromShadow
 
 //Value Computed by CMake
 pybind11_BINARY_DIR:STATIC=/Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug/extern/pybind11
