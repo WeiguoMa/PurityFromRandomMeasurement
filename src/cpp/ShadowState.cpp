@@ -1,9 +1,6 @@
 //
 // Created by Weiguo Ma on 2024/9/16.
 //
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
 #include <Eigen/Dense>
 #include <cmath>
 #include <complex>
@@ -11,7 +8,6 @@
 #include <map>
 #include <string>
 
-namespace py = pybind11;
 using namespace Eigen;
 using namespace std;
 
@@ -51,7 +47,7 @@ private:
 
         MatrixType result(rowsA * rowsB, colsA * colsB);
 
-#pragma omp parallel for collapse(2)  // Parallelize the nested loop
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < rowsA; ++i) {
             for (int j = 0; j < colsA; ++j) {
                 result.block(i * rowsB, j * colsB, rowsB, colsB) = A(i, j) * B;
@@ -77,7 +73,7 @@ public:
         vector<MatrixXcd> _state;
         _state.reserve(measureOperation.size());
 
-        for (int idx = 0; idx < measureOperation.size(); ++idx) {
+        for (size_t idx = 0; idx < measureOperation.size(); ++idx) {
             _state.emplace_back(
                     3 * precomputedResults[{measureOperation[idx], measureResult[idx]}] - Matrix2cd::Identity()
             );
@@ -91,7 +87,7 @@ public:
     ) {
         MatrixXcd sumMatrix = MatrixXcd::Zero(precomputedResults.begin()->second.rows(),
                                               precomputedResults.begin()->second.cols());
-        for (int idx = 0; idx < measureOperations.size(); ++idx) {
+        for (size_t idx = 0; idx < measureOperations.size(); ++idx) {
             sumMatrix += measureResult2state(measureOperations[idx], measureResults[idx]);
         }
         return sumMatrix / sumMatrix.size();

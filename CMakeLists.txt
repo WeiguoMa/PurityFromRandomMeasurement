@@ -23,6 +23,7 @@ add_subdirectory("./extern/eigen")
 include_directories(${CMAKE_SOURCE_DIR}/extern/eigen)
 
 pybind11_add_module(shadowState src/cpp/ShadowState.cpp)
+add_executable(RenyiEntropy src/cpp/RenyiEntropy.cpp)
 
 #include_directories(/opt/homebrew/Cellar/quantum++/5.1/include/qpp)
 #add_executable(standalone src/cpp/main.cpp)
