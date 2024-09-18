@@ -1,5 +1,5 @@
 #include <Eigen/Core>
 #include <iostream>
 
-template <class ArgType>
+template<class ArgType>
 class Circulant;

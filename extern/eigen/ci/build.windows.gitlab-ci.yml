@@ -8,7 +8,7 @@
     # Note: /d2ReducedOptimizeHugeFunctions is only available in VS 2019.
     EIGEN_CI_TEST_CUSTOM_CXX_FLAGS: "/d2ReducedOptimizeHugeFunctions;/DEIGEN_STRONG_INLINE=inline;/Os"
   script:
-     - ./ci/scripts/build.windows.script.ps1
+    - ./ci/scripts/build.windows.script.ps1
   tags:
     - eigen-runner
     - windows

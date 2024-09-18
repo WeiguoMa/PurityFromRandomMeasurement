@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-# Find Python3
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 if(NOT Python3_FOUND)
@@ -14,7 +13,6 @@ endif()
 
 message(STATUS "Using Python 3: ${Python3_EXECUTABLE}")
 
-# Ensure pybind11 uses the found Python environment
 set(PYBIND11_PYTHON_VERSION ${Python3_VERSION})
 set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
 set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
