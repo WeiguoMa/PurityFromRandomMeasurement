@@ -19,9 +19,13 @@ typedef complex<double> cd;
 
 struct matrix_hash {
     std::size_t operator()(const std::pair<int, int>& p) const {
-        return std::hash<int>{}(p.first) ^ std::hash<int>{}(p.second);
+        std::size_t seed = 0;
+        seed ^= std::hash<int>{}(p.first) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= std::hash<int>{}(p.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        return seed;
     }
 };
+
 
 class ShadowState {
 private:
