@@ -1,12 +1,16 @@
 //
 // Created by Weiguo Ma on 2024/9/18.
 //
-#include <iostream>
-#include <vector>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <Eigen/Dense>
 #include <cmath>
-#include <cstdint>
+#include <vector>
+#include <unordered_map>
+#include "ShadowState.h"
 
 using namespace std;
+namespace py = pybind11;
 
 int countBits(uint64_t x) {
     return __builtin_popcountll(x);
@@ -34,6 +38,8 @@ private:
     size_t K; // Number of Measurements with given U
     size_t M; // Number of Us
 
+    ShadowState shadowState;
+    vector<vector<vector<int>>> measurementResults;
     vector<vector<vector<uint64_t>>> measurementResultsBitset;
 
     [[nodiscard]] vector<uint64_t> compressVector(const vector<int>& binaryVector) const {
@@ -66,7 +72,7 @@ public:
         }
     }
 
-    double calculateP2() {
+    double calculateP2_Hamming() {
         double sum = 0.0;
 
         for (size_t m = 0; m < M; ++m) {
@@ -83,7 +89,37 @@ public:
 
     }
 
-    double calculateRenyiEntropy(){
-        return -log2(calculateP2());
+    double calculateP2_ClassicalShadow() {
+        double sum = 0.0;
+
+        vector<MatrixXcd> rhoMatrices;
+        for (size_t m = 0; m < M; ++m) {
+            MatrixXcd rho_m = shadowState.stateEstimation(
+                    measurementResults[m], measurementResults[m]
+                    );
+            rhoMatrices.push_back(rho_m);
+        }
+
+        for (size_t m = 0; m < M; ++m) {
+            for (size_t m_prime = m + 1; m_prime < M; ++m_prime) {
+                MatrixXcd product = rhoMatrices[m] * rhoMatrices[m_prime];  // rho^{(m)} * rho^{(m')}
+                sum += product.trace().real();
+            }
+        }
+        return (2.0 * sum) / (static_cast<int>(M) * (static_cast<int>(M) - 1));  // times 2, m != m'
+    };
+
+    double calculateRenyiEntropy(bool cs){
+        if (cs) {
+            return -log2(calculateP2_ClassicalShadow());
+        } else {
+            return calculateP2_Hamming();
+        }
     }
 };
+
+PYBIND11_MODULE(RenyiEntropy, m) {
+    py::class_<RenyiEntropy>(m, "RenyiEntropy")
+            .def(py::init<const vector<vector<vector<int>>>&>())
+            .def("calculateRenyiEntropy", &RenyiEntropy::calculateRenyiEntropy);
+}
