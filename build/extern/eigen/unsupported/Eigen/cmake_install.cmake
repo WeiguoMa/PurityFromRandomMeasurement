@@ -39,36 +39,36 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Devel" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3/unsupported/Eigen" TYPE FILE FILES
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/AdolcForward"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/AlignedVector3"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/ArpackSupport"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/AutoDiff"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/BVH"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/EulerAngles"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/FFT"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/IterativeSolvers"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/KroneckerProduct"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/LevenbergMarquardt"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/MatrixFunctions"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/MPRealSupport"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/NNLS"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/NonLinearOptimization"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/NumericalDiff"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/OpenGLSupport"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/Polynomials"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/SparseExtra"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/SpecialFunctions"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/Splines"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/AdolcForward"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/AlignedVector3"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/ArpackSupport"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/AutoDiff"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/BVH"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/EulerAngles"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/FFT"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/IterativeSolvers"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/KroneckerProduct"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/LevenbergMarquardt"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/MatrixFunctions"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/MPRealSupport"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/NNLS"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/NonLinearOptimization"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/NumericalDiff"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/OpenGLSupport"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/Polynomials"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/SparseExtra"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/SpecialFunctions"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/Splines"
     )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Devel" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3/unsupported/Eigen" TYPE DIRECTORY FILES "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/src" FILES_MATCHING REGEX "/[^/]*\\.h$")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3/unsupported/Eigen" TYPE DIRECTORY FILES "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/src" FILES_MATCHING REGEX "/[^/]*\\.h$")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/weiguo_ma/CppProjects/PurityFromShadow/build/extern/eigen/unsupported/Eigen/CXX11/cmake_install.cmake")
+  include("/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/extern/eigen/unsupported/Eigen/CXX11/cmake_install.cmake")
 
 endif()
 

@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.1/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/weiguo_ma/CppProjects/PurityFromShadow
+CMAKE_SOURCE_DIR = /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/weiguo_ma/CppProjects/PurityFromShadow/build
+CMAKE_BINARY_DIR = /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/weiguo_ma/CppProjects/PurityFromShadow/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles /Users/weiguo_ma/CppProjects/PurityFromShadow/build/extern/eigen/unsupported/Eigen/CXX11//CMakeFiles/progress.marks
-	cd /Users/weiguo_ma/CppProjects/PurityFromShadow/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles 0
+	cd /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/extern/eigen/unsupported/Eigen/CXX11//CMakeFiles/progress.marks
+	cd /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/weiguo_ma/CppProjects/PurityFromShadow/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/clean
+	cd /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,17 +148,17 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/weiguo_ma/CppProjects/PurityFromShadow/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/preinstall
+	cd /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/weiguo_ma/CppProjects/PurityFromShadow/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/preinstall
+	cd /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 extern/eigen/unsupported/Eigen/CXX11/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/weiguo_ma/CppProjects/PurityFromShadow/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Help Target
@@ -184,6 +184,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/weiguo_ma/CppProjects/PurityFromShadow/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

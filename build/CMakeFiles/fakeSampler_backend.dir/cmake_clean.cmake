@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/Users/weiguo_ma/CppProjects/PurityFromShadow/src/dependency/fakeSampler_backend.cpython-310-darwin.so"
-  "/Users/weiguo_ma/CppProjects/PurityFromShadow/src/dependency/fakeSampler_backend.pdb"
+  "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/src/dependency/fakeSampler_backend.cpython-310-darwin.so"
+  "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/src/dependency/fakeSampler_backend.pdb"
   "CMakeFiles/fakeSampler_backend.dir/src/cpp/fake_sampler_binding.cpp.o"
   "CMakeFiles/fakeSampler_backend.dir/src/cpp/fake_sampler_binding.cpp.o.d"
 )

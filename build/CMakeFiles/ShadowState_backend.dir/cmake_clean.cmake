@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/Users/weiguo_ma/CppProjects/PurityFromShadow/src/dependency/ShadowState_backend.cpython-310-darwin.so"
-  "/Users/weiguo_ma/CppProjects/PurityFromShadow/src/dependency/ShadowState_backend.pdb"
+  "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/src/dependency/ShadowState_backend.cpython-310-darwin.so"
+  "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/src/dependency/ShadowState_backend.pdb"
   "CMakeFiles/ShadowState_backend.dir/src/cpp/ShadowState.cpp.o"
   "CMakeFiles/ShadowState_backend.dir/src/cpp/ShadowState.cpp.o.d"
 )

@@ -39,13 +39,13 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Devel" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3/unsupported/Eigen/CXX11" TYPE FILE FILES
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/CXX11/Tensor"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/CXX11/TensorSymmetry"
-    "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/CXX11/ThreadPool"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/CXX11/Tensor"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/CXX11/TensorSymmetry"
+    "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/CXX11/ThreadPool"
     )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Devel" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3/unsupported/Eigen/CXX11" TYPE DIRECTORY FILES "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen/CXX11/src" FILES_MATCHING REGEX "/[^/]*\\.h$")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3/unsupported/Eigen/CXX11" TYPE DIRECTORY FILES "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen/CXX11/src" FILES_MATCHING REGEX "/[^/]*\\.h$")
 endif()
 

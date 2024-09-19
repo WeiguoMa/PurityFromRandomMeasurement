@@ -38,16 +38,16 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Devel" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3" TYPE FILE FILES "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/signature_of_eigen3_matrix_library")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3" TYPE FILE FILES "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/signature_of_eigen3_matrix_library")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Devel" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3" TYPE DIRECTORY FILES "/Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/Eigen")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/eigen3" TYPE DIRECTORY FILES "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/Eigen")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/weiguo_ma/CppProjects/PurityFromShadow/build/extern/eigen/unsupported/cmake_install.cmake")
+  include("/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/extern/eigen/unsupported/cmake_install.cmake")
 
 endif()
 

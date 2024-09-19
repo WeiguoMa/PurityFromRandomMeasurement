@@ -54,10 +54,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.1/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/weiguo_ma/CppProjects/PurityFromShadow
+CMAKE_SOURCE_DIR = /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/weiguo_ma/CppProjects/PurityFromShadow/build
+CMAKE_BINARY_DIR = /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -165,14 +165,14 @@ extern/pybind11/clean:
 CMakeFiles/RenyiEntropy_backend.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RenyiEntropy_backend.dir/build.make CMakeFiles/RenyiEntropy_backend.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RenyiEntropy_backend.dir/build.make CMakeFiles/RenyiEntropy_backend.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles --progress-num=1,2,3 "Built target RenyiEntropy_backend"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles --progress-num=1,2,3 "Built target RenyiEntropy_backend"
 .PHONY : CMakeFiles/RenyiEntropy_backend.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/RenyiEntropy_backend.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/RenyiEntropy_backend.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles 0
 .PHONY : CMakeFiles/RenyiEntropy_backend.dir/rule
 
 # Convenience name for target.
@@ -191,14 +191,14 @@ CMakeFiles/RenyiEntropy_backend.dir/clean:
 CMakeFiles/fakeSampler_backend.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fakeSampler_backend.dir/build.make CMakeFiles/fakeSampler_backend.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fakeSampler_backend.dir/build.make CMakeFiles/fakeSampler_backend.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles --progress-num=6,7 "Built target fakeSampler_backend"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles --progress-num=6,7 "Built target fakeSampler_backend"
 .PHONY : CMakeFiles/fakeSampler_backend.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fakeSampler_backend.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/fakeSampler_backend.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles 0
 .PHONY : CMakeFiles/fakeSampler_backend.dir/rule
 
 # Convenience name for target.
@@ -217,14 +217,14 @@ CMakeFiles/fakeSampler_backend.dir/clean:
 CMakeFiles/ShadowState_backend.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ShadowState_backend.dir/build.make CMakeFiles/ShadowState_backend.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ShadowState_backend.dir/build.make CMakeFiles/ShadowState_backend.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles --progress-num=4,5 "Built target ShadowState_backend"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles --progress-num=4,5 "Built target ShadowState_backend"
 .PHONY : CMakeFiles/ShadowState_backend.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/ShadowState_backend.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ShadowState_backend.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles 0
 .PHONY : CMakeFiles/ShadowState_backend.dir/rule
 
 # Convenience name for target.
