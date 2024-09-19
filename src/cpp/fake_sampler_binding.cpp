@@ -19,8 +19,8 @@ class FakeSampler_backend {
 private:
     vector<string> proj_basis;
     vector<MatrixXcd> _bases = {
-            (MatrixXcd(2, 2) << 1, 1, -1, 1).finished() / sqrt(2.0),
-            (MatrixXcd(2, 2) << 1, cd(0, -1), cd(0, 1), 1).finished() / sqrt(2.0),
+            (MatrixXcd(2, 2) << 1, 1, 1, -1).finished() / sqrt(2.0),
+            (MatrixXcd(2, 2) << 1, cd(0, -1), 1, cd(0, 1)).finished() / sqrt(2.0),
             MatrixXcd::Identity(2, 2)
     };
 

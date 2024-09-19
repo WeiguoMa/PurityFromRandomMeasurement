@@ -1,8 +1,6 @@
 //
 // Created by Weiguo Ma on 2024/9/16.
 //
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include "ShadowState.h"
 
 namespace py = pybind11;
@@ -74,7 +72,7 @@ MatrixXcd ShadowState::measureResult2state(
         _state.clear();
         for (size_t idx = 0; idx < measureOperation.size(); ++idx) {
             _state.emplace_back(
-                    3 * precomputedResults[{measureOperation[idx], measureResult_per[idx]}] - Matrix2cd::Identity()
+                    3 * precomputedResults[{measureOperation[idx], measureResult_per[idx]}] - MatrixXcd::Identity(2, 2)
             );
         }
         sum_measurements_state += kroneckerProduct(_state);
@@ -96,14 +94,14 @@ MatrixXcd ShadowState::stateEstimation(
 
 
 const vector<MatrixXcd> ShadowState::_pauliBases = {
-        (MatrixXcd(2, 2) << 1, 1, -1, 1).finished() / sqrt(2.0),
-        (MatrixXcd(2, 2) << 1, cd(0, -1), cd(0, 1), 1).finished() / sqrt(2.0),
+        (MatrixXcd(2, 2) << 1, 1, 1, -1).finished() / sqrt(2.0),
+        (MatrixXcd(2, 2) << 1, cd(0, -1), 1, cd(0, 1)).finished() / sqrt(2.0),
         MatrixXcd::Identity(2, 2)
 };
 
 const vector<MatrixXcd> ShadowState::_bases = {
-        (MatrixXcd(1, 2) << 1, 0).finished(),
-        (MatrixXcd(1, 2) << 0, 1).finished()
+        (MatrixXcd(2, 1) << 1, 0).finished(),
+        (MatrixXcd(2, 1) << 0, 1).finished()
 };
 
 
