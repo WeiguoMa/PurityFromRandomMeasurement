@@ -1,8 +1,11 @@
 //
 // Created by Weiguo Ma on 2024/9/16.
 //
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include "ShadowState.h"
 
+namespace py = pybind11;
 
 std::size_t matrix_hash::operator()(const std::pair<int, int> &p) const {
     std::size_t seed = 0;
@@ -38,7 +41,7 @@ MatrixType ShadowState::kroneckerProduct(const MatrixType &A, const MatrixType &
 
     MatrixType result(rowsA * rowsB, colsA * colsB);
 
-    #pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(2)
     for (int i = 0; i < rowsA; ++i) {
         for (int j = 0; j < colsA; ++j) {
             result.block(i * rowsB, j * colsB, rowsB, colsB) = A(i, j) * B;
@@ -65,9 +68,9 @@ MatrixXcd ShadowState::measureResult2state(
     MatrixXcd sum_measurements_state = MatrixXcd::Zero(hilbert_dimension, hilbert_dimension);
 
     vector<MatrixXcd> _state;
-    _state.reserve(measureOperation.size());
+    _state.reserve(static_cast<int>(measureOperation.size()));
 
-    for (vector<int> measureResult_per : measureResult) {
+    for (vector<int> measureResult_per: measureResult) {
         _state.clear();
         for (size_t idx = 0; idx < measureOperation.size(); ++idx) {
             _state.emplace_back(
@@ -76,7 +79,7 @@ MatrixXcd ShadowState::measureResult2state(
         }
         sum_measurements_state += kroneckerProduct(_state);
     }
-    return sum_measurements_state / measureResult.size();
+    return sum_measurements_state / static_cast<int>(measureResult.size());
 }
 
 
@@ -85,11 +88,10 @@ MatrixXcd ShadowState::stateEstimation(
         const vector<vector<vector<int>>> &measureResults
 ) {
     MatrixXcd sumMatrix = MatrixXcd::Zero(hilbert_dimension, hilbert_dimension);
-
     for (size_t idx = 0; idx < measureOperations.size(); ++idx) {
         sumMatrix += ShadowState::measureResult2state(measureOperations[idx], measureResults[idx]);
     }
-    return sumMatrix / measureOperations.size();
+    return sumMatrix / static_cast<int>(measureOperations.size());
 }
 
 
@@ -103,3 +105,11 @@ const vector<MatrixXcd> ShadowState::_bases = {
         (MatrixXcd(1, 2) << 1, 0).finished(),
         (MatrixXcd(1, 2) << 0, 1).finished()
 };
+
+
+PYBIND11_MODULE(ShadowState_backend, m) {
+    m.doc() = "ShadowState backend module";
+    py::class_<ShadowState>(m, "ShadowState")
+            .def(py::init<const int &>())
+            .def("stateEstimation", &ShadowState::stateEstimation);
+}

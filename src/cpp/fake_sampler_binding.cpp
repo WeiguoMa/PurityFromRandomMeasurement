@@ -28,7 +28,7 @@ private:
     std::mt19937 gen;
 
     template<typename MatrixType>
-    static MatrixType kroneckerProduct(const MatrixType& A, const MatrixType& B) {
+    static MatrixType kroneckerProduct(const MatrixType &A, const MatrixType &B) {
         const int rowsA = A.rows();
         const int colsA = A.cols();
         const int rowsB = B.rows();
@@ -43,27 +43,28 @@ private:
         }
         return result;
     }
+
 public:
-    explicit FakeSampler_backend(vector<string>& basis): proj_basis(basis), gen(rd()) {}
+    explicit FakeSampler_backend(vector<string> &basis) : proj_basis(basis), gen(rd()) {}
 
     vector<vector<int>> fakeSampling_dm(const py::array_t<std::complex<double>> &dm_array,
-                                const int &measure_times,
-                                std::vector<int> &measurement_orientation);
+                                        const int &measure_times,
+                                        std::vector<int> &measurement_orientation);
 };
 
 
 vector<vector<int>> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::complex<double>> &dm_array,
-                                                 const int &measure_times,
-                                                 std::vector<int> &measurement_orientation) {
+                                                         const int &measure_times,
+                                                         std::vector<int> &measurement_orientation) {
     auto dm_buf = dm_array.request();
 
     const size_t rows = dm_buf.shape[0];
     const size_t cols = dm_buf.shape[1];
 
     Eigen::Map<MatrixXcd> dm(
-            static_cast<std::complex<double>*>(dm_buf.ptr),
+            static_cast<std::complex<double> *>(dm_buf.ptr),
             static_cast<int>(rows), static_cast<int>(cols)
-            );
+    );
 
     MatrixXcd U_operations = _bases[measurement_orientation[0]];
     for (size_t i = 1; i < measurement_orientation.size(); ++i) {
@@ -89,7 +90,7 @@ vector<vector<int>> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::
 
         vector<int> _state_eigenValue;
         _state_eigenValue.reserve(_state.size());
-        for (char _value : _state) {
+        for (char _value: _state) {
             _state_eigenValue.push_back(_value == '0' ? 0 : 1);
         }
 
@@ -101,7 +102,7 @@ vector<vector<int>> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::
 
 PYBIND11_MODULE(fakeSampler_backend, m) {
     py::class_<FakeSampler_backend>(m, "FakeSampler_backend")
-            .def(py::init<vector<string>&>(), py::arg("proj_basis"))
+            .def(py::init<vector<string> &>(), py::arg("proj_basis"))
             .def("fakeSampling_dm", &FakeSampler_backend::fakeSampling_dm,
                  py::arg("dm_array"), py::arg("measure_times"), py::arg("measurement_orientation"));
 }

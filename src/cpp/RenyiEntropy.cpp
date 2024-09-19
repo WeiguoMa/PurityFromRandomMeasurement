@@ -16,7 +16,7 @@ int countBits(uint64_t x) {
     return __builtin_popcountll(x);
 }
 
-int hammingDistance(const vector<uint64_t>& v1, const vector<uint64_t>& v2, size_t numBits) {
+int hammingDistance(const vector<uint64_t> &v1, const vector<uint64_t> &v2, size_t numBits) {
     int distance = 0;
     size_t numBlocks = v1.size();
 
@@ -47,7 +47,7 @@ private:
     vector<vector<vector<int>>> measurementResults;
     vector<vector<vector<uint64_t>>> measurementResultsBitset;
 
-    [[nodiscard]] vector<uint64_t> compressVector(const vector<int>& binaryVector) const {
+    [[nodiscard]] vector<uint64_t> compressVector(const vector<int> &binaryVector) const {
         size_t numBlocks = (N + 63) / 64;
         vector<uint64_t> compressed(numBlocks, 0);
 
@@ -65,8 +65,8 @@ private:
 public:
     RenyiEntropy_backend(const vector<vector<int>> &measurementScheme,
                          const vector<vector<vector<int>>> &measurementResults)
-                         : measurementScheme(measurementScheme), measurementResults(measurementResults),
-                           shadowState(static_cast<int>(measurementResults[0].size())){
+            : measurementScheme(measurementScheme), measurementResults(measurementResults),
+              shadowState(static_cast<int>(measurementResults[0][0].size())) {
         M = measurementResults.size();
         K = measurementResults[0].size();
         N = measurementResults[0][0].size();
@@ -90,7 +90,7 @@ public:
                             measurementResultsBitset[m][k],
                             measurementResultsBitset[m][k_prime],
                             N
-                            );
+                    );
                     sum += 2 * pow(-2, -dist);  // k/k' is the same as k'/k
                 }
             }
@@ -120,7 +120,7 @@ public:
         return (2.0 * sum) / (static_cast<int>(M) * (static_cast<int>(M) - 1));  // times 2, m != m'
     };
 
-    double calculateRenyiEntropy(bool cs){
+    double calculateRenyiEntropy(bool cs) {
         if (cs) {
             return -log2(calculateP2_ClassicalShadow());
         } else {
@@ -131,7 +131,7 @@ public:
 
 PYBIND11_MODULE(RenyiEntropy_backend, m) {
     py::class_<RenyiEntropy_backend>(m, "RenyiEntropy_backend")
-            .def(py::init<const vector<vector<int>>&, const vector<vector<vector<int>>>&>(),
+            .def(py::init<const vector<vector<int>> &, const vector<vector<vector<int>>> &>(),
                  py::arg("measurementScheme"), py::arg("measurementResults"))
             .def("calculateRenyiEntropy", &RenyiEntropy_backend::calculateRenyiEntropy,
                  py::arg("cs") = false);

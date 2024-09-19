@@ -36,9 +36,12 @@ private:
     static MatrixType kroneckerProduct(const std::vector<MatrixType> &matrixList);
 
 public:
-    ShadowState(const int &qnumber);
+    explicit ShadowState(const int &qnumber);
+
     MatrixXcd measureResult2state(const vector<int> &measureOperation, const vector<vector<int>> &measureResult);
-    MatrixXcd stateEstimation(const vector<vector<int>> &measureOperations, const vector<vector<vector<int>>> &measureResults);
+
+    MatrixXcd
+    stateEstimation(const vector<vector<int>> &measureOperations, const vector<vector<vector<int>>> &measureResults);
 };
 
 #endif //PURITYFROMSHADOW_SHADOWSTATE_H
