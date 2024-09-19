@@ -44,18 +44,17 @@ private:
 public:
     explicit FakeSampler_backend(vector<string>& basis): proj_basis(basis), gen(rd()) {}
 
-    std::vector<std::string> fakeSampling_dm(const py::array_t<std::complex<double>>& dm_array,
-                                             std::vector<string>& measurement_orientation);
+    vector<int> fakeSampling_dm(const py::array_t<std::complex<double>>& dm_array,
+                                std::vector<string>& measurement_orientation);
 };
 
 
-std::vector<std::string> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::complex<double>>& dm_array,
-                                         std::vector<string>& measurement_orientation) {
+vector<int> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::complex<double>>& dm_array,
+                                                 std::vector<string>& measurement_orientation) {
     auto dm_buf = dm_array.request();
 
     const size_t rows = dm_buf.shape[0];
     const size_t cols = dm_buf.shape[1];
-    int _systemSize = static_cast<int>(log2(rows));
 
     Eigen::Map<MatrixXcd> dm(
             static_cast<std::complex<double>*>(dm_buf.ptr),
@@ -82,12 +81,12 @@ std::vector<std::string> FakeSampler_backend::fakeSampling_dm(const py::array_t<
 
     std::string _state = proj_basis[dist(gen)];
 
-    std::vector<std::string> _state_eigenValue;
+    vector<int> _state_eigenValue;
     _state_eigenValue.reserve(_state.size());
-    for (char _value : _state) {
-        _state_eigenValue.emplace_back(_value == '0' ? "1" : "-1");
-    }
 
+    for (char _value : _state) {
+        _state_eigenValue.emplace_back(_value == '0' ? 0 : 1);
+    }
     return _state_eigenValue;
 }
 

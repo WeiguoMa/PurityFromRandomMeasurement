@@ -51,6 +51,6 @@ class FakeSampler:
         elif len(measurement_orientation) != system_size:
             raise ValueError("The length of measurement_orientation must be equal to the system size.")
 
-        state_eigenvalues = self.backend.fakeSampling_dm(dm_array=dm, measurement_orientation=measurement_orientation)
+        state01 = self.backend.fakeSampling_dm(dm_array=dm, measurement_orientation=measurement_orientation)
 
-        return measurement_orientation, state_eigenvalues
+        return measurement_orientation, state01
