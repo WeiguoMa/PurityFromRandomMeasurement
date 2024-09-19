@@ -24,6 +24,7 @@ class ShadowState {
 private:
     static const vector<MatrixXcd> _bases;
     static const vector<MatrixXcd> _pauliBases;
+    int hilbert_dimension;
     unordered_map<pair<int, int>, MatrixXcd, matrix_hash> precomputedResults;
 
     void precomputeAll();
@@ -35,9 +36,9 @@ private:
     static MatrixType kroneckerProduct(const std::vector<MatrixType> &matrixList);
 
 public:
-    ShadowState();
-    MatrixXcd measureResult2state(const vector<int> &measureOperation, const vector<int> &measureResult);
-    MatrixXcd stateEstimation(const vector<vector<int>> &measureOperations, const vector<vector<int>> &measureResults);
+    ShadowState(const int &qnumber);
+    MatrixXcd measureResult2state(const vector<int> &measureOperation, const vector<vector<int>> &measureResult);
+    MatrixXcd stateEstimation(const vector<vector<int>> &measureOperations, const vector<vector<vector<int>>> &measureResults);
 };
 
 #endif //PURITYFROMSHADOW_SHADOWSTATE_H

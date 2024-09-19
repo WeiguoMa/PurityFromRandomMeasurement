@@ -12,7 +12,8 @@ std::size_t matrix_hash::operator()(const std::pair<int, int> &p) const {
 }
 
 
-ShadowState::ShadowState() {
+ShadowState::ShadowState(const int &qnumber) {
+    hilbert_dimension = static_cast<int>(pow(2, qnumber));
     precomputeAll();
 }
 
@@ -59,38 +60,43 @@ MatrixType ShadowState::kroneckerProduct(const std::vector<MatrixType> &matrixLi
 
 MatrixXcd ShadowState::measureResult2state(
         const vector<int> &measureOperation,
-        const vector<int> &measureResult
+        const vector<vector<int>> &measureResult
 ) {
+    MatrixXcd sum_measurements_state = MatrixXcd::Zero(hilbert_dimension, hilbert_dimension);
+
     vector<MatrixXcd> _state;
     _state.reserve(measureOperation.size());
 
-    for (size_t idx = 0; idx < measureOperation.size(); ++idx) {
-        _state.emplace_back(
-                3 * precomputedResults[{measureOperation[idx], measureResult[idx]}] - Matrix2cd::Identity()
-        );
+    for (vector<int> measureResult_per : measureResult) {
+        _state.clear();
+        for (size_t idx = 0; idx < measureOperation.size(); ++idx) {
+            _state.emplace_back(
+                    3 * precomputedResults[{measureOperation[idx], measureResult_per[idx]}] - Matrix2cd::Identity()
+            );
+        }
+        sum_measurements_state += kroneckerProduct(_state);
     }
-    return kroneckerProduct(_state);
+    return sum_measurements_state / measureResult.size();
 }
 
 
 MatrixXcd ShadowState::stateEstimation(
         const vector<vector<int>> &measureOperations,
-        const vector<vector<int>> &measureResults
+        const vector<vector<vector<int>>> &measureResults
 ) {
-    // hilbert_dimension = 2^N, N is the number of qubits
-    int hilbert_dimension = static_cast<int>(pow(2, static_cast<int>(measureOperations.size())));
     MatrixXcd sumMatrix = MatrixXcd::Zero(hilbert_dimension, hilbert_dimension);
+
     for (size_t idx = 0; idx < measureOperations.size(); ++idx) {
         sumMatrix += ShadowState::measureResult2state(measureOperations[idx], measureResults[idx]);
     }
-    return sumMatrix / sumMatrix.size();
+    return sumMatrix / measureOperations.size();
 }
 
 
 const vector<MatrixXcd> ShadowState::_pauliBases = {
         (MatrixXcd(2, 2) << 1, 1, -1, 1).finished() / sqrt(2.0),
         (MatrixXcd(2, 2) << 1, cd(0, -1), cd(0, 1), 1).finished() / sqrt(2.0),
-        (MatrixXcd(2, 2) << 1, 0, 0, 1).finished()
+        MatrixXcd::Identity(2, 2)
 };
 
 const vector<MatrixXcd> ShadowState::_bases = {
