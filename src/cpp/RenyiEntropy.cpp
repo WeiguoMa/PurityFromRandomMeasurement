@@ -2,7 +2,6 @@
 // Created by Weiguo Ma on 2024/9/18.
 //
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <Eigen/Dense>
 #include <cmath>
 #include <vector>

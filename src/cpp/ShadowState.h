@@ -5,6 +5,9 @@
 #ifndef PURITYFROMSHADOW_SHADOWSTATE_H
 #define PURITYFROMSHADOW_SHADOWSTATE_H
 
+#include <pybind11/pybind11.h>
+#include <pybind11/eigen.h>
+#include <pybind11/stl.h>
 #include <Eigen/Dense>
 #include <complex>
 #include <vector>
