@@ -28,8 +28,10 @@ add_subdirectory("./extern/eigen")
 include_directories(${CMAKE_SOURCE_DIR}/extern/eigen)
 
 # Add the pybind11 module and ensure ShadowState.cpp is compiled as part of the module
-pybind11_add_module(RenyiEntropy src/cpp/RenyiEntropy.cpp src/cpp/ShadowState.cpp)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/src/dependency)
+pybind11_add_module(RenyiEntropy_backend src/cpp/RenyiEntropy.cpp src/cpp/ShadowState.cpp)
 pybind11_add_module(fakeSampler_backend src/cpp/fake_sampler_binding.cpp)
+pybind11_add_module(ShadowState_backend src/cpp/ShadowState.cpp src/cpp/ShadowState.h)
 
 #include_directories(/opt/homebrew/Cellar/quantum++/5.1/include/qpp)
 #add_executable(standalone src/cpp/main.cpp)
