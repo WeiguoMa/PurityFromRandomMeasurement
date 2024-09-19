@@ -1,4 +1,4 @@
-# Install script for directory: /Users/weiguo_ma/CppProjects/PurityFromShadow/extern/eigen/unsupported/Eigen
+# Install script for directory: /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/extern/eigen/unsupported/Eigen
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

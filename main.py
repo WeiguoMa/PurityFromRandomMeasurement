@@ -1,4 +1,5 @@
 from typing import List
+from tqdm import tqdm
 
 import numpy as np
 
@@ -6,7 +7,7 @@ from src.python.Physics.generate_TEST_DM import main
 from src.python.RenyiEntropy import RenyiEntropy
 from src.python.fake_sampler import FakeSampler, random_measurementScheme
 
-K = 1000
+K = 10000
 M = 100
 QNUMBER = 4
 TIME_LIST = [0, 1, 2, 3, 4, 5]
@@ -38,10 +39,11 @@ for density_matrix in TEST_DM:
 
 renyiEntropy_CS = []
 renyiEntropy_randomMeasurement = []
-for measurementDM in measurementDMs:
+for measurementDM in tqdm(measurementDMs):
     renyiCalculator = RenyiEntropy(RANDOM_MEASUREMENT_SCHEME, measurementDM)
     renyiEntropy_randomMeasurement.append(renyiCalculator.calculateRenyiEntropy(classical_shadow=False))
     renyiEntropy_CS.append(renyiCalculator.calculateRenyiEntropy(classical_shadow=True))
 
+print(f'------------------- CURRENT M: {M}, K: {K} -------------------')
 print("CS: ", renyiEntropy_CS)
 print("Random Measurement: ", renyiEntropy_randomMeasurement)       # Seems to be correct with M=100, K=1000

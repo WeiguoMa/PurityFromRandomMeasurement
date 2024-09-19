@@ -61,8 +61,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-uaP8ie"
-      binary: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-uaP8ie"
+      source: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-uaP8ie"
+      binary: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-uaP8ie"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/opt/homebrew/Cellar/llvm/18.1.8/bin/clang-scan-deps"
       CMAKE_C_FLAGS: ""
@@ -246,8 +246,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-iIX0lm"
-      binary: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-iIX0lm"
+      source: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-iIX0lm"
+      binary: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-iIX0lm"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/opt/homebrew/Cellar/llvm/18.1.8/bin/clang-scan-deps"
       CMAKE_CXX_FLAGS: ""
@@ -436,8 +436,8 @@ events:
       - "CMakeLists.txt:23 (find_package)"
     description: "Detecting C OpenMP compiler info"
     directories:
-      source: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-cpccDa"
-      binary: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-cpccDa"
+      source: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-cpccDa"
+      binary: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-cpccDa"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/opt/homebrew/Cellar/llvm/18.1.8/bin/clang-scan-deps"
       CMAKE_C_FLAGS: ""
@@ -580,8 +580,8 @@ events:
       - "CMakeLists.txt:23 (find_package)"
     description: "Detecting CXX OpenMP compiler info"
     directories:
-      source: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-Vl6ldO"
-      binary: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-Vl6ldO"
+      source: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-Vl6ldO"
+      binary: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-Vl6ldO"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/opt/homebrew/Cellar/llvm/18.1.8/bin/clang-scan-deps"
       CMAKE_CXX_FLAGS: ""
@@ -727,8 +727,8 @@ events:
       - "CMakeLists.txt:23 (find_package)"
     description: "Detecting C OpenMP version"
     directories:
-      source: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-W3pLJJ"
-      binary: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-W3pLJJ"
+      source: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-W3pLJJ"
+      binary: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-W3pLJJ"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/opt/homebrew/Cellar/llvm/18.1.8/bin/clang-scan-deps"
       CMAKE_C_FLAGS: ""
@@ -761,8 +761,8 @@ events:
       - "CMakeLists.txt:23 (find_package)"
     description: "Detecting CXX OpenMP version"
     directories:
-      source: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-nUmpcF"
-      binary: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-nUmpcF"
+      source: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-nUmpcF"
+      binary: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-nUmpcF"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/opt/homebrew/Cellar/llvm/18.1.8/bin/clang-scan-deps"
       CMAKE_CXX_FLAGS: ""
@@ -800,8 +800,8 @@ events:
     checks:
       - "Performing Test HAS_FLTO_THIN"
     directories:
-      source: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-b8LPSn"
-      binary: "/Users/weiguo_ma/CppProjects/PurityFromShadow/build/CMakeFiles/CMakeScratch/TryCompile-b8LPSn"
+      source: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-b8LPSn"
+      binary: "/Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement/build/CMakeFiles/CMakeScratch/TryCompile-b8LPSn"
     cmakeVariables:
       CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/opt/homebrew/Cellar/llvm/18.1.8/bin/clang-scan-deps"
       CMAKE_CXX_FLAGS: ""

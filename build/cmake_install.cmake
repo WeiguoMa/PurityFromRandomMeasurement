@@ -1,4 +1,4 @@
-# Install script for directory: /Users/weiguo_ma/CppProjects/PurityFromShadow
+# Install script for directory: /Users/weiguo_ma/CppProjects/PurityFromRandomMeasurement
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
