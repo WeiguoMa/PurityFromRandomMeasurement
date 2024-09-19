@@ -57,7 +57,10 @@ std::vector<std::string> FakeSampler_backend::fakeSampling_dm(const py::array_t<
     const size_t cols = dm_buf.shape[1];
     int _systemSize = static_cast<int>(log2(rows));
 
-    Eigen::Map<MatrixXcd> dm(static_cast<std::complex<double>*>(dm_buf.ptr), rows, cols);
+    Eigen::Map<MatrixXcd> dm(
+            static_cast<std::complex<double>*>(dm_buf.ptr),
+            static_cast<int>(rows), static_cast<int>(cols)
+            );
 
     MatrixXcd U_operations = _bases.at(measurement_orientation[0]);
     for (size_t i = 1; i < measurement_orientation.size(); ++i) {

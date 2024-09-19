@@ -1,0 +1,170 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.28"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				},
+				{
+					"build" : "extern/pybind11",
+					"jsonFile" : "directory-extern.pybind11-Release-8dfc4421fd7ebc2c69d2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "extern/pybind11"
+				},
+				{
+					"build" : "extern/eigen",
+					"childIndexes" : 
+					[
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.eigen-Release-a0db1957a9aff8a45008.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "extern/eigen"
+				},
+				{
+					"build" : "extern/eigen/unsupported",
+					"childIndexes" : 
+					[
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.eigen.unsupported-Release-9151c281f7f5d80a7a64.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "extern/eigen/unsupported"
+				},
+				{
+					"build" : "extern/eigen/unsupported/Eigen",
+					"childIndexes" : 
+					[
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.eigen.unsupported.Eigen-Release-d6e23b01366ceedb0799.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 2,
+					"source" : "extern/eigen/unsupported/Eigen"
+				},
+				{
+					"build" : "extern/eigen/unsupported/Eigen/CXX11",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-extern.eigen.unsupported.Eigen.CXX11-Release-229778cd732589f8bfa2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 2,
+					"source" : "extern/eigen/unsupported/Eigen/CXX11"
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "PurityFromShadow",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "pybind11",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "Eigen3",
+					"parentIndex" : 0
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "RenyiEntropy::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RenyiEntropy-Release-dfdb8d390ae4414fc3b2.json",
+					"name" : "RenyiEntropy",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "fakeSampler_backend::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-fakeSampler_backend-Release-442b4fa875be77b0d664.json",
+					"name" : "fakeSampler_backend",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/weiguo_ma/CppProjects/PurityFromShadow/cmake-build-debug",
+		"source" : "/Users/weiguo_ma/CppProjects/PurityFromShadow"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
