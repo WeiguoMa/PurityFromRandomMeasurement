@@ -5,6 +5,7 @@ mkdir build
 ````
 cd build
 ````
+OpenMP is set to OFF by default, if you want to use OpenMP, you can simply set it to "ON".
 ````
 cmake -DUSE_OPENMP=OFF ..
 ````
