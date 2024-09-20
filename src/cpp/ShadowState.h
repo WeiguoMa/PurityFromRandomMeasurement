@@ -13,6 +13,8 @@
 #include <vector>
 #include <unordered_map>
 #include <utility>
+#include <omp.h>
+#include <cmath>
 
 using namespace Eigen;
 using namespace std;
