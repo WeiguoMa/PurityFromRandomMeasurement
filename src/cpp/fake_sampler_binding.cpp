@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "pcg/pcg_random.hpp"
+#include <omp.h>
 
 namespace py = pybind11;
 using namespace Eigen;
@@ -24,8 +26,7 @@ private:
             MatrixXcd::Identity(2, 2)
     };
 
-    std::random_device rd;
-    std::mt19937 gen;
+    pcg32 gen;
 
     template<typename MatrixType>
     static MatrixType kroneckerProduct(const MatrixType &A, const MatrixType &B) {
@@ -36,6 +37,7 @@ private:
 
         MatrixType result(rowsA * rowsB, colsA * colsB);
 
+#pragma omp parallel for collapse(2)
         for (int i = 0; i < rowsA; ++i) {
             for (int j = 0; j < colsA; ++j) {
                 result.block(i * rowsB, j * colsB, rowsB, colsB) = A(i, j) * B;
@@ -45,7 +47,11 @@ private:
     }
 
 public:
-    explicit FakeSampler_backend(vector<string> &basis) : proj_basis(basis), gen(rd()) {}
+    explicit FakeSampler_backend(vector<string> &basis) : proj_basis(basis) {
+        std::random_device rd;
+        std::seed_seq seed{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
+        gen.seed(seed);
+    }
 
     vector<vector<int>> fakeSampling_dm(const py::array_t<std::complex<double>> &dm_array,
                                         const int &measure_times,
@@ -85,18 +91,17 @@ vector<vector<int>> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::
     vector<vector<int>> results;
     results.reserve(measure_times);
 
+#pragma omp parallel for
     for (int t = 0; t < measure_times; ++t) {
         std::string _state = proj_basis[dist(gen)];
-
         vector<int> _state_eigenValue;
         _state_eigenValue.reserve(_state.size());
         for (char _value: _state) {
             _state_eigenValue.push_back(_value == '0' ? 0 : 1);
         }
-
+#pragma omp critical
         results.push_back(_state_eigenValue);
     }
-
     return results;
 }
 
