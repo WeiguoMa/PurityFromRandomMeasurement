@@ -51,8 +51,8 @@ def calculate_entropy_with_errorBars(DMs4Gauging: List, M, K, repeats: int = 10)
     time_random_results_repeats = []
     renyiEntropy_CS_results_repeats = []
     renyiEntropy_Hamming_results_repeats = []
+    STANDARD_PURITY = np.array([calculate_renyi2_IDEAL(dm) for dm in TEST_DM])
 
-    print(f'-------- CURRENT K = {K} --------')
     for _ in tqdm(range(repeats)):
         random_measurementSchemes = random_measurementScheme(QNUMBER, amount=M)
         measurementResults4DMs = generate_fakeMeasurements4DMs(DMs4Gauging, K, random_measurementSchemes)
@@ -66,9 +66,9 @@ def calculate_entropy_with_errorBars(DMs4Gauging: List, M, K, repeats: int = 10)
         renyiEntropy_Hamming_results_repeats.append(renyiEntropy_Hamming)
 
     return {
-        'avg_CS_DMs': np.mean(renyiEntropy_CS_results_repeats, axis=0),
+        'avg_CS_DMs': np.mean(renyiEntropy_CS_results_repeats, axis=0) - STANDARD_PURITY,
         'std_CS_DMs': np.std(renyiEntropy_CS_results_repeats, axis=0) / np.sqrt(repeats),
-        'avg_hamming_DMs': np.mean(renyiEntropy_Hamming_results_repeats, axis=0),
+        'avg_hamming_DMs': np.mean(renyiEntropy_Hamming_results_repeats, axis=0) - STANDARD_PURITY,
         'std_hamming_DMs': np.std(renyiEntropy_Hamming_results_repeats, axis=0) / np.sqrt(repeats),
         'avg_time_cs_DMs': np.mean(time_cs_results_repeats, axis=0),
         'std_time_cs_DMs': np.std(time_cs_results_repeats, axis=0) / np.sqrt(repeats),
@@ -84,30 +84,30 @@ def extract_data(data: Dict) -> Dict:
     For DM0:
         Convert2ndarray - > KRepeat[:, 0]
     """
-    avg_CS_Ks_DMs, std_CS_Ks_DMs, avg_hamming_Ks_DMs, std_hamming_Ks_DMs = [], [], [], []
-    avgTime_CS_Ks_DMs, stdTime_CS_Ks_DMs, avgTime_Hamming_Ks_DMs, stdTime_Hamming_Ks_DMs = [], [], [], []
+    avg_CS_Ns_DMs, std_CS_Ns_DMs, avg_hamming_Ns_DMs, std_hamming_Ns_DMs = [], [], [], []
+    avgTime_CS_Ns_DMs, stdTime_CS_Ns_DMs, avgTime_Hamming_Ns_DMs, stdTime_Hamming_Ns_DMs = [], [], [], []
     for item in data.values():
-        avg_CS_Ks_DMs.append(item['avg_CS_DMs'])
-        std_CS_Ks_DMs.append(item['std_CS_DMs'])
-        avg_hamming_Ks_DMs.append(item['avg_hamming_DMs'])
-        std_hamming_Ks_DMs.append(item['std_hamming_DMs'])
-        avgTime_CS_Ks_DMs.append(item['avg_time_cs_DMs'])
-        stdTime_CS_Ks_DMs.append(item['std_time_cs_DMs'])
-        avgTime_Hamming_Ks_DMs.append(item['avg_time_hamming_DMs'])
-        stdTime_Hamming_Ks_DMs.append(item['std_time_hamming_DMs'])
+        avg_CS_Ns_DMs.append(item['avg_CS_DMs'])
+        std_CS_Ns_DMs.append(item['std_CS_DMs'])
+        avg_hamming_Ns_DMs.append(item['avg_hamming_DMs'])
+        std_hamming_Ns_DMs.append(item['std_hamming_DMs'])
+        avgTime_CS_Ns_DMs.append(item['avg_time_cs_DMs'])
+        stdTime_CS_Ns_DMs.append(item['std_time_cs_DMs'])
+        avgTime_Hamming_Ns_DMs.append(item['avg_time_hamming_DMs'])
+        stdTime_Hamming_Ns_DMs.append(item['std_time_hamming_DMs'])
 
     dictDMs = {
         idx: {
-            'avg_CS_Ks': np.array(avg_CS_Ks_DMs)[:, idx],
-            'std_CS_Ks': np.array(std_CS_Ks_DMs)[:, idx],
-            'avg_hamming_Ks': np.array(avg_hamming_Ks_DMs)[:, idx],
-            'std_hamming_Ks': np.array(std_hamming_Ks_DMs)[:, idx],
-            'avgTime_CS_Ks': np.array(avgTime_CS_Ks_DMs)[:, idx],
-            'stdTime_CS_Ks': np.array(stdTime_CS_Ks_DMs)[:, idx],
-            'avgTime_Hamming_Ks': np.array(avgTime_Hamming_Ks_DMs)[:, idx],
-            'stdTime_Hamming_Ks': np.array(stdTime_Hamming_Ks_DMs)[:, idx],
+            'avg_CS_Ns': np.array(avg_CS_Ns_DMs)[:, idx],
+            'std_CS_Ns': np.array(std_CS_Ns_DMs)[:, idx],
+            'avg_hamming_Ns': np.array(avg_hamming_Ns_DMs)[:, idx],
+            'std_hamming_Ns': np.array(std_hamming_Ns_DMs)[:, idx],
+            'avgTime_CS_Ns': np.array(avgTime_CS_Ns_DMs)[:, idx],
+            'stdTime_CS_Ns': np.array(stdTime_CS_Ns_DMs)[:, idx],
+            'avgTime_Hamming_Ns': np.array(avgTime_Hamming_Ns_DMs)[:, idx],
+            'stdTime_Hamming_Ns': np.array(stdTime_Hamming_Ns_DMs)[:, idx],
         }
-        for idx in range(len(avg_CS_Ks_DMs[0]))
+        for idx in range(len(avg_CS_Ns_DMs[0]))
     }
 
     return dictDMs
@@ -122,60 +122,58 @@ def plot_figures(K_values, data: Dict, saveLocation: Optional[str] = None):
         print(f"------------------- CURRENT DM: {idxDM} -------------------")
         plt.figure(figsize=(10, 6), dpi=300)
 
-        plt.errorbar(K_values, value['avg_CS_Ks'], yerr=value['std_CS_Ks'], fmt='o-',
+        plt.errorbar(K_values, value['avg_CS_Ns'], yerr=value['std_CS_Ns'], fmt='o-',
                      label='CS Avg.', capsize=5)
-        plt.errorbar(K_values, value['avg_hamming_Ks'], yerr=value['std_hamming_Ks'],
+        plt.errorbar(K_values, value['avg_hamming_Ns'], yerr=value['std_hamming_Ns'],
                      fmt='s-', label='Hamming Avg.', capsize=5)
 
-        plt.axhline(y=STANDARD_PURITY[idxDM], color='g', linestyle='--', label='Standard Purity')
         plt.xticks(fontsize=18)
         plt.yticks(fontsize=18)
         plt.ylim(-0.05, 1.05)
-        plt.xlabel('K (Number of Samples)', fontsize=20)
+        plt.xlabel('N (Number of Qubits)', fontsize=20)
         plt.ylabel('Renyi Entropy', fontsize=20)
-        plt.title('Renyi Entropy vs K with Error Bars', fontsize=22)
+        plt.title('Error of Renyi Entropy vs N with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"../figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_RenyiEntropy_DM_{idxDM}.pdf")
+        plt.savefig(f"../figures/N_holdK_{K}_M_{M}_rp_{repeats}_RenyiEntropy_DM_{idxDM}.pdf")
 
         # Plot Time consumption with error bars
         plt.figure(figsize=(10, 6))
-        plt.errorbar(K_values, value['avgTime_CS_Ks'], yerr=value['stdTime_CS_Ks'], fmt='o-',
+        plt.errorbar(K_values, value['avgTime_CS_Ns'], yerr=value['stdTime_CS_Ns'], fmt='o-',
                      label='Classical Shadow', capsize=5)
-        plt.errorbar(K_values, value['avgTime_Hamming_Ks'], yerr=value['stdTime_Hamming_Ks'],
+        plt.errorbar(K_values, value['avgTime_Hamming_Ns'], yerr=value['stdTime_Hamming_Ns'],
                      fmt='s-', label='Hamming', capsize=5)
         plt.xticks(fontsize=18)
         plt.yticks(fontsize=18)
-        plt.xlabel('K (Number of Samples)', fontsize=20)
+        plt.xlabel('N (Number of Qubits)', fontsize=20)
         plt.ylabel('Time (seconds)', fontsize=20)
-        plt.title('Time Consumption vs K with Error Bars', fontsize=22)
+        plt.title('Time Consumption vs N with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"../figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_TimeConsumption_DM_{idxDM}.pdf")
+        plt.savefig(f"../figures/N_holdK_{K}_M_{M}_rp_{repeats}_TimeConsumption_DM_{idxDM}.pdf")
 
 
 if __name__ == '__main__':
-    QNUMBER = 4
-    FAKESAMPLER = FakeSampler(QNUMBER)
-
-    # Fixed TEST_DM
-    TEST_DM = pseudo_random_DM(QNUMBER, numPure=0, numMixed=1)
-    STANDARD_PURITY = [calculate_renyi2_IDEAL(dm) for dm in TEST_DM]
-
+    K = 1000
     M = 1000
-    repeats = 50
-    K_values = [50, 100, 300, 500, 1000, 2000, 4000]
+    repeats = 10
+    QNUMBER_LIST = [3, 4, 5, 6]
 
-    dataKs = {K: calculate_entropy_with_errorBars(DMs4Gauging=TEST_DM, M=M, K=K, repeats=repeats) for K in K_values}
+    dataNs = {}
+    for QNUMBER in QNUMBER_LIST:
+        print('------------------- CURRENT QNUMBER: ', QNUMBER, ' -------------------')
+        FAKESAMPLER = FakeSampler(QNUMBER)
+        TEST_DM = pseudo_random_DM(QNUMBER, numPure=0, numMixed=1)
 
-    extractedData: Dict = extract_data(dataKs)
+        dataNs[QNUMBER] = calculate_entropy_with_errorBars(DMs4Gauging=TEST_DM, M=M, K=K, repeats=repeats)
 
-    extractedData['QNUMBER'] = QNUMBER
+    extractedData: Dict = extract_data(dataNs)
+
+    extractedData['QNUMBER_LIST'] = QNUMBER_LIST
     extractedData['M'] = M
-    extractedData['K_values'] = K_values
-    extractedData['STANDARD_PURITY'] = STANDARD_PURITY
+    extractedData['K'] = K
 
-    with open(f"../data/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}.mat", 'wb') as f:
+    with open(f"../data/N_holdK_{K}_M_{M}_rp_{repeats}.mat", 'wb') as f:
         pickle.dump(extractedData, f)
 
-    plot_figures(K_values, extractedData)
+    plot_figures(QNUMBER_LIST, extractedData)

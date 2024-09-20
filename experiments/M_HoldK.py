@@ -1,10 +1,14 @@
+import os
+import pickle
+import sys
 import time
+from typing import List, Dict, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
-from typing import List, Dict, Optional
-import pickle
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from src.python.Physics.generate_TEST_DM import pseudo_random_DM
 from src.python.RenyiEntropy import RenyiEntropy
@@ -132,7 +136,7 @@ def plot_figures(M_values: List, data: Dict, saveLocation: Optional[str] = None)
         plt.title('Renyi Entropy vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}_RenyiEntropy_DM_{idxDM}.pdf")
+        plt.savefig(f"../figures/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}_RenyiEntropy_DM_{idxDM}.pdf")
 
         # Plot Time consumption with error bars
         plt.figure(figsize=(10, 6))
@@ -147,7 +151,7 @@ def plot_figures(M_values: List, data: Dict, saveLocation: Optional[str] = None)
         plt.title('Time Consumption vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}_TimeConsumption_DM_{idxDM}.pdf")
+        plt.savefig(f"../figures/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}_TimeConsumption_DM_{idxDM}.pdf")
 
 
 if __name__ == '__main__':
@@ -162,15 +166,15 @@ if __name__ == '__main__':
     repeats = 50
     M_values = [100, 300, 500, 1000, 2000, 4000]
 
-    dataKs = {M: calculate_entropy_with_errorBars(DMs4Gauging=TEST_DM, M=M, K=K, repeats=repeats) for M in M_values}
+    dataMs = {M: calculate_entropy_with_errorBars(DMs4Gauging=TEST_DM, M=M, K=K, repeats=repeats) for M in M_values}
 
-    extractedData: Dict = extract_data(dataKs)
+    extractedData: Dict = extract_data(dataMs)
 
     extractedData['QNUMBER'] = QNUMBER
     extractedData['M_values'] = M_values
     extractedData['K'] = K
     extractedData['STANDARD_PURITY'] = STANDARD_PURITY
-    with open(f"./data/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}.mat", 'wb') as f:
+    with open(f"../data/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}.mat", 'wb') as f:
         pickle.dump(extractedData, f)
 
     plot_figures(M_values, extractedData)

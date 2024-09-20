@@ -1,16 +1,18 @@
-from typing import List
+import os
+import sys
 
 import numpy as np
 
-from src.python.Physics.generate_TEST_DM import main
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
+from src.python.Physics.generate_TEST_DM import pseudo_random_DM
 from src.python.fake_sampler import FakeSampler, random_measurementScheme
 from src.python.ShadowState import ShadowState
 
 K = 1000
 M = 1000
 QNUMBER = 2
-TIME_LIST = [0, 1]
-TEST_DM = main(QNUMBER, TIME_LIST)
+TEST_DM = pseudo_random_DM(QNUMBER, numPure=1, numMixed=1)
 
 print("Standard DM:")
 print(TEST_DM[-1])

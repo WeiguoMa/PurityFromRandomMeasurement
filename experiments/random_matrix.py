@@ -1,9 +1,13 @@
+import os
+import sys
 import time
 from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from src.python.Physics.generate_TEST_DM import pseudo_random_DM
 from src.python.RenyiEntropy import RenyiEntropy
