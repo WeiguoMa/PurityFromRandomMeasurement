@@ -7,6 +7,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
     #include <bit>
+    #include <random>
 
     using LoopIndexType = int;
     using randomGenerator = std::mt19937;
