@@ -18,8 +18,23 @@ function(print_separator message)
     message(STATUS "------------------------------------------")
 endfunction()
 
-# Add option to enable or disable OpenMP
-option(USE_OPENMP "Enable OpenMP support" ON)  # Default is ON
+# Add option to enable or disable OpenMP, cache this variable
+option(USE_OPENMP "Enable OpenMP support" OFF)
+set(USE_OPENMP ${USE_OPENMP} CACHE BOOL "Enable or disable OpenMP support")
+
+if (USE_OPENMP)
+    find_package(OpenMP REQUIRED)
+    if (OpenMP_CXX_FOUND)
+        print_separator("OpenMP Configuration")
+        message(STATUS "OpenMP found: Enabling OpenMP support.")
+        set(ENABLE_OPENMP TRUE CACHE BOOL "OpenMP is enabled")
+    else ()
+        message(FATAL_ERROR "OpenMP requested but not found.")
+    endif ()
+else ()
+    print_separator("OpenMP disabled by user.")
+    set(ENABLE_OPENMP FALSE CACHE BOOL "OpenMP is disabled")
+endif ()
 
 # Find Python3 interpreter and development components
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
@@ -37,29 +52,6 @@ set(PYBIND11_PYTHON_VERSION ${Python3_VERSION})
 set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
 set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
 set(PYTHON_LIBRARY ${Python3_LIBRARIES})
-
-# Detect OS and set OpenMP options
-if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-    # macOS: Do not enable OpenMP
-    print_separator("macOS detected. OpenMP will not be enabled.")
-    set(ENABLE_OPENMP FALSE)
-elseif (USE_OPENMP)
-    # Linux and Windows: Enable OpenMP only if the option is ON
-    find_package(OpenMP)
-    if (OpenMP_CXX_FOUND)
-        print_separator("OpenMP Configuration")
-        message(STATUS "OpenMP found: Enabling OpenMP support.")
-        set(ENABLE_OPENMP TRUE)
-    else ()
-        print_separator("OpenMP Configuration")
-        message(STATUS "OpenMP not found: Proceeding without OpenMP support.")
-        set(ENABLE_OPENMP FALSE)
-    endif ()
-else ()
-    # User opted to disable OpenMP
-    print_separator("OpenMP disabled by user.")
-    set(ENABLE_OPENMP FALSE)
-endif ()
 
 # Get the number of logical CPU cores
 include(ProcessorCount)
