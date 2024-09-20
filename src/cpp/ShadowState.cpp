@@ -2,6 +2,7 @@
 // Created by Weiguo Ma on 2024/9/16.
 //
 #include "ShadowState.h"
+#include "platformConfig.h"
 
 namespace py = pybind11;
 
@@ -20,12 +21,13 @@ ShadowState::ShadowState(const int &qnumber) {
 
 
 void ShadowState::precomputeAll() {
-    #pragma omp parallel for collapse(2)
-    for (int i = 0; i < _pauliBases.size(); ++i) {
-        for (int j = 0; j < _bases.size(); ++j) {
-            MatrixXcd ketResult = _pauliBases[i].adjoint() * _bases[j];
+    #pragma omp parallel for
+    for (LoopIndexType i = 0; i < static_cast<LoopIndexType>(_pauliBases.size()); ++i) {
+        for (LoopIndexType j = 0; j < static_cast<LoopIndexType>(_bases.size()); ++j) {
+            MatrixXcd ketResult =
+                    _pauliBases[static_cast<LoopIndexType>(i)].adjoint() * _bases[static_cast<LoopIndexType>(j)];
             MatrixXcd rhoResult = ketResult * ketResult.adjoint();
-            precomputedResults[{i, j}] = rhoResult;
+            precomputedResults[{static_cast<LoopIndexType>(i), static_cast<LoopIndexType>(j)}] = rhoResult;
         }
     }
 }
@@ -40,10 +42,14 @@ MatrixType ShadowState::kroneckerProduct(const MatrixType &A, const MatrixType &
 
     MatrixType result(rowsA * rowsB, colsA * colsB);
 
-#pragma omp parallel for collapse(2)
-    for (int i = 0; i < rowsA; ++i) {
-        for (int j = 0; j < colsA; ++j) {
-            result.block(i * rowsB, j * colsB, rowsB, colsB) = A(i, j) * B;
+    #pragma omp parallel for
+    for (LoopIndexType i = 0; i < static_cast<LoopIndexType>(rowsA); ++i) {
+        for (LoopIndexType j = 0; j < static_cast<LoopIndexType>(colsA); ++j) {
+            result.block(static_cast<LoopIndexType>(i) * static_cast<LoopIndexType>(rowsB),
+                         static_cast<LoopIndexType>(j) * static_cast<LoopIndexType>(colsB),
+                         static_cast<LoopIndexType>(rowsB),
+                         static_cast<LoopIndexType>(colsB))
+                         = A(static_cast<LoopIndexType>(i), static_cast<LoopIndexType>(j)) * B;
         }
     }
     return result;
@@ -92,8 +98,11 @@ MatrixXcd ShadowState::stateEstimation(
         MatrixXcd localSumMatrix = MatrixXcd::Zero(sumMatrix.rows(), sumMatrix.cols());
 
     #pragma omp for
-        for (size_t idx = 0; idx < measureOperations.size(); ++idx) {
-            localSumMatrix += ShadowState::measureResult2state(measureOperations[idx], measureResults[idx]);
+        for (LoopIndexType idx = 0; idx < static_cast<LoopIndexType>(measureOperations.size()); ++idx) {
+            localSumMatrix += ShadowState::measureResult2state(
+                    measureOperations[static_cast<LoopIndexType>(idx)],
+                    measureResults[static_cast<LoopIndexType>(idx)]
+                    );
         }
 
     #pragma omp critical

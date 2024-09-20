@@ -8,8 +8,8 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "pcg/pcg_random.hpp"
 #include <omp.h>
+#include "platformConfig.h"
 
 namespace py = pybind11;
 using namespace Eigen;
@@ -26,7 +26,7 @@ private:
             MatrixXcd::Identity(2, 2)
     };
 
-    pcg32 gen;
+    randomGenerator gen;
 
     template<typename MatrixType>
     static MatrixType kroneckerProduct(const MatrixType &A, const MatrixType &B) {
@@ -37,10 +37,14 @@ private:
 
         MatrixType result(rowsA * rowsB, colsA * colsB);
 
-#pragma omp parallel for collapse(2)
-        for (int i = 0; i < rowsA; ++i) {
-            for (int j = 0; j < colsA; ++j) {
-                result.block(i * rowsB, j * colsB, rowsB, colsB) = A(i, j) * B;
+        #pragma omp parallel for
+        for (LoopIndexType i = 0; i < static_cast<LoopIndexType>(rowsA); ++i) {
+            for (LoopIndexType j = 0; j < static_cast<LoopIndexType>(colsA); ++j) {
+                result.block(static_cast<LoopIndexType>(i) * static_cast<LoopIndexType>(rowsB),
+                             static_cast<LoopIndexType>(j) * static_cast<LoopIndexType>(colsB),
+                             static_cast<LoopIndexType>(rowsB),
+                             static_cast<LoopIndexType>(colsB))
+                        = A(static_cast<LoopIndexType>(i), static_cast<LoopIndexType>(j)) * B;
             }
         }
         return result;
@@ -92,7 +96,7 @@ vector<vector<int>> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::
     results.reserve(measure_times);
 
     #pragma omp parallel for
-    for (int t = 0; t < measure_times; ++t) {
+    for (LoopIndexType t = 0; t < static_cast<LoopIndexType>(measure_times); ++t) {
         std::string _state = proj_basis[dist(gen)];
         vector<int> _state_eigenValue;
         _state_eigenValue.reserve(_state.size());

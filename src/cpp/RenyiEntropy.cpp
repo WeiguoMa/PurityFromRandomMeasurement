@@ -2,13 +2,11 @@
 // Created by Weiguo Ma on 2024/9/18.
 //
 #include "ShadowState.h"
+#include "platformConfig.h"
 
 using namespace std;
 namespace py = pybind11;
 
-int countBits(uint64_t x) {
-    return __builtin_popcountll(x);
-}
 
 int hammingDistance(const vector<uint64_t> &v1, const vector<uint64_t> &v2, size_t numBits) {
     int distance = 0;
@@ -77,13 +75,13 @@ public:
     double calculateP2_Hamming() {
         double sum = 0.0;
 
-        #pragma omp parallel for collapse(3) reduction(+:sum)
-        for (size_t m = 0; m < M; ++m) {
-            for (size_t k = 0; k < K; ++k) {
-                for (size_t k_prime = k + 1; k_prime < K; ++k_prime) {
+        #pragma omp parallel for reduction(+:sum)
+        for (LoopIndexType m = 0; m < static_cast<LoopIndexType>(M); ++m) {
+            for (LoopIndexType k = 0; k < static_cast<LoopIndexType>(K); ++k) {
+                for (LoopIndexType k_prime = k + 1; k_prime < static_cast<LoopIndexType>(K); ++k_prime) {
                     int dist = hammingDistance(
-                            measurementResultsBitset[m][k],
-                            measurementResultsBitset[m][k_prime],
+                            measurementResultsBitset[static_cast<LoopIndexType>(m)][k],
+                            measurementResultsBitset[static_cast<LoopIndexType>(m)][k_prime],
                             N
                     );
                     sum += 2 * pow(-2, -dist);  // k/k' is the same as k'/k
@@ -100,16 +98,20 @@ public:
 
         vector<MatrixXcd> rhoMatrices(M);
         #pragma omp parallel for
-        for (size_t m = 0; m < M; ++m) {
+        for (LoopIndexType m = 0; m < static_cast<LoopIndexType>(M); ++m) {
             rhoMatrices[m] = shadowState.stateEstimation(
-                    {measurementScheme[m]}, {measurementResults[m]}
+                    {
+                        measurementScheme[static_cast<LoopIndexType>(m)]},
+                        {measurementResults[static_cast<LoopIndexType>(m)]
+                        }
             );
         }
 
-        #pragma omp parallel for reduction(+:sum) collapse(2)
-        for (size_t m = 0; m < M; ++m) {
-            for (size_t m_prime = m + 1; m_prime < M; ++m_prime) {
-                MatrixXcd product = rhoMatrices[m] * rhoMatrices[m_prime];  // rho^{(m)} * rho^{(m')}
+        #pragma omp parallel for reduction(+:sum)
+        for (LoopIndexType m = 0; m < static_cast<LoopIndexType>(M); ++m) {
+            for (LoopIndexType m_prime = m + 1; m_prime < static_cast<LoopIndexType>(M); ++m_prime) {
+                MatrixXcd product =     // rho^{(m)} * rho^{(m')}
+                        rhoMatrices[static_cast<LoopIndexType>(m)] * rhoMatrices[static_cast<LoopIndexType>(m_prime)];
                 sum += product.trace().real();
             }
         }
