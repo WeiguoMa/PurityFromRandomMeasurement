@@ -37,3 +37,6 @@ estimated_states = [
 
 print("Estimated DM:")
 print(estimated_states[-1])
+print("TRACE:", np.trace(estimated_states[-1]))
+print("TRACE2:", np.trace(np.matmul(estimated_states[-1], estimated_states[-1])))
+print("RENYI2:", -np.log2(np.trace(np.matmul(estimated_states[-1], estimated_states[-1]))))

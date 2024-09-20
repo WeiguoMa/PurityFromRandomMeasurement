@@ -1,19 +1,25 @@
+import time
 from typing import List
 from tqdm import tqdm
 
 import numpy as np
 
-from src.python.Physics.generate_TEST_DM import main
+from src.python.Physics.generate_TEST_DM import state_qutip_evolution, pseudo_random_DM
 from src.python.RenyiEntropy import RenyiEntropy
 from src.python.fake_sampler import FakeSampler, random_measurementScheme
 
-K = 10000
-M = 100
+K = 100
+M = 1000
 QNUMBER = 4
-TIME_LIST = [0, 1, 2, 3, 4, 5]
-TEST_DM = main(QNUMBER, TIME_LIST)
+
+# TIME_LIST = [0, 5, 8, 10, 14, 20]
+# TEST_DM = state_qutip_evolution(QNUMBER, TIME_LIST)
+
+TEST_DM = pseudo_random_DM(QNUMBER, numPure=1, numMixed=3)
+
 FAKESAMPLER = FakeSampler(QNUMBER)
 RANDOM_MEASUREMENT_SCHEME = random_measurementScheme(QNUMBER, amount=M)
+
 
 # print("Random Measurement Scheme: ", RANDOM_MEASUREMENT_SCHEME)
 
@@ -22,7 +28,8 @@ def calculate_renyi2_IDEAL(dm):
 
 
 STANDARD_PURITY = [calculate_renyi2_IDEAL(dm) for dm in TEST_DM]
-print("Standard Purity: ", STANDARD_PURITY)
+STANDARD_TRACE = [np.trace(dm).real for dm in TEST_DM]
+
 
 measurementDMs: List[List[List[List[int]]]] = []
 """
@@ -37,13 +44,27 @@ for density_matrix in TEST_DM:
 
 # print("Measurement DMs: ", measurementDMs[0])
 
+total_time_cs = 0.0
+total_time_random = 0.0
+
 renyiEntropy_CS = []
 renyiEntropy_randomMeasurement = []
+
 for measurementDM in tqdm(measurementDMs):
     renyiCalculator = RenyiEntropy(RANDOM_MEASUREMENT_SCHEME, measurementDM)
-    renyiEntropy_randomMeasurement.append(renyiCalculator.calculateRenyiEntropy(classical_shadow=False))
-    renyiEntropy_CS.append(renyiCalculator.calculateRenyiEntropy(classical_shadow=True))
 
+    start_time = time.time()
+    renyiEntropy_CS.append(renyiCalculator.calculateRenyiEntropy(classical_shadow=True))
+    total_time_cs += time.time() - start_time
+
+    start_time = time.time()
+    renyiEntropy_randomMeasurement.append(renyiCalculator.calculateRenyiEntropy(classical_shadow=False))
+    total_time_random += time.time() - start_time
+
+print("Standard Trace: ", STANDARD_TRACE)
+print("Standard Purity: ", STANDARD_PURITY)
 print(f'------------------- CURRENT M: {M}, K: {K} -------------------')
+print(f"Total time for renyiEntropy_CS: {total_time_cs:.6f} seconds")
 print("CS: ", renyiEntropy_CS)
-print("Random Measurement: ", renyiEntropy_randomMeasurement)       # Seems to be correct with M=100, K=1000
+print(f"Total time for renyiEntropy_randomMeasurement: {total_time_random:.6f} seconds")
+print("Random Measurement: ", renyiEntropy_randomMeasurement)  # Seems to be correct with M=100, K=1000

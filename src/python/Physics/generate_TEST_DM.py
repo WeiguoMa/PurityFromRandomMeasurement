@@ -4,6 +4,7 @@ Time: 09.19.2024
 Contact: weiguo.m@iphy.ac.cn
 """
 from typing import Union, List
+import numpy as np
 
 from qutip import Qobj, tensor, sigmax, sigmay, sigmaz, qeye, mesolve, basis, ket2dm
 
@@ -34,10 +35,32 @@ def time_evolution(initial_state: Qobj, hamiltonian: Qobj, time_list: List):
     return mesolve(hamiltonian, initial_state, tlist=time_list).states
 
 
-def main(qnumber: int, time_list: List):
+def state_qutip_evolution(qnumber: int, time_list: List):
     J = 1.
     Bx = 0.1 * J
     initial_state = ket2dm(tensor([basis(2, 0) for _ in range(qnumber)]))
     hamiltonian = ham_in_manuscript(qnumber, J, Bx)
     evolution_states = time_evolution(initial_state, hamiltonian, time_list)
     return [evolution_states[i].full() for i in range(len(evolution_states))]
+
+
+def random_pure_state(dim):
+    psi = np.random.rand(dim) + 1j * np.random.rand(dim)
+    psi = psi / np.linalg.norm(psi)
+    return np.outer(psi, np.conj(psi))
+
+
+def random_mixed_state(dim):
+    rho = np.zeros((dim, dim), dtype=complex)
+    for _ in range(dim):
+        psi = np.random.rand(dim) + 1j * np.random.rand(dim)
+        psi = psi / np.linalg.norm(psi)
+        rho += np.outer(psi, np.conj(psi)) * np.random.rand()
+    rho = rho / np.trace(rho)
+    return rho
+
+
+def pseudo_random_DM(qnumber: int, numPure: int, numMixed: int):
+    pureList = [random_pure_state(2 ** qnumber) for _ in range(numPure)]
+    mixedList = [random_mixed_state(2 ** qnumber) for _ in range(numMixed)]
+    return pureList + mixedList

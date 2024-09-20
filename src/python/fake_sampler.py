@@ -71,4 +71,4 @@ def random_measurementScheme(qnumber: int, amount: int) -> List[List[int]]:
     Returns:
         List[str]: The measurement orientations.
     """
-    return [np.random.choice([0, 1, 2], qnumber).tolist() for _ in range(amount)]
+    return np.random.randint(0, 3, size=(amount, qnumber)).tolist()
