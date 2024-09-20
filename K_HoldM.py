@@ -26,8 +26,8 @@ def generate_fakeMeasurements4DMs(DMs: List, K: int, random_measurementSchemes):
 
 
 def calculateRenyi2(measurementResults4DMs: List, random_measurementSchemes) -> (List, List, List, List):
-    time_cs, time_hamming = [], []              # FOR DM_LIST
-    entropy_cs, entropy_hamming = [], []        # FOR DM_LIST
+    time_cs, time_hamming = [], []  # FOR DM_LIST
+    entropy_cs, entropy_hamming = [], []  # FOR DM_LIST
     for measurementDM in measurementResults4DMs:
         renyiCalculator = RenyiEntropy(random_measurementSchemes, measurementDM)
 
@@ -112,22 +112,27 @@ def extract_data(data: Dict) -> Dict:
 def plot_figures(K_values, data: Dict, saveLocation: Optional[str] = None):
     print('Plotting Figures...')
     for idxDM, value in enumerate(data.values()):
+        if not isinstance(value, Dict):
+            continue
+
         print(f"------------------- CURRENT DM: {idxDM} -------------------")
         plt.figure(figsize=(10, 6), dpi=300)
 
         plt.errorbar(K_values, value['avg_CS_Ks'], yerr=value['std_CS_Ks'], fmt='o-',
-                     label='Classical Shadow', capsize=5)
+                     label='CS Avg.', capsize=5)
         plt.errorbar(K_values, value['avg_hamming_Ks'], yerr=value['std_hamming_Ks'],
-                     fmt='s-', label='Hamming', capsize=5)
+                     fmt='s-', label='Hamming Avg.', capsize=5)
+
         plt.axhline(y=STANDARD_PURITY[idxDM], color='g', linestyle='--', label='Standard Purity')
         plt.xticks(fontsize=18)
         plt.yticks(fontsize=18)
+        plt.ylim(-0.05, 1.05)
         plt.xlabel('K (Number of Samples)', fontsize=20)
         plt.ylabel('Renyi Entropy', fontsize=20)
         plt.title('Renyi Entropy vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_RenyiEntropy_DM:-{idxDM}.pdf")
+        plt.savefig(f"./figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_RenyiEntropy_DM_{idxDM}.pdf")
 
         # Plot Time consumption with error bars
         plt.figure(figsize=(10, 6))
@@ -142,7 +147,7 @@ def plot_figures(K_values, data: Dict, saveLocation: Optional[str] = None):
         plt.title('Time Consumption vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_TimeConsumption_DM-{idxDM}.pdf")
+        plt.savefig(f"./figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_TimeConsumption_DM_{idxDM}.pdf")
 
 
 if __name__ == '__main__':
@@ -154,8 +159,8 @@ if __name__ == '__main__':
     STANDARD_PURITY = [calculate_renyi2_IDEAL(dm) for dm in TEST_DM]
 
     M = 1000
-    repeats = 10
-    K_values = [100, 300, 500, 1000, 2000, 4000]
+    repeats = 50
+    K_values = [50, 100, 300, 500, 1000, 2000, 4000]
 
     dataKs = {K: calculate_entropy_with_errorBars(DMs4Gauging=TEST_DM, M=M, K=K, repeats=repeats) for K in K_values}
 
