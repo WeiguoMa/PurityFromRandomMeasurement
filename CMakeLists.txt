@@ -4,7 +4,12 @@ project(PurityFromShadow)
 # Set C++ standard and build options
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox")  # Maximum optimization for MSVC
+else()
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Optimize for GCC or Clang
+endif()
 
 # Output separator for better visibility
 function(print_separator message)
@@ -12,6 +17,9 @@ function(print_separator message)
     message(STATUS "${message}")
     message(STATUS "------------------------------------------")
 endfunction()
+
+# Add option to enable or disable OpenMP
+option(USE_OPENMP "Enable OpenMP support" ON)  # Default is ON
 
 # Find Python3 interpreter and development components
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
@@ -35,8 +43,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     # macOS: Do not enable OpenMP
     print_separator("macOS detected. OpenMP will not be enabled.")
     set(ENABLE_OPENMP FALSE)
-else()
-    # Linux and Windows: Try to find OpenMP
+elseif(USE_OPENMP)
+    # Linux and Windows: Enable OpenMP only if the option is ON
     find_package(OpenMP)
     if(OpenMP_CXX_FOUND)
         print_separator("OpenMP Configuration")
@@ -47,6 +55,10 @@ else()
         message(STATUS "OpenMP not found: Proceeding without OpenMP support.")
         set(ENABLE_OPENMP FALSE)
     endif()
+else()
+    # User opted to disable OpenMP
+    print_separator("OpenMP disabled by user.")
+    set(ENABLE_OPENMP FALSE)
 endif()
 
 # Get the number of logical CPU cores
@@ -60,7 +72,7 @@ add_subdirectory("./extern/pybind11")
 add_subdirectory("./extern/eigen")
 include_directories(${CMAKE_SOURCE_DIR}/extern/eigen)
 
-# Add the pybind11 module and ensure ShadowState.cpp is compiled as part of the module
+# Set the output directory for the modules
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/src/dependency)
 
 # pybind11 modules
