@@ -202,3 +202,7 @@ cmake-build-*/
 
 # DataSpell
 .idea/dataspell/
+
+data/*
+figures/*
+src/dependency/*
