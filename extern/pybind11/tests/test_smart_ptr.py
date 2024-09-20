@@ -9,7 +9,7 @@ from pybind11_tests import ConstructorStats  # noqa: E402
 def test_smart_ptr(capture):
     # Object1
     for i, o in enumerate(
-        [m.make_object_1(), m.make_object_2(), m.MyObject1(3)], start=1
+            [m.make_object_1(), m.make_object_2(), m.MyObject1(3)], start=1
     ):
         assert o.getRefCount() == 1
         with capture:
@@ -20,7 +20,7 @@ def test_smart_ptr(capture):
         assert capture == f"MyObject1[{i}]\n" * 4
 
     for i, o in enumerate(
-        [m.make_myobject1_1(), m.make_myobject1_2(), m.MyObject1(6), 7], start=4
+            [m.make_myobject1_1(), m.make_myobject1_2(), m.MyObject1(6), 7], start=4
     ):
         print(o)
         with capture:
@@ -49,7 +49,7 @@ def test_smart_ptr(capture):
 
     # Object2
     for i, o in zip(
-        [8, 6, 7], [m.MyObject2(8), m.make_myobject2_1(), m.make_myobject2_2()]
+            [8, 6, 7], [m.MyObject2(8), m.make_myobject2_1(), m.make_myobject2_2()]
     ):
         print(o)
         with capture:
@@ -72,7 +72,7 @@ def test_smart_ptr(capture):
 
     # Object3
     for i, o in zip(
-        [9, 8, 9], [m.MyObject3(9), m.make_myobject3_1(), m.make_myobject3_2()]
+            [9, 8, 9], [m.MyObject3(9), m.make_myobject3_1(), m.make_myobject3_2()]
     ):
         print(o)
         with capture:
@@ -302,8 +302,8 @@ def test_smart_ptr_from_default():
     with pytest.raises(RuntimeError) as excinfo:
         m.HeldByDefaultHolder.load_shared_ptr(instance)
     assert (
-        "Unable to load a custom holder type from a "
-        "default-holder instance" in str(excinfo.value)
+            "Unable to load a custom holder type from a "
+            "default-holder instance" in str(excinfo.value)
     )
 
 

@@ -3,10 +3,10 @@ from __future__ import annotations
 import sys
 
 import pytest
-
-import env
 from pybind11_tests import IncType, UserType
 from pybind11_tests import builtin_casters as m
+
+import env
 
 
 def test_simple_string():
@@ -59,7 +59,7 @@ def test_single_char_arguments():
     assert m.ord_char("a") == 0x61  # simple ASCII
     assert m.ord_char_lv("b") == 0x62
     assert (
-        m.ord_char("é") == 0xE9
+            m.ord_char("é") == 0xE9
     )  # requires 2 bytes in utf-8, but can be stuffed in a char
     with pytest.raises(ValueError) as excinfo:
         assert m.ord_char("Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
@@ -111,7 +111,7 @@ def test_single_char_arguments():
         assert m.ord_char8("a") == 0x61  # simple ASCII
         assert m.ord_char8_lv("b") == 0x62
         assert (
-            m.ord_char8("é") == 0xE9
+                m.ord_char8("é") == 0xE9
         )  # requires 2 bytes in utf-8, but can be stuffed in a char
         with pytest.raises(ValueError) as excinfo:
             assert m.ord_char8("Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
@@ -167,8 +167,8 @@ def test_string_view(capture):
         m.string_view16_print("utf16 🎂")
         m.string_view32_print("utf32 🎂")
     assert (
-        capture
-        == """
+            capture
+            == """
         Hi 2
         utf8 🎂 9
         utf16 🎂 8
@@ -180,8 +180,8 @@ def test_string_view(capture):
             m.string_view8_print("Hi")
             m.string_view8_print("utf8 🎂")
         assert (
-            capture
-            == """
+                capture
+                == """
             Hi 2
             utf8 🎂 9
         """
@@ -193,8 +193,8 @@ def test_string_view(capture):
         m.string_view16_print("Hi, utf16 🎂")
         m.string_view32_print("Hi, utf32 🎂")
     assert (
-        capture
-        == """
+            capture
+            == """
         Hi, ascii 9
         Hi, utf8 🎂 13
         Hi, utf16 🎂 12
@@ -206,8 +206,8 @@ def test_string_view(capture):
             m.string_view8_print("Hi, ascii")
             m.string_view8_print("Hi, utf8 🎂")
         assert (
-            capture
-            == """
+                capture
+                == """
             Hi, ascii 9
             Hi, utf8 🎂 13
         """
@@ -352,16 +352,16 @@ def test_tuple(doc):
     assert m.empty_tuple() == ()
 
     assert (
-        doc(m.pair_passthrough)
-        == """
+            doc(m.pair_passthrough)
+            == """
         pair_passthrough(arg0: tuple[bool, str]) -> tuple[str, bool]
 
         Return a pair in reversed order
     """
     )
     assert (
-        doc(m.tuple_passthrough)
-        == """
+            doc(m.tuple_passthrough)
+            == """
         tuple_passthrough(arg0: tuple[bool, str, int]) -> tuple[int, str, bool]
 
         Return a triple in reversed order

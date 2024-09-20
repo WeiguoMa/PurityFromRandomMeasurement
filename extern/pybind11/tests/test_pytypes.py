@@ -5,10 +5,10 @@ import sys
 import types
 
 import pytest
-
-import env
 from pybind11_tests import detailed_error_messages_enabled
 from pybind11_tests import pytypes as m
+
+import env
 
 
 def test_obj_class_name():
@@ -77,8 +77,8 @@ def test_list(capture, doc):
         lst.append("value2")
         m.print_list(lst)
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         Entry at position 0: value
         list item 0: inserted-0
         list item 1: overwritten
@@ -105,8 +105,8 @@ def test_set(capture, doc):
     with capture:
         m.print_anyset(s)
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         key: key1
         key: key2
         key: key3
@@ -136,8 +136,8 @@ def test_frozenset(capture, doc):
     with capture:
         m.print_anyset(s)
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         key: key1
         key: key2
         key: key3
@@ -161,8 +161,8 @@ def test_dict(capture, doc):
         d["key2"] = "value2"
         m.print_dict(d)
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         key: key, value=value
         key: key2, value=value2
     """
@@ -291,8 +291,8 @@ def test_capsule(capture):
         del a
         pytest.gc_collect()
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         creating capsule
         destructing capsule
     """
@@ -303,8 +303,8 @@ def test_capsule(capture):
         del a
         pytest.gc_collect()
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         creating capsule
         renaming capsule
         destructing capsule
@@ -316,8 +316,8 @@ def test_capsule(capture):
         del a
         pytest.gc_collect()
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         creating capsule
         destructing capsule: 1234
     """
@@ -328,8 +328,8 @@ def test_capsule(capture):
         del a
         pytest.gc_collect()
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         creating capsule
         destructing capsule: 1233
         original name: oname
@@ -341,8 +341,8 @@ def test_capsule(capture):
         del a
         pytest.gc_collect()
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         creating capsule
         renaming capsule
         destructing capsule: 1234
@@ -354,8 +354,8 @@ def test_capsule(capture):
         del a
         pytest.gc_collect()
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         created capsule (1234, 'pointer type description')
         destructing capsule (1234, 'pointer type description')
     """
@@ -366,8 +366,8 @@ def test_capsule(capture):
         del a
         pytest.gc_collect()
     assert (
-        capture.unordered
-        == """
+            capture.unordered
+            == """
         creating capsule with explicit nullptr dtor
     """
     )
@@ -483,7 +483,7 @@ def test_pybind11_str_raw_str():
     assert cvt(False) == "False"
     assert cvt(True) == "True"
     assert cvt(42) == "42"
-    assert cvt(2**65) == "36893488147419103232"
+    assert cvt(2 ** 65) == "36893488147419103232"
     assert cvt(-1.50) == "-1.5"
     assert cvt(()) == "()"
     assert cvt((18,)) == "(18,)"
@@ -536,8 +536,8 @@ def test_print(capture):
     with capture:
         m.print_function()
     assert (
-        capture
-        == """
+            capture
+            == """
         Hello, World!
         1 2.0 three True -- multiple args
         *args-and-a-custom-separator
@@ -862,10 +862,10 @@ def test_inplace_divide(a, b):
     [
         (False, True),
         (
-            set(),
-            {
-                1,
-            },
+                set(),
+                {
+                    1,
+                },
         ),
     ],
 )
@@ -879,10 +879,10 @@ def test_inplace_or(a, b):
     [
         (True, False),
         (
-            {1, 2, 3},
-            {
-                1,
-            },
+                {1, 2, 3},
+                {
+                    1,
+                },
         ),
     ],
 )
@@ -905,28 +905,28 @@ def test_inplace_rshift(a, b):
 
 def test_tuple_nonempty_annotations(doc):
     assert (
-        doc(m.annotate_tuple_float_str)
-        == "annotate_tuple_float_str(arg0: tuple[float, str]) -> None"
+            doc(m.annotate_tuple_float_str)
+            == "annotate_tuple_float_str(arg0: tuple[float, str]) -> None"
     )
 
 
 def test_tuple_empty_annotations(doc):
     assert (
-        doc(m.annotate_tuple_empty) == "annotate_tuple_empty(arg0: tuple[()]) -> None"
+            doc(m.annotate_tuple_empty) == "annotate_tuple_empty(arg0: tuple[()]) -> None"
     )
 
 
 def test_tuple_variable_length_annotations(doc):
     assert (
-        doc(m.annotate_tuple_variable_length)
-        == "annotate_tuple_variable_length(arg0: tuple[float, ...]) -> None"
+            doc(m.annotate_tuple_variable_length)
+            == "annotate_tuple_variable_length(arg0: tuple[float, ...]) -> None"
     )
 
 
 def test_dict_annotations(doc):
     assert (
-        doc(m.annotate_dict_str_int)
-        == "annotate_dict_str_int(arg0: dict[str, int]) -> None"
+            doc(m.annotate_dict_str_int)
+            == "annotate_dict_str_int(arg0: dict[str, int]) -> None"
     )
 
 
@@ -940,29 +940,29 @@ def test_set_annotations(doc):
 
 def test_iterable_annotations(doc):
     assert (
-        doc(m.annotate_iterable_str)
-        == "annotate_iterable_str(arg0: Iterable[str]) -> None"
+            doc(m.annotate_iterable_str)
+            == "annotate_iterable_str(arg0: Iterable[str]) -> None"
     )
 
 
 def test_iterator_annotations(doc):
     assert (
-        doc(m.annotate_iterator_int)
-        == "annotate_iterator_int(arg0: Iterator[int]) -> None"
+            doc(m.annotate_iterator_int)
+            == "annotate_iterator_int(arg0: Iterator[int]) -> None"
     )
 
 
 def test_fn_annotations(doc):
     assert (
-        doc(m.annotate_fn)
-        == "annotate_fn(arg0: Callable[[list[str], str], int]) -> None"
+            doc(m.annotate_fn)
+            == "annotate_fn(arg0: Callable[[list[str], str], int]) -> None"
     )
 
 
 def test_fn_return_only(doc):
     assert (
-        doc(m.annotate_fn_only_return)
-        == "annotate_fn_only_return(arg0: Callable[..., int]) -> None"
+            doc(m.annotate_fn_only_return)
+            == "annotate_fn_only_return(arg0: Callable[..., int]) -> None"
     )
 
 
@@ -972,36 +972,36 @@ def test_type_annotation(doc):
 
 def test_union_annotations(doc):
     assert (
-        doc(m.annotate_union)
-        == "annotate_union(arg0: list[Union[str, int, object]], arg1: str, arg2: int, arg3: object) -> list[Union[str, int, object]]"
+            doc(m.annotate_union)
+            == "annotate_union(arg0: list[Union[str, int, object]], arg1: str, arg2: int, arg3: object) -> list[Union[str, int, object]]"
     )
 
 
 def test_union_typing_only(doc):
     assert (
-        doc(m.union_typing_only)
-        == "union_typing_only(arg0: list[Union[str]]) -> list[Union[int]]"
+            doc(m.union_typing_only)
+            == "union_typing_only(arg0: list[Union[str]]) -> list[Union[int]]"
     )
 
 
 def test_union_object_annotations(doc):
     assert (
-        doc(m.annotate_union_to_object)
-        == "annotate_union_to_object(arg0: Union[int, str]) -> object"
+            doc(m.annotate_union_to_object)
+            == "annotate_union_to_object(arg0: Union[int, str]) -> object"
     )
 
 
 def test_optional_annotations(doc):
     assert (
-        doc(m.annotate_optional)
-        == "annotate_optional(arg0: list) -> list[Optional[str]]"
+            doc(m.annotate_optional)
+            == "annotate_optional(arg0: list) -> list[Optional[str]]"
     )
 
 
 def test_type_guard_annotations(doc):
     assert (
-        doc(m.annotate_type_guard)
-        == "annotate_type_guard(arg0: object) -> TypeGuard[str]"
+            doc(m.annotate_type_guard)
+            == "annotate_type_guard(arg0: object) -> TypeGuard[str]"
     )
 
 
@@ -1019,8 +1019,8 @@ def test_never_annotation(doc):
 
 def test_optional_object_annotations(doc):
     assert (
-        doc(m.annotate_optional_to_object)
-        == "annotate_optional_to_object(arg0: Optional[int]) -> object"
+            doc(m.annotate_optional_to_object)
+            == "annotate_optional_to_object(arg0: Optional[int]) -> object"
     )
 
 
@@ -1030,8 +1030,8 @@ def test_optional_object_annotations(doc):
 )
 def test_literal(doc):
     assert (
-        doc(m.annotate_literal)
-        == 'annotate_literal(arg0: Literal[26, 0x1A, "hello world", b"hello world", u"hello world", True, Color.RED, None]) -> object'
+            doc(m.annotate_literal)
+            == 'annotate_literal(arg0: Literal[26, 0x1A, "hello world", b"hello world", u"hello world", True, Color.RED, None]) -> object'
     )
 
 
@@ -1041,8 +1041,8 @@ def test_literal(doc):
 )
 def test_typevar(doc):
     assert (
-        doc(m.annotate_generic_containers)
-        == "annotate_generic_containers(arg0: list[T]) -> list[V]"
+            doc(m.annotate_generic_containers)
+            == "annotate_generic_containers(arg0: list[T]) -> list[V]"
     )
 
     assert doc(m.annotate_listT_to_T) == "annotate_listT_to_T(arg0: list[T]) -> T"

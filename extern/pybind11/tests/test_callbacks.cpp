@@ -85,8 +85,11 @@ TEST_SUBMODULE(callbacks, m) {
     // test_lambda_closure_cleanup
     struct Payload {
         Payload() { print_default_created(this); }
+
         ~Payload() { print_destroyed(this); }
+
         Payload(const Payload &) { print_copy_created(this); }
+
         Payload(Payload &&) noexcept { print_move_created(this); }
     };
     // Export the payload constructor statistics for testing purposes:
@@ -105,9 +108,13 @@ TEST_SUBMODULE(callbacks, m) {
     class CppCallable {
     public:
         CppCallable() { track_default_created(this); }
+
         ~CppCallable() { track_destroyed(this); }
+
         CppCallable(const CppCallable &) { track_copy_created(this); }
+
         CppCallable(CppCallable &&) noexcept { track_move_created(this); }
+
         void operator()() {}
     };
 
@@ -147,15 +154,15 @@ TEST_SUBMODULE(callbacks, m) {
     m.def("dummy_function_overloaded", &dummy_function);
     m.def("dummy_function2", [](int i, int j) { return i + j; });
     m.def(
-        "roundtrip",
-        [](std::function<int(int)> f, bool expect_none = false) {
-            if (expect_none && f) {
-                throw std::runtime_error("Expected None to be converted to empty std::function");
-            }
-            return f;
-        },
-        py::arg("f"),
-        py::arg("expect_none") = false);
+            "roundtrip",
+            [](std::function<int(int)> f, bool expect_none = false) {
+                if (expect_none && f) {
+                    throw std::runtime_error("Expected None to be converted to empty std::function");
+                }
+                return f;
+            },
+            py::arg("f"),
+            py::arg("expect_none") = false);
     m.def("test_dummy_function", [](const std::function<int(int)> &f) -> std::string {
         using fn_type = int (*)(int);
         const auto *result = f.target<fn_type>();
@@ -185,9 +192,13 @@ TEST_SUBMODULE(callbacks, m) {
         bool valid = true;
 
         MovableObject() = default;
+
         MovableObject(const MovableObject &) = default;
+
         MovableObject &operator=(const MovableObject &) = default;
-        MovableObject(MovableObject &&o) noexcept : valid(o.valid) { o.valid = false; }
+
+        MovableObject(MovableObject &&o) noexcept: valid(o.valid) { o.valid = false; }
+
         MovableObject &operator=(MovableObject &&o) noexcept {
             valid = o.valid;
             o.valid = false;
@@ -204,10 +215,11 @@ TEST_SUBMODULE(callbacks, m) {
     });
 
     // test_bound_method_callback
-    struct CppBoundMethodTest {};
+    struct CppBoundMethodTest {
+    };
     py::class_<CppBoundMethodTest>(m, "CppBoundMethodTest")
-        .def(py::init<>())
-        .def("triple", [](CppBoundMethodTest &, int val) { return 3 * val; });
+            .def(py::init<>())
+            .def("triple", [](CppBoundMethodTest &, int val) { return 3 * val; });
 
     // This checks that builtin functions can be passed as callbacks
     // rather than throwing RuntimeError due to trying to extract as capsule
@@ -230,7 +242,7 @@ TEST_SUBMODULE(callbacks, m) {
         };
 
         // spawn worker threads
-        for (auto i : work) {
+        for (auto i: work) {
             start_f(py::cast<int>(i));
         }
     });
@@ -264,7 +276,7 @@ TEST_SUBMODULE(callbacks, m) {
     // This capsule should be detected by our code as foreign and not inspected as the pointers
     // shouldn't match
     constexpr const char *rec_capsule_name
-        = pybind11::detail::internals_function_record_capsule_name;
+            = pybind11::detail::internals_function_record_capsule_name;
     py::capsule rec_capsule(std::malloc(1), [](void *data) { std::free(data); });
     rec_capsule.set_name(rec_capsule_name);
     m.add_object("custom_function", PyCFunction_New(custom_def, rec_capsule.ptr()));

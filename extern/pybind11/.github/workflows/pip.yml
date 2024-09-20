@@ -5,12 +5,12 @@ on:
   pull_request:
   push:
     branches:
-    - master
-    - stable
-    - v*
+      - master
+      - stable
+      - v*
   release:
     types:
-    - published
+      - published
 
 permissions:
   contents: read
@@ -27,19 +27,19 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup 🐍 3.8
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.8
+      - name: Setup 🐍 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
 
-    - name: Prepare env
-      run: |
-        python -m pip install -r tests/requirements.txt
+      - name: Prepare env
+        run: |
+          python -m pip install -r tests/requirements.txt
 
-    - name: Python Packaging tests
-      run: pytest tests/extra_python_package/
+      - name: Python Packaging tests
+        run: pytest tests/extra_python_package/
 
 
   # This runs the packaging tests and also builds and saves the packages as
@@ -49,39 +49,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup 🐍 3.8
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.8
+      - name: Setup 🐍 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
 
-    - name: Prepare env
-      run: |
-        python -m pip install -r tests/requirements.txt build twine
+      - name: Prepare env
+        run: |
+          python -m pip install -r tests/requirements.txt build twine
 
-    - name: Python Packaging tests
-      run: pytest tests/extra_python_package/
+      - name: Python Packaging tests
+        run: pytest tests/extra_python_package/
 
-    - name: Build SDist and wheels
-      run: |
-        python -m build
-        PYBIND11_GLOBAL_SDIST=1 python -m build
+      - name: Build SDist and wheels
+        run: |
+          python -m build
+          PYBIND11_GLOBAL_SDIST=1 python -m build
 
-    - name: Check metadata
-      run: twine check dist/*
+      - name: Check metadata
+        run: twine check dist/*
 
-    - name: Save standard package
-      uses: actions/upload-artifact@v4
-      with:
-        name: standard
-        path: dist/pybind11-*
+      - name: Save standard package
+        uses: actions/upload-artifact@v4
+        with:
+          name: standard
+          path: dist/pybind11-*
 
-    - name: Save global package
-      uses: actions/upload-artifact@v4
-      with:
-        name: global
-        path: dist/pybind11_global-*
+      - name: Save global package
+        uses: actions/upload-artifact@v4
+        with:
+          name: global
+          path: dist/pybind11_global-*
 
 
 
@@ -90,7 +90,7 @@ jobs:
     name: Upload to PyPI
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
-    needs: [packaging]
+    needs: [ packaging ]
     environment: pypi
     permissions:
       id-token: write
@@ -98,20 +98,20 @@ jobs:
       contents: read
 
     steps:
-    # Downloads all to directories matching the artifact names
-    - uses: actions/download-artifact@v4
+      # Downloads all to directories matching the artifact names
+      - uses: actions/download-artifact@v4
 
-    - name: Generate artifact attestation for sdist and wheel
-      uses: actions/attest-build-provenance@5e9cb68e95676991667494a6a4e59b8a2f13e1d0 # v1.3.3
-      with:
-        subject-path: "*/pybind11*"
+      - name: Generate artifact attestation for sdist and wheel
+        uses: actions/attest-build-provenance@5e9cb68e95676991667494a6a4e59b8a2f13e1d0 # v1.3.3
+        with:
+          subject-path: "*/pybind11*"
 
-    - name: Publish standard package
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        packages-dir: standard/
+      - name: Publish standard package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: standard/
 
-    - name: Publish global package
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        packages-dir: global/
+      - name: Publish global package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: global/

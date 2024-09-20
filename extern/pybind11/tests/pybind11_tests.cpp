@@ -43,35 +43,35 @@ test_initializer::test_initializer(const char *submodule_name, Initializer init)
 
 void bind_ConstructorStats(py::module_ &m) {
     py::class_<ConstructorStats>(m, "ConstructorStats")
-        .def("alive", &ConstructorStats::alive)
-        .def("values", &ConstructorStats::values)
-        .def_readwrite("default_constructions", &ConstructorStats::default_constructions)
-        .def_readwrite("copy_assignments", &ConstructorStats::copy_assignments)
-        .def_readwrite("move_assignments", &ConstructorStats::move_assignments)
-        .def_readwrite("copy_constructions", &ConstructorStats::copy_constructions)
-        .def_readwrite("move_constructions", &ConstructorStats::move_constructions)
-        .def_static("get",
-                    (ConstructorStats & (*) (py::object)) & ConstructorStats::get,
-                    py::return_value_policy::reference_internal)
+            .def("alive", &ConstructorStats::alive)
+            .def("values", &ConstructorStats::values)
+            .def_readwrite("default_constructions", &ConstructorStats::default_constructions)
+            .def_readwrite("copy_assignments", &ConstructorStats::copy_assignments)
+            .def_readwrite("move_assignments", &ConstructorStats::move_assignments)
+            .def_readwrite("copy_constructions", &ConstructorStats::copy_constructions)
+            .def_readwrite("move_constructions", &ConstructorStats::move_constructions)
+            .def_static("get",
+                        (ConstructorStats &(*)(py::object)) &ConstructorStats::get,
+                        py::return_value_policy::reference_internal)
 
-        // Not exactly ConstructorStats, but related: expose the internal pybind number of
-        // registered instances to allow instance cleanup checks (invokes a GC first)
-        .def_static("detail_reg_inst", []() {
-            ConstructorStats::gc();
-            return py::detail::num_registered_instances();
-        });
+                    // Not exactly ConstructorStats, but related: expose the internal pybind number of
+                    // registered instances to allow instance cleanup checks (invokes a GC first)
+            .def_static("detail_reg_inst", []() {
+                ConstructorStats::gc();
+                return py::detail::num_registered_instances();
+            });
 }
 
 const char *cpp_std() {
     return
 #if defined(PYBIND11_CPP20)
-        "C++20";
+            "C++20";
 #elif defined(PYBIND11_CPP17)
-        "C++17";
+    "C++17";
 #elif defined(PYBIND11_CPP14)
-        "C++14";
+    "C++14";
 #else
-        "C++11";
+    "C++11";
 #endif
 }
 
@@ -93,15 +93,15 @@ PYBIND11_MODULE(pybind11_tests, m, py::mod_gil_not_used()) {
     m.attr("PYBIND11_REFCNT_IMMORTAL") = UINT32_MAX;
     m.attr("PYBIND11_SIMPLE_GIL_MANAGEMENT") =
 #if defined(PYBIND11_SIMPLE_GIL_MANAGEMENT)
-        true;
+            true;
 #else
-        false;
+            false;
 #endif
     m.attr("PYBIND11_NUMPY_1_ONLY") =
 #if defined(PYBIND11_NUMPY_1_ONLY)
-        true;
+            true;
 #else
-        false;
+            false;
 #endif
 
     bind_ConstructorStats(m);
@@ -113,19 +113,19 @@ PYBIND11_MODULE(pybind11_tests, m, py::mod_gil_not_used()) {
 #endif
 
     py::class_<UserType>(m, "UserType", "A `py::class_` type for testing")
-        .def(py::init<>())
-        .def(py::init<int>())
-        .def("get_value", &UserType::value, "Get value using a method")
-        .def("set_value", &UserType::set, "Set value using a method")
-        .def_property("value", &UserType::value, &UserType::set, "Get/set value using a property")
-        .def("__repr__", [](const UserType &u) { return "UserType({})"_s.format(u.value()); });
+            .def(py::init<>())
+            .def(py::init<int>())
+            .def("get_value", &UserType::value, "Get value using a method")
+            .def("set_value", &UserType::set, "Set value using a method")
+            .def_property("value", &UserType::value, &UserType::set, "Get/set value using a property")
+            .def("__repr__", [](const UserType &u) { return "UserType({})"_s.format(u.value()); });
 
     py::class_<IncType, UserType>(m, "IncType")
-        .def(py::init<>())
-        .def(py::init<int>())
-        .def("__repr__", [](const IncType &u) { return "IncType({})"_s.format(u.value()); });
+            .def(py::init<>())
+            .def(py::init<int>())
+            .def("__repr__", [](const IncType &u) { return "IncType({})"_s.format(u.value()); });
 
-    for (const auto &initializer : initializers()) {
+    for (const auto &initializer: initializers()) {
         initializer(m);
     }
 }

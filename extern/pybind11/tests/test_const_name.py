@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from pybind11_tests import const_name as m
 
 
@@ -10,17 +9,17 @@ from pybind11_tests import const_name as m
     ("selector", "expected"),
     enumerate(
         (
-            "",
-            "A",
-            "Bd",
-            "Cef",
-            "%",
-            "%",
-            "T1",
-            "U2",
-            "D1",
-            "E2",
-            "KeepAtEnd",
+                "",
+                "A",
+                "Bd",
+                "Cef",
+                "%",
+                "%",
+                "T1",
+                "U2",
+                "D1",
+                "E2",
+                "KeepAtEnd",
         )
     ),
 )

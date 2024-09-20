@@ -34,8 +34,8 @@ TEST_SUBMODULE(local_bindings, m) {
     // The main pybind11 test module is loaded first, so this registration will succeed (the second
     // one, in pybind11_cross_module_tests.cpp, is designed to fail):
     bind_local<NonLocalType, 0>(m, "NonLocalType")
-        .def(py::init<int>())
-        .def("get", [](LocalType &i) { return i.i; });
+            .def(py::init<int>())
+            .def("get", [](LocalType &i) { return i.i; });
 
     // test_duplicate_local
     // py::module_local declarations should be visible across compilation units that get linked

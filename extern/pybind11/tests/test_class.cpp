@@ -28,30 +28,32 @@ PYBIND11_WARNING_DISABLE_MSVC(4324)
 // test_brace_initialization
 struct NoBraceInitialization {
     explicit NoBraceInitialization(std::vector<int> v) : vec{std::move(v)} {}
-    template <typename T>
+
+    template<typename T>
     NoBraceInitialization(std::initializer_list<T> l) : vec(l) {}
 
     std::vector<int> vec;
 };
 
 namespace test_class {
-namespace pr4220_tripped_over_this { // PR #4227
+    namespace pr4220_tripped_over_this { // PR #4227
 
-template <int>
-struct SoEmpty {};
+        template<int>
+        struct SoEmpty {
+        };
 
-template <typename T>
-std::string get_msg(const T &) {
-    return "This is really only meant to exercise successful compilation.";
-}
+        template<typename T>
+        std::string get_msg(const T &) {
+            return "This is really only meant to exercise successful compilation.";
+        }
 
-using Empty0 = SoEmpty<0x0>;
+        using Empty0 = SoEmpty<0x0>;
 
-void bind_empty0(py::module_ &m) {
-    py::class_<Empty0>(m, "Empty0").def(py::init<>()).def("get_msg", get_msg<Empty0>);
-}
+        void bind_empty0(py::module_ &m) {
+            py::class_<Empty0>(m, "Empty0").def(py::init<>()).def("get_msg", get_msg<Empty0>);
+        }
 
-} // namespace pr4220_tripped_over_this
+    } // namespace pr4220_tripped_over_this
 } // namespace test_class
 
 TEST_SUBMODULE(class_, m) {
@@ -60,41 +62,51 @@ TEST_SUBMODULE(class_, m) {
     // test_instance
     struct NoConstructor {
         NoConstructor() = default;
+
         NoConstructor(const NoConstructor &) = default;
+
         NoConstructor(NoConstructor &&) = default;
+
         static NoConstructor *new_instance() {
             auto *ptr = new NoConstructor();
             print_created(ptr, "via new_instance");
             return ptr;
         }
+
         ~NoConstructor() { print_destroyed(this); }
     };
     struct NoConstructorNew {
         NoConstructorNew() = default;
+
         NoConstructorNew(const NoConstructorNew &) = default;
+
         NoConstructorNew(NoConstructorNew &&) = default;
+
         static NoConstructorNew *new_instance() {
             auto *ptr = new NoConstructorNew();
             print_created(ptr, "via new_instance");
             return ptr;
         }
+
         ~NoConstructorNew() { print_destroyed(this); }
     };
 
     py::class_<NoConstructor>(m, "NoConstructor")
-        .def_static("new_instance", &NoConstructor::new_instance, "Return an instance");
+            .def_static("new_instance", &NoConstructor::new_instance, "Return an instance");
 
     py::class_<NoConstructorNew>(m, "NoConstructorNew")
-        .def(py::init([]() { return nullptr; })) // Need a NOOP __init__
-        .def_static("__new__",
-                    [](const py::object &) { return NoConstructorNew::new_instance(); });
+            .def(py::init([]() { return nullptr; })) // Need a NOOP __init__
+            .def_static("__new__",
+                        [](const py::object &) { return NoConstructorNew::new_instance(); });
 
     // test_inheritance
     class Pet {
     public:
         Pet(const std::string &name, const std::string &species)
-            : m_name(name), m_species(species) {}
+                : m_name(name), m_species(species) {}
+
         std::string name() const { return m_name; }
+
         std::string species() const { return m_species; }
 
     private:
@@ -105,6 +117,7 @@ TEST_SUBMODULE(class_, m) {
     class Dog : public Pet {
     public:
         explicit Dog(const std::string &name) : Pet(name, "dog") {}
+
         std::string bark() const { return "Woof!"; }
     };
 
@@ -124,8 +137,8 @@ TEST_SUBMODULE(class_, m) {
 
     py::class_<Pet> pet_class(m, "Pet");
     pet_class.def(py::init<std::string, std::string>())
-        .def("name", &Pet::name)
-        .def("species", &Pet::species);
+            .def("name", &Pet::name)
+            .def("species", &Pet::species);
 
     /* One way of declaring a subclass relationship: reference parent's class_ object */
     py::class_<Dog>(m, "Dog", pet_class).def(py::init<std::string>());
@@ -146,12 +159,17 @@ TEST_SUBMODULE(class_, m) {
     // test_automatic_upcasting
     struct BaseClass {
         BaseClass() = default;
+
         BaseClass(const BaseClass &) = default;
+
         BaseClass(BaseClass &&) = default;
+
         virtual ~BaseClass() = default;
     };
-    struct DerivedClass1 : BaseClass {};
-    struct DerivedClass2 : BaseClass {};
+    struct DerivedClass1 : BaseClass {
+    };
+    struct DerivedClass2 : BaseClass {
+    };
 
     py::class_<BaseClass>(m, "BaseClass").def(py::init<>());
     py::class_<DerivedClass1>(m, "DerivedClass1").def(py::init<>());
@@ -181,7 +199,8 @@ TEST_SUBMODULE(class_, m) {
                               py::isinstance<UnregisteredType>(l[6]));
     });
 
-    struct Invalid {};
+    struct Invalid {
+    };
 
     // test_type
     m.def("check_type", [](int category) {
@@ -202,11 +221,15 @@ TEST_SUBMODULE(class_, m) {
     m.def("as_type", [](const py::object &ob) { return py::type(ob); });
 
     // test_mismatched_holder
-    struct MismatchBase1 {};
-    struct MismatchDerived1 : MismatchBase1 {};
+    struct MismatchBase1 {
+    };
+    struct MismatchDerived1 : MismatchBase1 {
+    };
 
-    struct MismatchBase2 {};
-    struct MismatchDerived2 : MismatchBase2 {};
+    struct MismatchBase2 {
+    };
+    struct MismatchDerived2 : MismatchBase2 {
+    };
 
     m.def("mismatched_holder_1", []() {
         auto mod = py::module_::import("__main__");
@@ -217,7 +240,7 @@ TEST_SUBMODULE(class_, m) {
         auto mod = py::module_::import("__main__");
         py::class_<MismatchBase2>(mod, "MismatchBase2");
         py::class_<MismatchDerived2, std::shared_ptr<MismatchDerived2>, MismatchBase2>(
-            mod, "MismatchDerived2");
+                mod, "MismatchDerived2");
     });
 
     // test_override_static
@@ -235,8 +258,8 @@ TEST_SUBMODULE(class_, m) {
     py::class_<MyBase>(m, "MyBase").def_static("make", &MyBase::make);
 
     py::class_<MyDerived, MyBase>(m, "MyDerived")
-        .def_static("make", &MyDerived::make)
-        .def_static("make2", &MyDerived::make);
+            .def_static("make", &MyDerived::make)
+            .def_static("make2", &MyDerived::make);
 
     // test_implicit_conversion_life_support
     struct ConvertibleFromUserType {
@@ -271,20 +294,23 @@ TEST_SUBMODULE(class_, m) {
         py::capsule def_capsule(def,
                                 [](void *ptr) { delete reinterpret_cast<PyMethodDef *>(ptr); });
         return py::reinterpret_steal<py::object>(
-            PyCFunction_NewEx(def, def_capsule.ptr(), m.ptr()));
+                PyCFunction_NewEx(def, def_capsule.ptr(), m.ptr()));
     }());
 
     // test_operator_new_delete
     struct HasOpNewDel {
         std::uint64_t i;
+
         static void *operator new(size_t s) {
             py::print("A new", s);
             return ::operator new(s);
         }
+
         static void *operator new(size_t s, void *ptr) {
             py::print("A placement-new", s);
             return ptr;
         }
+
         static void operator delete(void *p) {
             py::print("A delete");
             return ::operator delete(p);
@@ -292,14 +318,17 @@ TEST_SUBMODULE(class_, m) {
     };
     struct HasOpNewDelSize {
         std::uint32_t i;
+
         static void *operator new(size_t s) {
             py::print("B new", s);
             return ::operator new(s);
         }
+
         static void *operator new(size_t s, void *ptr) {
             py::print("B placement-new", s);
             return ptr;
         }
+
         static void operator delete(void *p, size_t s) {
             py::print("B delete", s);
             return ::operator delete(p);
@@ -307,41 +336,53 @@ TEST_SUBMODULE(class_, m) {
     };
     struct AliasedHasOpNewDelSize {
         std::uint64_t i;
+
         static void *operator new(size_t s) {
             py::print("C new", s);
             return ::operator new(s);
         }
+
         static void *operator new(size_t s, void *ptr) {
             py::print("C placement-new", s);
             return ptr;
         }
+
         static void operator delete(void *p, size_t s) {
             py::print("C delete", s);
             return ::operator delete(p);
         }
+
         virtual ~AliasedHasOpNewDelSize() = default;
+
         AliasedHasOpNewDelSize() = default;
+
         AliasedHasOpNewDelSize(const AliasedHasOpNewDelSize &) = delete;
     };
     struct PyAliasedHasOpNewDelSize : AliasedHasOpNewDelSize {
         PyAliasedHasOpNewDelSize() = default;
+
         explicit PyAliasedHasOpNewDelSize(int) {}
+
         std::uint64_t j;
     };
     struct HasOpNewDelBoth {
         std::uint32_t i[8];
+
         static void *operator new(size_t s) {
             py::print("D new", s);
             return ::operator new(s);
         }
+
         static void *operator new(size_t s, void *ptr) {
             py::print("D placement-new", s);
             return ptr;
         }
+
         static void operator delete(void *p) {
             py::print("D delete");
             return ::operator delete(p);
         }
+
         static void operator delete(void *p, size_t s) {
             py::print("D wrong delete", s);
             return ::operator delete(p);
@@ -379,12 +420,16 @@ TEST_SUBMODULE(class_, m) {
     class ProtectedB {
     public:
         virtual ~ProtectedB() = default;
+
         ProtectedB() = default;
+
         ProtectedB(const ProtectedB &) = delete;
 
     protected:
         virtual int foo() const { return value; }
+
         virtual void *void_foo() { return static_cast<void *>(&value); }
+
         virtual void *get_self() { return static_cast<void *>(this); }
 
     private:
@@ -393,9 +438,11 @@ TEST_SUBMODULE(class_, m) {
 
     class TrampolineB : public ProtectedB {
     public:
-        int foo() const override { PYBIND11_OVERRIDE(int, ProtectedB, foo, ); }
-        void *void_foo() override { PYBIND11_OVERRIDE(void *, ProtectedB, void_foo, ); }
-        void *get_self() override { PYBIND11_OVERRIDE(void *, ProtectedB, get_self, ); }
+        int foo() const override { PYBIND11_OVERRIDE(int, ProtectedB, foo,); }
+
+        void *void_foo() override { PYBIND11_OVERRIDE(void *, ProtectedB, void_foo,); }
+
+        void *get_self() override { PYBIND11_OVERRIDE(void *, ProtectedB, get_self,); }
     };
 
     class PublicistB : public ProtectedB {
@@ -418,10 +465,10 @@ TEST_SUBMODULE(class_, m) {
           [](const void *original, const void *comparison) { return original == comparison; });
 
     py::class_<ProtectedB, TrampolineB>(m, "ProtectedB")
-        .def(py::init<>())
-        .def("foo", &PublicistB::foo)
-        .def("void_foo", &PublicistB::void_foo)
-        .def("get_self", &PublicistB::get_self);
+            .def(py::init<>())
+            .def("foo", &PublicistB::foo)
+            .def("void_foo", &PublicistB::void_foo)
+            .def("get_self", &PublicistB::get_self);
 
     // test_brace_initialization
     struct BraceInitialization {
@@ -430,15 +477,15 @@ TEST_SUBMODULE(class_, m) {
     };
 
     py::class_<BraceInitialization>(m, "BraceInitialization")
-        .def(py::init<int, const std::string &>())
-        .def_readwrite("field1", &BraceInitialization::field1)
-        .def_readwrite("field2", &BraceInitialization::field2);
+            .def(py::init<int, const std::string &>())
+            .def_readwrite("field1", &BraceInitialization::field1)
+            .def_readwrite("field2", &BraceInitialization::field2);
     // We *don't* want to construct using braces when the given constructor argument maps to a
     // constructor, because brace initialization could go to the wrong place (in particular when
     // there is also an `initializer_list<T>`-accept constructor):
     py::class_<NoBraceInitialization>(m, "NoBraceInitialization")
-        .def(py::init<std::vector<int>>())
-        .def_readonly("vec", &NoBraceInitialization::vec);
+            .def(py::init<std::vector<int>>())
+            .def_readonly("vec", &NoBraceInitialization::vec);
 
     // test_reentrant_implicit_conversion_failure
     // #1035: issue with runaway reentrant implicit conversion
@@ -447,21 +494,23 @@ TEST_SUBMODULE(class_, m) {
     };
 
     py::class_<BogusImplicitConversion>(m, "BogusImplicitConversion")
-        .def(py::init<const BogusImplicitConversion &>());
+            .def(py::init<const BogusImplicitConversion &>());
 
     py::implicitly_convertible<int, BogusImplicitConversion>();
 
     // test_qualname
     // #1166: nested class docstring doesn't show nested name
     // Also related: tests that __qualname__ is set properly
-    struct NestBase {};
-    struct Nested {};
+    struct NestBase {
+    };
+    struct Nested {
+    };
     py::class_<NestBase> base(m, "NestBase");
     base.def(py::init<>());
     py::class_<Nested>(base, "Nested")
-        .def(py::init<>())
-        .def("fn", [](Nested &, int, NestBase &, Nested &) {})
-        .def("fa", [](Nested &, int, NestBase &, Nested &) {}, "a"_a, "b"_a, "c"_a);
+            .def(py::init<>())
+            .def("fn", [](Nested &, int, NestBase &, Nested &) {})
+            .def("fa", [](Nested &, int, NestBase &, Nested &) {}, "a"_a, "b"_a, "c"_a);
     base.def("g", [](NestBase &, Nested &) {});
     base.def("h", []() { return NestBase(); });
 
@@ -470,7 +519,8 @@ TEST_SUBMODULE(class_, m) {
     // remember which overload was used, and would crash trying to
     // generate a useful error message
 
-    struct NotRegistered {};
+    struct NotRegistered {
+    };
     struct StringWrapper {
         std::string str;
     };
@@ -488,53 +538,65 @@ TEST_SUBMODULE(class_, m) {
 #endif
 
     // test_final
-    struct IsFinal final {};
+    struct IsFinal final {
+    };
     py::class_<IsFinal>(m, "IsFinal", py::is_final());
 
     // test_non_final_final
-    struct IsNonFinalFinal {};
+    struct IsNonFinalFinal {
+    };
     py::class_<IsNonFinalFinal>(m, "IsNonFinalFinal", py::is_final());
 
     // test_exception_rvalue_abort
     struct PyPrintDestructor {
         PyPrintDestructor() = default;
+
         ~PyPrintDestructor() { py::print("Print from destructor"); }
+
         void throw_something() { throw std::runtime_error("error"); }
     };
     py::class_<PyPrintDestructor>(m, "PyPrintDestructor")
-        .def(py::init<>())
-        .def("throw_something", &PyPrintDestructor::throw_something);
+            .def(py::init<>())
+            .def("throw_something", &PyPrintDestructor::throw_something);
 
     // test_multiple_instances_with_same_pointer
-    struct SamePointer {};
+    struct SamePointer {
+    };
     static SamePointer samePointer;
     py::class_<SamePointer, std::unique_ptr<SamePointer, py::nodelete>>(m, "SamePointer")
-        .def(py::init([]() { return &samePointer; }));
+            .def(py::init([]() { return &samePointer; }));
 
-    struct Empty {};
+    struct Empty {
+    };
     py::class_<Empty>(m, "Empty").def(py::init<>());
 
     // test_base_and_derived_nested_scope
     struct BaseWithNested {
-        struct Nested {};
+        struct Nested {
+        };
     };
 
     struct DerivedWithNested : BaseWithNested {
-        struct Nested {};
+        struct Nested {
+        };
     };
 
     py::class_<BaseWithNested> baseWithNested_class(m, "BaseWithNested");
     py::class_<DerivedWithNested, BaseWithNested> derivedWithNested_class(m, "DerivedWithNested");
     py::class_<BaseWithNested::Nested>(baseWithNested_class, "Nested")
-        .def_static("get_name", []() { return "BaseWithNested::Nested"; });
+            .def_static("get_name", []() { return "BaseWithNested::Nested"; });
     py::class_<DerivedWithNested::Nested>(derivedWithNested_class, "Nested")
-        .def_static("get_name", []() { return "DerivedWithNested::Nested"; });
+            .def_static("get_name", []() { return "DerivedWithNested::Nested"; });
 
     // test_register_duplicate_class
-    struct Duplicate {};
-    struct OtherDuplicate {};
-    struct DuplicateNested {};
-    struct OtherDuplicateNested {};
+    struct Duplicate {
+    };
+    struct OtherDuplicate {
+    };
+    struct DuplicateNested {
+    };
+    struct OtherDuplicateNested {
+    };
 
     m.def("register_duplicate_class_name", [](const py::module_ &m) {
         py::class_<Duplicate>(m, "Duplicate");
@@ -556,15 +618,19 @@ TEST_SUBMODULE(class_, m) {
     test_class::pr4220_tripped_over_this::bind_empty0(m);
 }
 
-template <int N>
+template<int N>
 class BreaksBase {
 public:
     virtual ~BreaksBase() = default;
+
     BreaksBase() = default;
+
     BreaksBase(const BreaksBase &) = delete;
 };
-template <int N>
-class BreaksTramp : public BreaksBase<N> {};
+
+template<int N>
+class BreaksTramp : public BreaksBase<N> {
+};
 // These should all compile just fine:
 using DoesntBreak1 = py::class_<BreaksBase<1>, std::unique_ptr<BreaksBase<1>>, BreaksTramp<1>>;
 using DoesntBreak2 = py::class_<BreaksBase<2>, BreaksTramp<2>, std::unique_ptr<BreaksBase<2>>>;

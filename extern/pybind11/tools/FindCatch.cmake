@@ -11,64 +11,64 @@
 
 option(DOWNLOAD_CATCH "Download catch2 if not found")
 
-if(NOT Catch_FIND_VERSION)
-  message(FATAL_ERROR "A version number must be specified.")
-elseif(Catch_FIND_REQUIRED)
-  message(FATAL_ERROR "This module assumes Catch is not required.")
-elseif(Catch_FIND_VERSION_EXACT)
-  message(FATAL_ERROR "Exact version numbers are not supported, only minimum.")
-endif()
+if (NOT Catch_FIND_VERSION)
+    message(FATAL_ERROR "A version number must be specified.")
+elseif (Catch_FIND_REQUIRED)
+    message(FATAL_ERROR "This module assumes Catch is not required.")
+elseif (Catch_FIND_VERSION_EXACT)
+    message(FATAL_ERROR "Exact version numbers are not supported, only minimum.")
+endif ()
 
 # Extract the version number from catch.hpp
 function(_get_catch_version)
-  file(
-    STRINGS "${CATCH_INCLUDE_DIR}/catch.hpp" version_line
-    REGEX "Catch v.*"
-    LIMIT_COUNT 1)
-  if(version_line MATCHES "Catch v([0-9]+)\\.([0-9]+)\\.([0-9]+)")
-    set(CATCH_VERSION
-        "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}"
-        PARENT_SCOPE)
-  endif()
+    file(
+            STRINGS "${CATCH_INCLUDE_DIR}/catch.hpp" version_line
+            REGEX "Catch v.*"
+            LIMIT_COUNT 1)
+    if (version_line MATCHES "Catch v([0-9]+)\\.([0-9]+)\\.([0-9]+)")
+        set(CATCH_VERSION
+                "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}"
+                PARENT_SCOPE)
+    endif ()
 endfunction()
 
 # Download the single-header version of Catch
 function(_download_catch version destination_dir)
-  message(STATUS "Downloading catch v${version}...")
-  set(url https://github.com/philsquared/Catch/releases/download/v${version}/catch.hpp)
-  file(
-    DOWNLOAD ${url} "${destination_dir}/catch.hpp"
-    STATUS status
-    LOG log)
-  list(GET status 0 error)
-  if(error)
-    string(REPLACE "\n" "\n  " log "  ${log}")
-    message(FATAL_ERROR "Could not download URL:\n" "  ${url}\n" "Log:\n" "${log}")
-  endif()
-  set(CATCH_INCLUDE_DIR
-      "${destination_dir}"
-      CACHE INTERNAL "")
+    message(STATUS "Downloading catch v${version}...")
+    set(url https://github.com/philsquared/Catch/releases/download/v${version}/catch.hpp)
+    file(
+            DOWNLOAD ${url} "${destination_dir}/catch.hpp"
+            STATUS status
+            LOG log)
+    list(GET status 0 error)
+    if (error)
+        string(REPLACE "\n" "\n  " log "  ${log}")
+        message(FATAL_ERROR "Could not download URL:\n" "  ${url}\n" "Log:\n" "${log}")
+    endif ()
+    set(CATCH_INCLUDE_DIR
+            "${destination_dir}"
+            CACHE INTERNAL "")
 endfunction()
 
 # Look for catch locally
 find_path(
-  CATCH_INCLUDE_DIR
-  NAMES catch.hpp
-  PATH_SUFFIXES catch2)
-if(CATCH_INCLUDE_DIR)
-  _get_catch_version()
-endif()
+        CATCH_INCLUDE_DIR
+        NAMES catch.hpp
+        PATH_SUFFIXES catch2)
+if (CATCH_INCLUDE_DIR)
+    _get_catch_version()
+endif ()
 
 # Download the header if it wasn't found or if it's outdated
-if(NOT CATCH_VERSION OR CATCH_VERSION VERSION_LESS ${Catch_FIND_VERSION})
-  if(DOWNLOAD_CATCH)
-    _download_catch(${Catch_FIND_VERSION} "${PROJECT_BINARY_DIR}/catch/")
-    _get_catch_version()
-  else()
-    set(CATCH_FOUND FALSE)
-    return()
-  endif()
-endif()
+if (NOT CATCH_VERSION OR CATCH_VERSION VERSION_LESS ${Catch_FIND_VERSION})
+    if (DOWNLOAD_CATCH)
+        _download_catch(${Catch_FIND_VERSION} "${PROJECT_BINARY_DIR}/catch/")
+        _get_catch_version()
+    else ()
+        set(CATCH_FOUND FALSE)
+        return()
+    endif ()
+endif ()
 
 add_library(Catch2::Catch2 IMPORTED INTERFACE)
 set_property(TARGET Catch2::Catch2 PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CATCH_INCLUDE_DIR}")

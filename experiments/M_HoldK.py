@@ -26,8 +26,8 @@ def generate_fakeMeasurements4DMs(DMs: List, K: int, random_measurementSchemes):
 
 
 def calculateRenyi2(measurementResults4DMs: List, random_measurementSchemes) -> (List, List, List, List):
-    time_cs, time_hamming = [], []              # FOR DM_LIST
-    entropy_cs, entropy_hamming = [], []        # FOR DM_LIST
+    time_cs, time_hamming = [], []  # FOR DM_LIST
+    entropy_cs, entropy_hamming = [], []  # FOR DM_LIST
     for measurementDM in measurementResults4DMs:
         renyiCalculator = RenyiEntropy(random_measurementSchemes, measurementDM)
 

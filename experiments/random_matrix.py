@@ -82,7 +82,8 @@ x_labels = [f'DM {i + 1}' for i in range(len(TEST_DM))]
 
 plt.figure(figsize=(10, 6))
 for i, purity in enumerate(STANDARD_PURITY):
-    plt.hlines(y=purity, xmin=i-0.2, xmax=i+0.2, colors='green', linestyles='dashed', label='Standard Purity' if i == 0 else "")
+    plt.hlines(y=purity, xmin=i - 0.2, xmax=i + 0.2, colors='green', linestyles='dashed',
+               label='Standard Purity' if i == 0 else "")
 plt.errorbar(x_labels, renyiEntropy_CS_mean, yerr=renyiEntropy_CS_std, fmt='o', label='Renyi Entropy Shadow', capsize=5)
 plt.errorbar(x_labels, renyiEntropy_randomMeasurement_mean, yerr=renyiEntropy_randomMeasurement_std, fmt='o',
              label='Renyi Entropy Hamming', capsize=5)

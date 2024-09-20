@@ -20,6 +20,7 @@
 class El {
 public:
     El() = delete;
+
     explicit El(int v) : a(v) {}
 
     int a;
@@ -34,15 +35,19 @@ std::ostream &operator<<(std::ostream &s, El const &v) {
 class E_nc {
 public:
     explicit E_nc(int i) : value{i} {}
+
     E_nc(const E_nc &) = delete;
+
     E_nc &operator=(const E_nc &) = delete;
+
     E_nc(E_nc &&) = default;
+
     E_nc &operator=(E_nc &&) = default;
 
     int value;
 };
 
-template <class Container>
+template<class Container>
 Container *one_to_n(int n) {
     auto *v = new Container();
     for (int i = 1; i <= n; i++) {
@@ -51,7 +56,7 @@ Container *one_to_n(int n) {
     return v;
 }
 
-template <class Map>
+template<class Map>
 Map *times_ten(int n) {
     auto *m = new Map();
     for (int i = 1; i <= n; i++) {
@@ -60,7 +65,7 @@ Map *times_ten(int n) {
     return m;
 }
 
-template <class NestMap>
+template<class NestMap>
 NestMap *times_hundred(int n) {
     auto *m = new NestMap();
     for (int i = 1; i <= n; i++) {
@@ -117,6 +122,7 @@ public:
 };
 
 bool operator==(UserVectorLike const &, UserVectorLike const &) { return true; }
+
 bool operator!=(UserVectorLike const &, UserVectorLike const &) { return false; }
 
 class UserMapLike : private std::map<int, int> {
@@ -158,20 +164,22 @@ public:
 struct MutuallyRecursiveContainerPairMV;
 struct MutuallyRecursiveContainerPairVM;
 
-struct MutuallyRecursiveContainerPairMV : std::map<int, MutuallyRecursiveContainerPairVM> {};
-struct MutuallyRecursiveContainerPairVM : std::vector<MutuallyRecursiveContainerPairMV> {};
+struct MutuallyRecursiveContainerPairMV : std::map<int, MutuallyRecursiveContainerPairVM> {
+};
+struct MutuallyRecursiveContainerPairVM : std::vector<MutuallyRecursiveContainerPairMV> {
+};
 
 namespace pybind11 {
-namespace detail {
-template <typename SFINAE>
-struct recursive_container_traits<MutuallyRecursiveContainerPairMV, SFINAE> {
-    using type_to_check_recursively = recursive_bottom;
-};
-template <typename SFINAE>
-struct recursive_container_traits<MutuallyRecursiveContainerPairVM, SFINAE> {
-    using type_to_check_recursively = recursive_bottom;
-};
-} // namespace detail
+    namespace detail {
+        template<typename SFINAE>
+        struct recursive_container_traits<MutuallyRecursiveContainerPairMV, SFINAE> {
+            using type_to_check_recursively = recursive_bottom;
+        };
+        template<typename SFINAE>
+        struct recursive_container_traits<MutuallyRecursiveContainerPairVM, SFINAE> {
+            using type_to_check_recursively = recursive_bottom;
+        };
+    } // namespace detail
 } // namespace pybind11
 
 TEST_SUBMODULE(stl_binders, m) {
@@ -240,7 +248,7 @@ TEST_SUBMODULE(stl_binders, m) {
     };
     m.def("create_undeclstruct", [m]() mutable {
         py::bind_vector<std::vector<VUndeclStruct>>(
-            m, "VectorUndeclStruct", py::buffer_protocol());
+                m, "VectorUndeclStruct", py::buffer_protocol());
     });
 
     // Bind recursive container types
@@ -271,5 +279,7 @@ TEST_SUBMODULE(stl_binders, m) {
     py::class_<VStruct>(m, "VStruct").def_readwrite("x", &VStruct::x);
     py::bind_vector<std::vector<VStruct>>(m, "VectorStruct", py::buffer_protocol());
     m.def("get_vectorstruct",
-          [] { return std::vector<VStruct>{{false, 5, 3.0, true}, {true, 30, -1e4, false}}; });
+          [] { return std::vector<VStruct>{{false, 5,  3.0,  true},
+                                           {true,  30, -1e4, false}};
+          });
 }

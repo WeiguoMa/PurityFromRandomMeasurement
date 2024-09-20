@@ -5,11 +5,11 @@ project(PurityFromShadow)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
 
-if(MSVC)
+if (MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox")  # Maximum optimization for MSVC
-else()
+else ()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Optimize for GCC or Clang
-endif()
+endif ()
 
 # Output separator for better visibility
 function(print_separator message)
@@ -24,13 +24,13 @@ option(USE_OPENMP "Enable OpenMP support" ON)  # Default is ON
 # Find Python3 interpreter and development components
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
-if(NOT Python3_FOUND)
+if (NOT Python3_FOUND)
     message(FATAL_ERROR "Python 3 not found.")
-else()
+else ()
     print_separator("Python 3 Configuration")
     message(STATUS "Python 3 Executable: ${Python3_EXECUTABLE}")
     message(STATUS "Python 3 Version: ${Python3_VERSION}")
-endif()
+endif ()
 
 # Set Python version and paths
 set(PYBIND11_PYTHON_VERSION ${Python3_VERSION})
@@ -39,27 +39,27 @@ set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
 set(PYTHON_LIBRARY ${Python3_LIBRARIES})
 
 # Detect OS and set OpenMP options
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     # macOS: Do not enable OpenMP
     print_separator("macOS detected. OpenMP will not be enabled.")
     set(ENABLE_OPENMP FALSE)
-elseif(USE_OPENMP)
+elseif (USE_OPENMP)
     # Linux and Windows: Enable OpenMP only if the option is ON
     find_package(OpenMP)
-    if(OpenMP_CXX_FOUND)
+    if (OpenMP_CXX_FOUND)
         print_separator("OpenMP Configuration")
         message(STATUS "OpenMP found: Enabling OpenMP support.")
         set(ENABLE_OPENMP TRUE)
-    else()
+    else ()
         print_separator("OpenMP Configuration")
         message(STATUS "OpenMP not found: Proceeding without OpenMP support.")
         set(ENABLE_OPENMP FALSE)
-    endif()
-else()
+    endif ()
+else ()
     # User opted to disable OpenMP
     print_separator("OpenMP disabled by user.")
     set(ENABLE_OPENMP FALSE)
-endif()
+endif ()
 
 # Get the number of logical CPU cores
 include(ProcessorCount)
@@ -77,28 +77,28 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/src/dependency)
 
 # pybind11 modules
 pybind11_add_module(RenyiEntropy_backend src/cpp/RenyiEntropy.cpp src/cpp/ShadowState.cpp)
-if(ENABLE_OPENMP)
+if (ENABLE_OPENMP)
     message(STATUS "Linking RenyiEntropy_backend with OpenMP.")
     target_link_libraries(RenyiEntropy_backend PUBLIC OpenMP::OpenMP_CXX)
-else()
+else ()
     message(STATUS "Building RenyiEntropy_backend without OpenMP.")
-endif()
+endif ()
 
 pybind11_add_module(fakeSampler_backend src/cpp/fake_sampler_binding.cpp)
-if(ENABLE_OPENMP)
+if (ENABLE_OPENMP)
     message(STATUS "Linking fakeSampler_backend with OpenMP.")
     target_link_libraries(fakeSampler_backend PUBLIC OpenMP::OpenMP_CXX)
-else()
+else ()
     message(STATUS "Building fakeSampler_backend without OpenMP.")
-endif()
+endif ()
 
 pybind11_add_module(ShadowState_backend src/cpp/ShadowState.cpp)
-if(ENABLE_OPENMP)
+if (ENABLE_OPENMP)
     message(STATUS "Linking ShadowState_backend with OpenMP.")
     target_link_libraries(ShadowState_backend PUBLIC OpenMP::OpenMP_CXX)
-else()
+else ()
     message(STATUS "Building ShadowState_backend without OpenMP.")
-endif()
+endif ()
 
 # Standalone executable (if needed in the future)
 # include_directories(/opt/homebrew/Cellar/quantum++/5.1/include/qpp)

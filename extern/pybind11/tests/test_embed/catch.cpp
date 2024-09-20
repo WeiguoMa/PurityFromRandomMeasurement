@@ -13,6 +13,7 @@ PYBIND11_WARNING_DISABLE_MSVC(4996)
 #endif
 
 #define CATCH_CONFIG_RUNNER
+
 #include <catch.hpp>
 
 namespace py = pybind11;

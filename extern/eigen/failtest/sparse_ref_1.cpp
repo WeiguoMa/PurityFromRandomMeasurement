@@ -11,7 +11,7 @@ using namespace Eigen;
 void call_ref(Ref<SparseMatrix<float> > a) {}
 
 int main() {
-  SparseMatrix<float> a(10, 10);
-  CV_QUALIFIER SparseMatrix<float>& ac(a);
-  call_ref(ac);
+    SparseMatrix<float> a(10, 10);
+    CV_QUALIFIER SparseMatrix<float> &ac(a);
+    call_ref(ac);
 }

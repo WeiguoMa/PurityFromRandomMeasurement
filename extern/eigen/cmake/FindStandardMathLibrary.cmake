@@ -22,7 +22,7 @@ include(CheckCXXSourceCompiles)
 
 # We read in the arguments from standard input to avoid the compiler optimizing away the calls
 set(find_standard_math_library_test_program
-"
+        "
 #include<cmath>
 int main(int argc, char **){
   return int(std::sin(double(argc)) + std::log(double(argc)));
@@ -33,38 +33,38 @@ int main(int argc, char **){
 set(CMAKE_REQUIRED_FLAGS "")
 set(CMAKE_REQUIRED_LIBRARIES "")
 CHECK_CXX_SOURCE_COMPILES(
-  "${find_standard_math_library_test_program}"
-  standard_math_library_linked_to_automatically
+        "${find_standard_math_library_test_program}"
+        standard_math_library_linked_to_automatically
 )
 
-if(standard_math_library_linked_to_automatically)
+if (standard_math_library_linked_to_automatically)
 
-  # the test program linked successfully without any linker flag.
-  set(STANDARD_MATH_LIBRARY "")
-  set(STANDARD_MATH_LIBRARY_FOUND TRUE)
-
-else()
-
-  # the test program did not link successfully without any linker flag.
-  # This is a very uncommon case that so far we only saw on QNX. The next try is the
-  # standard name 'm' for the standard math library.
-
-  set(CMAKE_REQUIRED_LIBRARIES "m")
-  CHECK_CXX_SOURCE_COMPILES(
-    "${find_standard_math_library_test_program}"
-    standard_math_library_linked_to_as_m)
-
-  if(standard_math_library_linked_to_as_m)
-
-    # the test program linked successfully when linking to the 'm' library
-    set(STANDARD_MATH_LIBRARY "m")
+    # the test program linked successfully without any linker flag.
+    set(STANDARD_MATH_LIBRARY "")
     set(STANDARD_MATH_LIBRARY_FOUND TRUE)
 
-  else()
+else ()
 
-    # the test program still doesn't link successfully
-    set(STANDARD_MATH_LIBRARY_FOUND FALSE)
+    # the test program did not link successfully without any linker flag.
+    # This is a very uncommon case that so far we only saw on QNX. The next try is the
+    # standard name 'm' for the standard math library.
 
-  endif()
+    set(CMAKE_REQUIRED_LIBRARIES "m")
+    CHECK_CXX_SOURCE_COMPILES(
+            "${find_standard_math_library_test_program}"
+            standard_math_library_linked_to_as_m)
 
-endif()
+    if (standard_math_library_linked_to_as_m)
+
+        # the test program linked successfully when linking to the 'm' library
+        set(STANDARD_MATH_LIBRARY "m")
+        set(STANDARD_MATH_LIBRARY_FOUND TRUE)
+
+    else ()
+
+        # the test program still doesn't link successfully
+        set(STANDARD_MATH_LIBRARY_FOUND FALSE)
+
+    endif ()
+
+endif ()

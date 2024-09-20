@@ -1,4 +1,5 @@
 #include <pybind11/embed.h>
+
 namespace py = pybind11;
 
 PYBIND11_EMBEDDED_MODULE(test_cmake_build, m) {

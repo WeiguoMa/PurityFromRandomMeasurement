@@ -21,7 +21,7 @@ using MatrixXdR = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::R
 
 // Sets/resets a testing reference matrix to have values of 10*r + c, where r and c are the
 // (1-based) row/column number.
-template <typename M>
+template<typename M>
 void reset_ref(M &x) {
     for (int i = 0; i < x.rows(); i++) {
         for (int j = 0; j < x.cols(); j++) {
@@ -39,6 +39,7 @@ Eigen::MatrixXd &get_cm() {
     }
     return *x;
 }
+
 // Likewise, but row-major
 MatrixXdR &get_rm() {
     static MatrixXdR *x;
@@ -48,6 +49,7 @@ MatrixXdR &get_rm() {
     }
     return *x;
 }
+
 // Resets the values of the static matrices returned by get_cm()/get_rm()
 void reset_refs() {
     reset_ref(get_cm());
@@ -59,7 +61,7 @@ double get_elem(const Eigen::Ref<const Eigen::MatrixXd> &m) { return m(2, 1); };
 
 // Returns a matrix with 10*r + 100*c added to each matrix element (to help test that the matrix
 // reference is referencing rows/columns correctly).
-template <typename MatrixArgType>
+template<typename MatrixArgType>
 Eigen::MatrixXd adjust_matrix(MatrixArgType m) {
     Eigen::MatrixXd ret(m);
     for (int c = 0; c < m.cols(); c++) {
@@ -146,45 +148,45 @@ TEST_SUBMODULE(eigen_matrix, m) {
 
     // Increments and returns ref to (same) matrix
     m.def(
-        "incr_matrix",
-        [](Eigen::Ref<Eigen::MatrixXd> m, double v) {
-            m += Eigen::MatrixXd::Constant(m.rows(), m.cols(), v);
-            return m;
-        },
-        py::return_value_policy::reference);
+            "incr_matrix",
+            [](Eigen::Ref<Eigen::MatrixXd> m, double v) {
+                m += Eigen::MatrixXd::Constant(m.rows(), m.cols(), v);
+                return m;
+            },
+            py::return_value_policy::reference);
 
     // Same, but accepts a matrix of any strides
     m.def(
-        "incr_matrix_any",
-        [](py::EigenDRef<Eigen::MatrixXd> m, double v) {
-            m += Eigen::MatrixXd::Constant(m.rows(), m.cols(), v);
-            return m;
-        },
-        py::return_value_policy::reference);
+            "incr_matrix_any",
+            [](py::EigenDRef<Eigen::MatrixXd> m, double v) {
+                m += Eigen::MatrixXd::Constant(m.rows(), m.cols(), v);
+                return m;
+            },
+            py::return_value_policy::reference);
 
     // Returns an eigen slice of even rows
     m.def(
-        "even_rows",
-        [](py::EigenDRef<Eigen::MatrixXd> m) {
-            return py::EigenDMap<Eigen::MatrixXd>(
-                m.data(),
-                (m.rows() + 1) / 2,
-                m.cols(),
-                py::EigenDStride(m.outerStride(), 2 * m.innerStride()));
-        },
-        py::return_value_policy::reference);
+            "even_rows",
+            [](py::EigenDRef<Eigen::MatrixXd> m) {
+                return py::EigenDMap<Eigen::MatrixXd>(
+                        m.data(),
+                        (m.rows() + 1) / 2,
+                        m.cols(),
+                        py::EigenDStride(m.outerStride(), 2 * m.innerStride()));
+            },
+            py::return_value_policy::reference);
 
     // Returns an eigen slice of even columns
     m.def(
-        "even_cols",
-        [](py::EigenDRef<Eigen::MatrixXd> m) {
-            return py::EigenDMap<Eigen::MatrixXd>(
-                m.data(),
-                m.rows(),
-                (m.cols() + 1) / 2,
-                py::EigenDStride(2 * m.outerStride(), m.innerStride()));
-        },
-        py::return_value_policy::reference);
+            "even_cols",
+            [](py::EigenDRef<Eigen::MatrixXd> m) {
+                return py::EigenDMap<Eigen::MatrixXd>(
+                        m.data(),
+                        m.rows(),
+                        (m.cols() + 1) / 2,
+                        py::EigenDStride(2 * m.outerStride(), m.innerStride()));
+            },
+            py::return_value_policy::reference);
 
     // Returns diagonals: a vector-like object with an inner stride != 1
     m.def("diagonal", [](const Eigen::Ref<const Eigen::MatrixXd> &x) { return x.diagonal(); });
@@ -204,31 +206,31 @@ TEST_SUBMODULE(eigen_matrix, m) {
           });
 
     m.def(
-        "_block",
-        [](const py::object &x_obj,
-           const Eigen::Ref<const Eigen::MatrixXd> &x,
-           int start_row,
-           int start_col,
-           int block_rows,
-           int block_cols) {
-            // See PR #4217 for background. This test is a bit over the top, but might be useful
-            // as a concrete example to point to when explaining the dangling reference trap.
-            auto i0 = py::make_tuple(0, 0);
-            auto x0_orig = x_obj[*i0].cast<double>();
-            if (x(0, 0) != x0_orig) {
-                throw std::runtime_error(
-                    "Something in the type_caster for Eigen::Ref is terribly wrong.");
-            }
-            double x0_mod = x0_orig + 1;
-            x_obj[*i0] = x0_mod;
-            auto copy_detected = (x(0, 0) != x0_mod);
-            x_obj[*i0] = x0_orig;
-            if (copy_detected) {
-                throw std::runtime_error("type_caster for Eigen::Ref made a copy.");
-            }
-            return x.block(start_row, start_col, block_rows, block_cols);
-        },
-        py::keep_alive<0, 1>());
+            "_block",
+            [](const py::object &x_obj,
+               const Eigen::Ref<const Eigen::MatrixXd> &x,
+               int start_row,
+               int start_col,
+               int block_rows,
+               int block_cols) {
+                // See PR #4217 for background. This test is a bit over the top, but might be useful
+                // as a concrete example to point to when explaining the dangling reference trap.
+                auto i0 = py::make_tuple(0, 0);
+                auto x0_orig = x_obj[*i0].cast<double>();
+                if (x(0, 0) != x0_orig) {
+                    throw std::runtime_error(
+                            "Something in the type_caster for Eigen::Ref is terribly wrong.");
+                }
+                double x0_mod = x0_orig + 1;
+                x_obj[*i0] = x0_mod;
+                auto copy_detected = (x(0, 0) != x0_mod);
+                x_obj[*i0] = x0_orig;
+                if (copy_detected) {
+                    throw std::runtime_error("type_caster for Eigen::Ref made a copy.");
+                }
+                return x.block(start_row, start_col, block_rows, block_cols);
+            },
+            py::keep_alive<0, 1>());
 
     // test_eigen_return_references, test_eigen_keepalive
     // return value referencing/copying tests:
@@ -237,58 +239,71 @@ TEST_SUBMODULE(eigen_matrix, m) {
 
     public:
         ReturnTester() { print_created(this); }
+
         ~ReturnTester() { print_destroyed(this); }
+
         static Eigen::MatrixXd create() { return Eigen::MatrixXd::Ones(10, 10); }
+
         // NOLINTNEXTLINE(readability-const-return-type)
         static const Eigen::MatrixXd createConst() { return Eigen::MatrixXd::Ones(10, 10); }
+
         Eigen::MatrixXd &get() { return mat; }
+
         Eigen::MatrixXd *getPtr() { return &mat; }
+
         const Eigen::MatrixXd &view() { return mat; }
+
         const Eigen::MatrixXd *viewPtr() { return &mat; }
+
         Eigen::Ref<Eigen::MatrixXd> ref() { return mat; }
+
         Eigen::Ref<const Eigen::MatrixXd> refConst() { return mat; }
+
         Eigen::Block<Eigen::MatrixXd> block(int r, int c, int nrow, int ncol) {
             return mat.block(r, c, nrow, ncol);
         }
+
         Eigen::Block<const Eigen::MatrixXd> blockConst(int r, int c, int nrow, int ncol) const {
             return mat.block(r, c, nrow, ncol);
         }
+
         py::EigenDMap<Eigen::Matrix2d> corners() {
             return py::EigenDMap<Eigen::Matrix2d>(
-                mat.data(),
-                py::EigenDStride(mat.outerStride() * (mat.outerSize() - 1),
-                                 mat.innerStride() * (mat.innerSize() - 1)));
+                    mat.data(),
+                    py::EigenDStride(mat.outerStride() * (mat.outerSize() - 1),
+                                     mat.innerStride() * (mat.innerSize() - 1)));
         }
+
         py::EigenDMap<const Eigen::Matrix2d> cornersConst() const {
             return py::EigenDMap<const Eigen::Matrix2d>(
-                mat.data(),
-                py::EigenDStride(mat.outerStride() * (mat.outerSize() - 1),
-                                 mat.innerStride() * (mat.innerSize() - 1)));
+                    mat.data(),
+                    py::EigenDStride(mat.outerStride() * (mat.outerSize() - 1),
+                                     mat.innerStride() * (mat.innerSize() - 1)));
         }
     };
     using rvp = py::return_value_policy;
     py::class_<ReturnTester>(m, "ReturnTester")
-        .def(py::init<>())
-        .def_static("create", &ReturnTester::create)
-        .def_static("create_const", &ReturnTester::createConst)
-        .def("get", &ReturnTester::get, rvp::reference_internal)
-        .def("get_ptr", &ReturnTester::getPtr, rvp::reference_internal)
-        .def("view", &ReturnTester::view, rvp::reference_internal)
-        .def("view_ptr", &ReturnTester::view, rvp::reference_internal)
-        .def("copy_get", &ReturnTester::get)       // Default rvp: copy
-        .def("copy_view", &ReturnTester::view)     //         "
-        .def("ref", &ReturnTester::ref)            // Default for Ref is to reference
-        .def("ref_const", &ReturnTester::refConst) // Likewise, but const
-        .def("ref_safe", &ReturnTester::ref, rvp::reference_internal)
-        .def("ref_const_safe", &ReturnTester::refConst, rvp::reference_internal)
-        .def("copy_ref", &ReturnTester::ref, rvp::copy)
-        .def("copy_ref_const", &ReturnTester::refConst, rvp::copy)
-        .def("block", &ReturnTester::block)
-        .def("block_safe", &ReturnTester::block, rvp::reference_internal)
-        .def("block_const", &ReturnTester::blockConst, rvp::reference_internal)
-        .def("copy_block", &ReturnTester::block, rvp::copy)
-        .def("corners", &ReturnTester::corners, rvp::reference_internal)
-        .def("corners_const", &ReturnTester::cornersConst, rvp::reference_internal);
+            .def(py::init<>())
+            .def_static("create", &ReturnTester::create)
+            .def_static("create_const", &ReturnTester::createConst)
+            .def("get", &ReturnTester::get, rvp::reference_internal)
+            .def("get_ptr", &ReturnTester::getPtr, rvp::reference_internal)
+            .def("view", &ReturnTester::view, rvp::reference_internal)
+            .def("view_ptr", &ReturnTester::view, rvp::reference_internal)
+            .def("copy_get", &ReturnTester::get)       // Default rvp: copy
+            .def("copy_view", &ReturnTester::view)     //         "
+            .def("ref", &ReturnTester::ref)            // Default for Ref is to reference
+            .def("ref_const", &ReturnTester::refConst) // Likewise, but const
+            .def("ref_safe", &ReturnTester::ref, rvp::reference_internal)
+            .def("ref_const_safe", &ReturnTester::refConst, rvp::reference_internal)
+            .def("copy_ref", &ReturnTester::ref, rvp::copy)
+            .def("copy_ref_const", &ReturnTester::refConst, rvp::copy)
+            .def("block", &ReturnTester::block)
+            .def("block_safe", &ReturnTester::block, rvp::reference_internal)
+            .def("block_const", &ReturnTester::blockConst, rvp::reference_internal)
+            .def("copy_block", &ReturnTester::block, rvp::copy)
+            .def("corners", &ReturnTester::corners, rvp::reference_internal)
+            .def("corners_const", &ReturnTester::cornersConst, rvp::reference_internal);
 
     // test_special_matrix_objects
     // Returns a DiagonalMatrix with diagonal (1,2,3,...)
@@ -310,7 +325,7 @@ TEST_SUBMODULE(eigen_matrix, m) {
     // Test matrix for various functions below.
     Eigen::MatrixXf mat(5, 6);
     mat << 0, 3, 0, 0, 0, 11, 22, 0, 0, 0, 17, 11, 7, 5, 0, 1, 0, 11, 0, 0, 0, 0, 0, 11, 0, 0, 14,
-        0, 8, 11;
+            0, 8, 11;
 
     // test_fixed, and various other tests
     m.def("fixed_r", [mat]() -> FixedMatrixR { return FixedMatrixR(mat); });
@@ -376,16 +391,16 @@ TEST_SUBMODULE(eigen_matrix, m) {
     m.def("get_elem", &get_elem);
     // Now this alternative that calls the tells pybind to fail rather than copy:
     m.def(
-        "get_elem_nocopy",
-        [](const Eigen::Ref<const Eigen::MatrixXd> &m) -> double { return get_elem(m); },
-        py::arg{}.noconvert());
+            "get_elem_nocopy",
+            [](const Eigen::Ref<const Eigen::MatrixXd> &m) -> double { return get_elem(m); },
+            py::arg{}.noconvert());
     // Also test a row-major-only no-copy const ref:
     m.def(
-        "get_elem_rm_nocopy",
-        [](Eigen::Ref<const Eigen::Matrix<long, -1, -1, Eigen::RowMajor>> &m) -> long {
-            return m(2, 1);
-        },
-        py::arg{}.noconvert());
+            "get_elem_rm_nocopy",
+            [](Eigen::Ref<const Eigen::Matrix<long, -1, -1, Eigen::RowMajor>> &m) -> long {
+                return m(2, 1);
+            },
+            py::arg{}.noconvert());
 
     // test_issue738, test_zero_length
     // Issue #738: 1×N or N×1 2D matrices were neither accepted nor properly copied with an
@@ -411,22 +426,22 @@ TEST_SUBMODULE(eigen_matrix, m) {
     // test_named_arguments
     // Make sure named arguments are working properly:
     m.def(
-        "matrix_multiply",
-        [](const py::EigenDRef<const Eigen::MatrixXd> &A,
-           const py::EigenDRef<const Eigen::MatrixXd> &B) -> Eigen::MatrixXd {
-            if (A.cols() != B.rows()) {
-                throw std::domain_error("Nonconformable matrices!");
-            }
-            return A * B;
-        },
-        py::arg("A"),
-        py::arg("B"));
+            "matrix_multiply",
+            [](const py::EigenDRef<const Eigen::MatrixXd> &A,
+               const py::EigenDRef<const Eigen::MatrixXd> &B) -> Eigen::MatrixXd {
+                if (A.cols() != B.rows()) {
+                    throw std::domain_error("Nonconformable matrices!");
+                }
+                return A * B;
+            },
+            py::arg("A"),
+            py::arg("B"));
 
     // test_custom_operator_new
     py::class_<CustomOperatorNew>(m, "CustomOperatorNew")
-        .def(py::init<>())
-        .def_readonly("a", &CustomOperatorNew::a)
-        .def_readonly("b", &CustomOperatorNew::b);
+            .def(py::init<>())
+            .def_readonly("a", &CustomOperatorNew::a)
+            .def_readonly("b", &CustomOperatorNew::b);
 
     // test_eigen_ref_life_support
     // In case of a failure (the caster's temp array does not live long enough), creating

@@ -288,7 +288,7 @@ class build_ext(_build_ext):  # noqa: N801
 
 
 def intree_extensions(
-    paths: Iterable[str], package_dir: dict[str, str] | None = None
+        paths: Iterable[str], package_dir: dict[str, str] | None = None
 ) -> list[Pybind11Extension]:
     """
     Generate Pybind11Extensions from source files directly located in a Python
@@ -408,11 +408,11 @@ class ParallelCompile:
     __slots__ = ("envvar", "default", "max", "_old", "needs_recompile")
 
     def __init__(
-        self,
-        envvar: str | None = None,
-        default: int = 0,
-        max: int = 0,  # pylint: disable=redefined-builtin
-        needs_recompile: Callable[[str, str], bool] = no_recompile,
+            self,
+            envvar: str | None = None,
+            default: int = 0,
+            max: int = 0,  # pylint: disable=redefined-builtin
+            needs_recompile: Callable[[str, str], bool] = no_recompile,
     ) -> None:
         self.envvar = envvar
         self.default = default
@@ -426,15 +426,15 @@ class ParallelCompile:
         """
 
         def compile_function(
-            compiler: distutils.ccompiler.CCompiler,
-            sources: list[str],
-            output_dir: str | None = None,
-            macros: list[tuple[str] | tuple[str, str | None]] | None = None,
-            include_dirs: list[str] | None = None,
-            debug: bool = False,
-            extra_preargs: list[str] | None = None,
-            extra_postargs: list[str] | None = None,
-            depends: list[str] | None = None,
+                compiler: distutils.ccompiler.CCompiler,
+                sources: list[str],
+                output_dir: str | None = None,
+                macros: list[tuple[str] | tuple[str, str | None]] | None = None,
+                include_dirs: list[str] | None = None,
+                debug: bool = False,
+                extra_preargs: list[str] | None = None,
+                extra_postargs: list[str] | None = None,
+                depends: list[str] | None = None,
         ) -> Any:
             # These lines are directly from distutils.ccompiler.CCompiler
             macros, objects, extra_postargs, pp_opts, build = compiler._setup_compile(  # type: ignore[attr-defined]

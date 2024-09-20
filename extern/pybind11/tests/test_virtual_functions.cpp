@@ -18,27 +18,32 @@
 class ExampleVirt {
 public:
     explicit ExampleVirt(int state) : state(state) { print_created(this, state); }
+
     ExampleVirt(const ExampleVirt &e) : state(e.state) { print_copy_created(this); }
-    ExampleVirt(ExampleVirt &&e) noexcept : state(e.state) {
+
+    ExampleVirt(ExampleVirt &&e) noexcept: state(e.state) {
         print_move_created(this);
         e.state = 0;
     }
+
     virtual ~ExampleVirt() { print_destroyed(this); }
 
     virtual int run(int value) {
         py::print("Original implementation of "
                   "ExampleVirt::run(state={}, value={}, str1={}, str2={})"_s.format(
-                      state, value, get_string1(), *get_string2()));
+                state, value, get_string1(), *get_string2()));
         return state + value;
     }
 
     virtual bool run_bool() = 0;
+
     virtual void pure_virtual() = 0;
 
     // Returning a reference/pointer to a type converted from python (numbers, strings, etc.) is a
     // bit trickier, because the actual int& or std::string& or whatever only exists temporarily,
     // so we have to handle it specially in the trampoline class (see below).
     virtual const std::string &get_string1() { return str1; }
+
     virtual const std::string *get_string2() { return &str2; }
 
 private:
@@ -64,8 +69,8 @@ public:
         PYBIND11_OVERRIDE_PURE(bool,        /* Return type */
                                ExampleVirt, /* Parent class */
                                run_bool,    /* Name of function */
-                                            /* This function has no arguments. The trailing comma
-                                               in the previous line is needed for some compilers */
+        /* This function has no arguments. The trailing comma
+           in the previous line is needed for some compilers */
         );
     }
 
@@ -73,8 +78,8 @@ public:
         PYBIND11_OVERRIDE_PURE(void,         /* Return type */
                                ExampleVirt,  /* Parent class */
                                pure_virtual, /* Name of function */
-                                             /* This function has no arguments. The trailing comma
-                                                in the previous line is needed for some compilers */
+        /* This function has no arguments. The trailing comma
+           in the previous line is needed for some compilers */
         );
     }
 
@@ -84,7 +89,7 @@ public:
         PYBIND11_OVERRIDE(const std::string &, /* Return type */
                           ExampleVirt,         /* Parent class */
                           get_string1,         /* Name of function */
-                                               /* (no arguments) */
+        /* (no arguments) */
         );
     }
 
@@ -92,7 +97,7 @@ public:
         PYBIND11_OVERRIDE(const std::string *, /* Return type */
                           ExampleVirt,         /* Parent class */
                           get_string2,         /* Name of function */
-                                               /* (no arguments) */
+        /* (no arguments) */
         );
     }
 };
@@ -100,17 +105,24 @@ public:
 class NonCopyable {
 public:
     NonCopyable(int a, int b) : value{new int(a * b)} { print_created(this, a, b); }
-    NonCopyable(NonCopyable &&o) noexcept : value{std::move(o.value)} { print_move_created(this); }
+
+    NonCopyable(NonCopyable &&o) noexcept: value{std::move(o.value)} { print_move_created(this); }
+
     NonCopyable(const NonCopyable &) = delete;
+
     NonCopyable() = delete;
+
     void operator=(const NonCopyable &) = delete;
+
     void operator=(NonCopyable &&) = delete;
+
     std::string get_value() const {
         if (value) {
             return std::to_string(*value);
         }
         return "(null)";
     }
+
     ~NonCopyable() { print_destroyed(this); }
 
 private:
@@ -122,9 +134,13 @@ private:
 class Movable {
 public:
     Movable(int a, int b) : value{a + b} { print_created(this, a, b); }
+
     Movable(const Movable &m) : value{m.value} { print_copy_created(this); }
-    Movable(Movable &&m) noexcept : value{m.value} { print_move_created(this); }
+
+    Movable(Movable &&m) noexcept: value{m.value} { print_move_created(this); }
+
     std::string get_value() const { return std::to_string(value); }
+
     ~Movable() { print_destroyed(this); }
 
 private:
@@ -134,20 +150,29 @@ private:
 class NCVirt {
 public:
     virtual ~NCVirt() = default;
+
     NCVirt() = default;
+
     NCVirt(const NCVirt &) = delete;
+
     virtual NonCopyable get_noncopyable(int a, int b) { return NonCopyable(a, b); }
+
     virtual Movable get_movable(int a, int b) = 0;
 
     std::string print_nc(int a, int b) { return get_noncopyable(a, b).get_value(); }
+
     std::string print_movable(int a, int b) { return get_movable(a, b).get_value(); }
 };
+
 class NCVirtTrampoline : public NCVirt {
 #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__PGIC__)
+
     NonCopyable get_noncopyable(int a, int b) override {
         PYBIND11_OVERRIDE(NonCopyable, NCVirt, get_noncopyable, a, b);
     }
+
 #endif
+
     Movable get_movable(int a, int b) override {
         PYBIND11_OVERRIDE_PURE(Movable, NCVirt, get_movable, a, b);
     }
@@ -155,8 +180,11 @@ class NCVirtTrampoline : public NCVirt {
 
 struct Base {
     virtual std::string dispatch() const = 0;
+
     virtual ~Base() = default;
+
     Base() = default;
+
     Base(const Base &) = delete;
 };
 
@@ -169,14 +197,18 @@ struct DispatchIssue : Base {
 // An abstract adder class that uses visitor pattern to add two data
 // objects and send the result to the visitor functor
 struct AdderBase {
-    struct Data {};
+    struct Data {
+    };
     using DataVisitor = std::function<void(const Data &)>;
 
     virtual void
     operator()(const Data &first, const Data &second, const DataVisitor &visitor) const
-        = 0;
+    = 0;
+
     virtual ~AdderBase() = default;
+
     AdderBase() = default;
+
     AdderBase(const AdderBase &) = delete;
 };
 
@@ -184,7 +216,7 @@ struct Adder : AdderBase {
     void
     operator()(const Data &first, const Data &second, const DataVisitor &visitor) const override {
         PYBIND11_OVERRIDE_PURE_NAME(
-            void, AdderBase, "__call__", operator(), first, second, visitor);
+                void, AdderBase, "__call__", operator(), first, second, visitor);
     }
 };
 
@@ -213,9 +245,12 @@ public:
     virtual int func() { return 0; }
 
     test_override_cache_helper() = default;
+
     virtual ~test_override_cache_helper() = default;
+
     // Non-copyable
     test_override_cache_helper &operator=(test_override_cache_helper const &Right) = delete;
+
     test_override_cache_helper(test_override_cache_helper const &Copy) = delete;
 };
 
@@ -234,11 +269,11 @@ void initialize_inherited_virtuals(py::module_ &m);
 TEST_SUBMODULE(virtual_functions, m) {
     // test_override
     py::class_<ExampleVirt, PyExampleVirt>(m, "ExampleVirt")
-        .def(py::init<int>())
-        /* Reference original class in function definitions */
-        .def("run", &ExampleVirt::run)
-        .def("run_bool", &ExampleVirt::run_bool)
-        .def("pure_virtual", &ExampleVirt::pure_virtual);
+            .def(py::init<int>())
+                    /* Reference original class in function definitions */
+            .def("run", &ExampleVirt::run)
+            .def("run_bool", &ExampleVirt::run_bool)
+            .def("pure_virtual", &ExampleVirt::pure_virtual);
 
     py::class_<NonCopyable>(m, "NonCopyable").def(py::init<int, int>());
 
@@ -247,11 +282,11 @@ TEST_SUBMODULE(virtual_functions, m) {
     // test_move_support
 #if !defined(__INTEL_COMPILER) && !defined(__CUDACC__) && !defined(__PGIC__)
     py::class_<NCVirt, NCVirtTrampoline>(m, "NCVirt")
-        .def(py::init<>())
-        .def("get_noncopyable", &NCVirt::get_noncopyable)
-        .def("get_movable", &NCVirt::get_movable)
-        .def("print_nc", &NCVirt::print_nc)
-        .def("print_movable", &NCVirt::print_movable);
+            .def(py::init<>())
+            .def("get_noncopyable", &NCVirt::get_noncopyable)
+            .def("get_movable", &NCVirt::get_movable)
+            .def("print_nc", &NCVirt::print_nc)
+            .def("print_movable", &NCVirt::print_movable);
 #endif
 
     m.def("runExampleVirt", [](ExampleVirt *ex, int value) { return ex->run(value); });
@@ -266,14 +301,19 @@ TEST_SUBMODULE(virtual_functions, m) {
     // that were not extended on the Python side
     struct A {
         A() = default;
+
         A(const A &) = delete;
+
         virtual ~A() = default;
+
         virtual void f() { py::print("A.f()"); }
     };
 
     struct PyA : A {
         PyA() { py::print("PyA.PyA()"); }
+
         PyA(const PyA &) = delete;
+
         ~PyA() override { py::print("PyA.~PyA()"); }
 
         void f() override {
@@ -292,15 +332,21 @@ TEST_SUBMODULE(virtual_functions, m) {
     // ... unless we explicitly request it, as in this example:
     struct A2 {
         A2() = default;
+
         A2(const A2 &) = delete;
+
         virtual ~A2() = default;
+
         virtual void f() { py::print("A2.f()"); }
     };
 
     struct PyA2 : A2 {
         PyA2() { py::print("PyA2.PyA2()"); }
+
         PyA2(const PyA2 &) = delete;
+
         ~PyA2() override { py::print("PyA2.~PyA2()"); }
+
         void f() override {
             py::print("PyA2.f()");
             PYBIND11_OVERRIDE(void, A2, f);
@@ -308,25 +354,25 @@ TEST_SUBMODULE(virtual_functions, m) {
     };
 
     py::class_<A2, PyA2>(m, "A2")
-        .def(py::init_alias<>())
-        .def(py::init([](int) { return new PyA2(); }))
-        .def("f", &A2::f);
+            .def(py::init_alias<>())
+            .def(py::init([](int) { return new PyA2(); }))
+            .def("f", &A2::f);
 
     m.def("call_f", [](A2 *a2) { a2->f(); });
 
     // test_dispatch_issue
     // #159: virtual function dispatch has problems with similar-named functions
     py::class_<Base, DispatchIssue>(m, "DispatchIssue")
-        .def(py::init<>())
-        .def("dispatch", &Base::dispatch);
+            .def(py::init<>())
+            .def("dispatch", &Base::dispatch);
 
     m.def("dispatch_issue_go", [](const Base *b) { return b->dispatch(); });
 
     // test_recursive_dispatch_issue
     // #3357: Recursive dispatch fails to find python function override
     pybind11::class_<AdderBase, Adder>(m, "Adder")
-        .def(pybind11::init<>())
-        .def("__call__", &AdderBase::operator());
+            .def(pybind11::init<>())
+            .def("__call__", &AdderBase::operator());
 
     pybind11::class_<AdderBase::Data>(m, "Data").def(pybind11::init<>());
 
@@ -357,19 +403,28 @@ TEST_SUBMODULE(virtual_functions, m) {
         };
         std::string v;
         A a;
+
         explicit OverrideTest(const std::string &v) : v{v} {}
+
         OverrideTest() = default;
+
         OverrideTest(const OverrideTest &) = delete;
+
         virtual std::string str_value() { return v; }
+
         virtual std::string &str_ref() { return v; }
+
         virtual A A_value() { return a; }
+
         virtual A &A_ref() { return a; }
+
         virtual ~OverrideTest() = default;
     };
 
     class PyOverrideTest : public OverrideTest {
     public:
         using OverrideTest::OverrideTest;
+
         std::string str_value() override {
             PYBIND11_OVERRIDE(std::string, OverrideTest, str_value);
         }
@@ -384,31 +439,33 @@ TEST_SUBMODULE(virtual_functions, m) {
         // But we can work around it like this:
     private:
         std::string _tmp;
+
         std::string str_ref_helper() { PYBIND11_OVERRIDE(std::string, OverrideTest, str_ref); }
 
     public:
         std::string &str_ref() override { return _tmp = str_ref_helper(); }
 
         A A_value() override { PYBIND11_OVERRIDE(A, OverrideTest, A_value); }
+
         A &A_ref() override { PYBIND11_OVERRIDE(A &, OverrideTest, A_ref); }
     };
 
     py::class_<OverrideTest::A>(m, "OverrideTest_A")
-        .def_readwrite("value", &OverrideTest::A::value);
+            .def_readwrite("value", &OverrideTest::A::value);
     py::class_<OverrideTest, PyOverrideTest>(m, "OverrideTest")
-        .def(py::init<const std::string &>())
-        .def("str_value", &OverrideTest::str_value)
+            .def(py::init<const std::string &>())
+            .def("str_value", &OverrideTest::str_value)
 #ifdef PYBIND11_NEVER_DEFINED_EVER
-        .def("str_ref", &OverrideTest::str_ref)
+                    .def("str_ref", &OverrideTest::str_ref)
 #endif
-        .def("A_value", &OverrideTest::A_value)
-        .def("A_ref", &OverrideTest::A_ref);
+            .def("A_value", &OverrideTest::A_value)
+            .def("A_ref", &OverrideTest::A_ref);
 
     py::class_<test_override_cache_helper,
-               test_override_cache_helper_trampoline,
-               std::shared_ptr<test_override_cache_helper>>(m, "test_override_cache_helper")
-        .def(py::init_alias<>())
-        .def("func", &test_override_cache_helper::func);
+            test_override_cache_helper_trampoline,
+            std::shared_ptr<test_override_cache_helper>>(m, "test_override_cache_helper")
+            .def(py::init_alias<>())
+            .def("func", &test_override_cache_helper::func);
 
     m.def("test_override_cache", test_override_cache);
 }
@@ -433,11 +490,15 @@ public:                                                                         
     std::string say_everything() {                                                                \
         return say_something(1) + " " + std::to_string(unlucky_number());                         \
     }
-    A_METHODS
+A_METHODS
+
     A_Repeat() = default;
+
     A_Repeat(const A_Repeat &) = delete;
+
     virtual ~A_Repeat() = default;
 };
+
 class B_Repeat : public A_Repeat {
 #define B_METHODS                                                                                 \
 public:                                                                                           \
@@ -446,15 +507,17 @@ public:                                                                         
         return "B says hi " + std::to_string(times) + " times";                                   \
     }                                                                                             \
     virtual double lucky_number() { return 7.0; }
-    B_METHODS
+B_METHODS
 };
+
 class C_Repeat : public B_Repeat {
 #define C_METHODS                                                                                 \
 public:                                                                                           \
     int unlucky_number() override { return 4444; }                                                \
     double lucky_number() override { return 888; }
-    C_METHODS
+C_METHODS
 };
+
 class D_Repeat : public C_Repeat {
 #define D_METHODS // Nothing overridden.
     D_METHODS
@@ -462,17 +525,23 @@ class D_Repeat : public C_Repeat {
 
 // Base classes for templated inheritance trampolines.  Identical to the repeat-everything version:
 class A_Tpl {
-    A_METHODS;
+A_METHODS;
+
     A_Tpl() = default;
+
     A_Tpl(const A_Tpl &) = delete;
+
     virtual ~A_Tpl() = default;
 };
+
 class B_Tpl : public A_Tpl {
-    B_METHODS
+B_METHODS
 };
+
 class C_Tpl : public B_Tpl {
-    C_METHODS
+C_METHODS
 };
+
 class D_Tpl : public C_Tpl {
     D_METHODS
 };
@@ -481,37 +550,51 @@ class D_Tpl : public C_Tpl {
 class PyA_Repeat : public A_Repeat {
 public:
     using A_Repeat::A_Repeat;
-    int unlucky_number() override { PYBIND11_OVERRIDE_PURE(int, A_Repeat, unlucky_number, ); }
+
+    int unlucky_number() override { PYBIND11_OVERRIDE_PURE(int, A_Repeat, unlucky_number,); }
+
     std::string say_something(unsigned times) override {
         PYBIND11_OVERRIDE(std::string, A_Repeat, say_something, times);
     }
 };
+
 class PyB_Repeat : public B_Repeat {
 public:
     using B_Repeat::B_Repeat;
-    int unlucky_number() override { PYBIND11_OVERRIDE(int, B_Repeat, unlucky_number, ); }
+
+    int unlucky_number() override { PYBIND11_OVERRIDE(int, B_Repeat, unlucky_number,); }
+
     std::string say_something(unsigned times) override {
         PYBIND11_OVERRIDE(std::string, B_Repeat, say_something, times);
     }
-    double lucky_number() override { PYBIND11_OVERRIDE(double, B_Repeat, lucky_number, ); }
+
+    double lucky_number() override { PYBIND11_OVERRIDE(double, B_Repeat, lucky_number,); }
 };
+
 class PyC_Repeat : public C_Repeat {
 public:
     using C_Repeat::C_Repeat;
-    int unlucky_number() override { PYBIND11_OVERRIDE(int, C_Repeat, unlucky_number, ); }
+
+    int unlucky_number() override { PYBIND11_OVERRIDE(int, C_Repeat, unlucky_number,); }
+
     std::string say_something(unsigned times) override {
         PYBIND11_OVERRIDE(std::string, C_Repeat, say_something, times);
     }
-    double lucky_number() override { PYBIND11_OVERRIDE(double, C_Repeat, lucky_number, ); }
+
+    double lucky_number() override { PYBIND11_OVERRIDE(double, C_Repeat, lucky_number,); }
 };
+
 class PyD_Repeat : public D_Repeat {
 public:
     using D_Repeat::D_Repeat;
-    int unlucky_number() override { PYBIND11_OVERRIDE(int, D_Repeat, unlucky_number, ); }
+
+    int unlucky_number() override { PYBIND11_OVERRIDE(int, D_Repeat, unlucky_number,); }
+
     std::string say_something(unsigned times) override {
         PYBIND11_OVERRIDE(std::string, D_Repeat, say_something, times);
     }
-    double lucky_number() override { PYBIND11_OVERRIDE(double, D_Repeat, lucky_number, ); }
+
+    double lucky_number() override { PYBIND11_OVERRIDE(double, D_Repeat, lucky_number,); }
 };
 
 // Inheritance approach 2: templated trampoline classes.
@@ -528,22 +611,25 @@ public:
 //   required for the repeat approach) instead of the 6 required for MI.  (If there was no pure
 //   method (or no pure method override), the number would drop down to the same 11 as the repeat
 //   approach).
-template <class Base = A_Tpl>
+template<class Base = A_Tpl>
 class PyA_Tpl : public Base {
 public:
     using Base::Base; // Inherit constructors
-    int unlucky_number() override { PYBIND11_OVERRIDE_PURE(int, Base, unlucky_number, ); }
+    int unlucky_number() override { PYBIND11_OVERRIDE_PURE(int, Base, unlucky_number,); }
+
     std::string say_something(unsigned times) override {
         PYBIND11_OVERRIDE(std::string, Base, say_something, times);
     }
 };
-template <class Base = B_Tpl>
+
+template<class Base = B_Tpl>
 class PyB_Tpl : public PyA_Tpl<Base> {
 public:
     using PyA_Tpl<Base>::PyA_Tpl; // Inherit constructors (via PyA_Tpl's inherited constructors)
     // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    int unlucky_number() override { PYBIND11_OVERRIDE(int, Base, unlucky_number, ); }
-    double lucky_number() override { PYBIND11_OVERRIDE(double, Base, lucky_number, ); }
+    int unlucky_number() override { PYBIND11_OVERRIDE(int, Base, unlucky_number,); }
+
+    double lucky_number() override { PYBIND11_OVERRIDE(double, Base, lucky_number,); }
 };
 // Since C_Tpl and D_Tpl don't declare any new virtual methods, we don't actually need these
 // (we can use PyB_Tpl<C_Tpl> and PyB_Tpl<D_Tpl> for the trampoline classes instead):
@@ -563,26 +649,26 @@ void initialize_inherited_virtuals(py::module_ &m) {
 
     // Method 1: repeat
     py::class_<A_Repeat, PyA_Repeat>(m, "A_Repeat")
-        .def(py::init<>())
-        .def("unlucky_number", &A_Repeat::unlucky_number)
-        .def("say_something", &A_Repeat::say_something)
-        .def("say_everything", &A_Repeat::say_everything);
+            .def(py::init<>())
+            .def("unlucky_number", &A_Repeat::unlucky_number)
+            .def("say_something", &A_Repeat::say_something)
+            .def("say_everything", &A_Repeat::say_everything);
     py::class_<B_Repeat, A_Repeat, PyB_Repeat>(m, "B_Repeat")
-        .def(py::init<>())
-        .def("lucky_number", &B_Repeat::lucky_number);
+            .def(py::init<>())
+            .def("lucky_number", &B_Repeat::lucky_number);
     py::class_<C_Repeat, B_Repeat, PyC_Repeat>(m, "C_Repeat").def(py::init<>());
     py::class_<D_Repeat, C_Repeat, PyD_Repeat>(m, "D_Repeat").def(py::init<>());
 
     // test_
     // Method 2: Templated trampolines
     py::class_<A_Tpl, PyA_Tpl<>>(m, "A_Tpl")
-        .def(py::init<>())
-        .def("unlucky_number", &A_Tpl::unlucky_number)
-        .def("say_something", &A_Tpl::say_something)
-        .def("say_everything", &A_Tpl::say_everything);
+            .def(py::init<>())
+            .def("unlucky_number", &A_Tpl::unlucky_number)
+            .def("say_something", &A_Tpl::say_something)
+            .def("say_everything", &A_Tpl::say_everything);
     py::class_<B_Tpl, A_Tpl, PyB_Tpl<>>(m, "B_Tpl")
-        .def(py::init<>())
-        .def("lucky_number", &B_Tpl::lucky_number);
+            .def(py::init<>())
+            .def("lucky_number", &B_Tpl::lucky_number);
     py::class_<C_Tpl, B_Tpl, PyB_Tpl<C_Tpl>>(m, "C_Tpl").def(py::init<>());
     py::class_<D_Tpl, C_Tpl, PyB_Tpl<D_Tpl>>(m, "D_Tpl").def(py::init<>());
 

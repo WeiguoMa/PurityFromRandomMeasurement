@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import pytest
-
 from pybind11_tests import ConstructorStats
 
 np = pytest.importorskip("numpy")
 m = pytest.importorskip("pybind11_tests.eigen_matrix")
-
 
 ref = np.array(
     [
@@ -94,14 +92,14 @@ def test_mutator_descriptors():
     with pytest.raises(TypeError) as excinfo:
         m.fixed_mutator_r(zc)
     assert (
-        "(arg0: numpy.ndarray[numpy.float32[5, 6],"
-        " flags.writeable, flags.c_contiguous]) -> None" in str(excinfo.value)
+            "(arg0: numpy.ndarray[numpy.float32[5, 6],"
+            " flags.writeable, flags.c_contiguous]) -> None" in str(excinfo.value)
     )
     with pytest.raises(TypeError) as excinfo:
         m.fixed_mutator_c(zr)
     assert (
-        "(arg0: numpy.ndarray[numpy.float32[5, 6],"
-        " flags.writeable, flags.f_contiguous]) -> None" in str(excinfo.value)
+            "(arg0: numpy.ndarray[numpy.float32[5, 6],"
+            " flags.writeable, flags.f_contiguous]) -> None" in str(excinfo.value)
     )
     with pytest.raises(TypeError) as excinfo:
         m.fixed_mutator_a(np.array([[1, 2], [3, 4]], dtype="float32"))
@@ -197,25 +195,25 @@ def test_negative_stride_from_python(msg):
     with pytest.raises(TypeError) as excinfo:
         m.double_threer(second_row)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         double_threer(): incompatible function arguments. The following argument types are supported:
             1. (arg0: numpy.ndarray[numpy.float32[1, 3], flags.writeable]) -> None
 
         Invoked with: """
-        + repr(np.array([5.0, 4.0, 3.0], dtype="float32"))
+            + repr(np.array([5.0, 4.0, 3.0], dtype="float32"))
     )
 
     with pytest.raises(TypeError) as excinfo:
         m.double_threec(second_col)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         double_threec(): incompatible function arguments. The following argument types are supported:
             1. (arg0: numpy.ndarray[numpy.float32[3, 1], flags.writeable]) -> None
 
         Invoked with: """
-        + repr(np.array([7.0, 4.0, 1.0], dtype="float32"))
+            + repr(np.array([7.0, 4.0, 1.0], dtype="float32"))
     )
 
 
@@ -381,10 +379,10 @@ def test_eigen_return_references():
     np.testing.assert_array_equal(a_block2, primary[2:5, 2:4])
     np.testing.assert_array_equal(a_block3, primary[6:10, 7:10])
     np.testing.assert_array_equal(
-        a_corn1, primary[0 :: primary.shape[0] - 1, 0 :: primary.shape[1] - 1]
+        a_corn1, primary[0:: primary.shape[0] - 1, 0:: primary.shape[1] - 1]
     )
     np.testing.assert_array_equal(
-        a_corn2, primary[0 :: primary.shape[0] - 1, 0 :: primary.shape[1] - 1]
+        a_corn2, primary[0:: primary.shape[0] - 1, 0:: primary.shape[1] - 1]
     )
 
     np.testing.assert_array_equal(a_copy1, c1want)
@@ -695,14 +693,14 @@ def test_special_matrix_objects():
 
 def test_dense_signature(doc):
     assert (
-        doc(m.double_col)
-        == """
+            doc(m.double_col)
+            == """
         double_col(arg0: numpy.ndarray[numpy.float32[m, 1]]) -> numpy.ndarray[numpy.float32[m, 1]]
     """
     )
     assert (
-        doc(m.double_row)
-        == """
+            doc(m.double_row)
+            == """
         double_row(arg0: numpy.ndarray[numpy.float32[1, n]]) -> numpy.ndarray[numpy.float32[1, n]]
     """
     )
@@ -759,14 +757,14 @@ def test_sparse():
 def test_sparse_signature(doc):
     pytest.importorskip("scipy")
     assert (
-        doc(m.sparse_copy_r)
-        == """
+            doc(m.sparse_copy_r)
+            == """
         sparse_copy_r(arg0: scipy.sparse.csr_matrix[numpy.float32]) -> scipy.sparse.csr_matrix[numpy.float32]
     """
     )
     assert (
-        doc(m.sparse_copy_c)
-        == """
+            doc(m.sparse_copy_c)
+            == """
         sparse_copy_c(arg0: scipy.sparse.csc_matrix[numpy.float32]) -> scipy.sparse.csc_matrix[numpy.float32]
     """
     )

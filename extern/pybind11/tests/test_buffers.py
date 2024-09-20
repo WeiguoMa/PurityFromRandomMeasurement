@@ -5,10 +5,10 @@ import io
 import struct
 
 import pytest
-
-import env
 from pybind11_tests import ConstructorStats
 from pybind11_tests import buffers as m
+
+import env
 
 np = pytest.importorskip("numpy")
 
@@ -225,6 +225,6 @@ def test_ctypes_from_buffer():
 
 def test_buffer_docstring():
     assert (
-        m.get_buffer_info.__doc__.strip()
-        == "get_buffer_info(arg0: Buffer) -> pybind11_tests.buffers.buffer_info"
+            m.get_buffer_info.__doc__.strip()
+            == "get_buffer_info(arg0: Buffer) -> pybind11_tests.buffers.buffer_info"
     )

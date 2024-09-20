@@ -4,8 +4,8 @@ Time: 09.19.2024
 Contact: weiguo.m@iphy.ac.cn
 """
 from typing import Union, List
-import numpy as np
 
+import numpy as np
 from qutip import Qobj, tensor, sigmax, sigmay, sigmaz, qeye, mesolve, basis, ket2dm
 
 

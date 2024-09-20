@@ -119,8 +119,8 @@ TEST_SUBMODULE(iostream, m) {
     });
 
     py::class_<TestThread>(m, "TestThread")
-        .def(py::init<>())
-        .def("stop", &TestThread::stop)
-        .def("join", &TestThread::join)
-        .def("sleep", &TestThread::sleep);
+            .def(py::init<>())
+            .def("stop", &TestThread::stop)
+            .def("join", &TestThread::join)
+            .def("sleep", &TestThread::sleep);
 }

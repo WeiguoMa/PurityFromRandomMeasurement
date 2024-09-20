@@ -19,55 +19,55 @@
 #include "datatypes.h"
 
 complex cdotc_(integer *n, complex *cx, integer *incx, complex *cy, integer *incy) {
-  complex res;
-  extern /* Subroutine */ void cdotcw_(integer *, complex *, integer *, complex *, integer *, complex *);
+    complex res;
+    extern /* Subroutine */ void cdotcw_(integer *, complex *, integer *, complex *, integer *, complex *);
 
-  /* Parameter adjustments */
-  --cy;
-  --cx;
+    /* Parameter adjustments */
+    --cy;
+    --cx;
 
-  /* Function Body */
-  cdotcw_(n, &cx[1], incx, &cy[1], incy, &res);
-  return res;
+    /* Function Body */
+    cdotcw_(n, &cx[1], incx, &cy[1], incy, &res);
+    return res;
 } /* cdotc_ */
 
 complex cdotu_(integer *n, complex *cx, integer *incx, complex *cy, integer *incy) {
-  complex res;
-  extern /* Subroutine */ void cdotuw_(integer *, complex *, integer *, complex *, integer *, complex *);
+    complex res;
+    extern /* Subroutine */ void cdotuw_(integer *, complex *, integer *, complex *, integer *, complex *);
 
-  /* Parameter adjustments */
-  --cy;
-  --cx;
+    /* Parameter adjustments */
+    --cy;
+    --cx;
 
-  /* Function Body */
-  cdotuw_(n, &cx[1], incx, &cy[1], incy, &res);
-  return res;
+    /* Function Body */
+    cdotuw_(n, &cx[1], incx, &cy[1], incy, &res);
+    return res;
 } /* cdotu_ */
 
 doublecomplex zdotc_(integer *n, doublecomplex *cx, integer *incx, doublecomplex *cy, integer *incy) {
-  doublecomplex res;
-  extern /* Subroutine */ void zdotcw_(integer *, doublecomplex *, integer *, doublecomplex *, integer *,
-                                       doublecomplex *);
+    doublecomplex res;
+    extern /* Subroutine */ void zdotcw_(integer *, doublecomplex *, integer *, doublecomplex *, integer *,
+                                         doublecomplex *);
 
-  /* Parameter adjustments */
-  --cy;
-  --cx;
+    /* Parameter adjustments */
+    --cy;
+    --cx;
 
-  /* Function Body */
-  zdotcw_(n, &cx[1], incx, &cy[1], incy, &res);
-  return res;
+    /* Function Body */
+    zdotcw_(n, &cx[1], incx, &cy[1], incy, &res);
+    return res;
 } /* zdotc_ */
 
 doublecomplex zdotu_(integer *n, doublecomplex *cx, integer *incx, doublecomplex *cy, integer *incy) {
-  doublecomplex res;
-  extern /* Subroutine */ void zdotuw_(integer *, doublecomplex *, integer *, doublecomplex *, integer *,
-                                       doublecomplex *);
+    doublecomplex res;
+    extern /* Subroutine */ void zdotuw_(integer *, doublecomplex *, integer *, doublecomplex *, integer *,
+                                         doublecomplex *);
 
-  /* Parameter adjustments */
-  --cy;
-  --cx;
+    /* Parameter adjustments */
+    --cy;
+    --cx;
 
-  /* Function Body */
-  zdotuw_(n, &cx[1], incx, &cy[1], incy, &res);
-  return res;
+    /* Function Body */
+    zdotuw_(n, &cx[1], incx, &cy[1], incy, &res);
+    return res;
 } /* zdotu_ */

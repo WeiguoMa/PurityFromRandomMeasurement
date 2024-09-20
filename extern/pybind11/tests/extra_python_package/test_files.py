@@ -24,7 +24,6 @@ Version: {VERSION}
 Cflags: -I${{includedir}}
 """
 
-
 main_headers = {
     "include/pybind11/attr.h",
     "include/pybind11/buffer_info.h",
@@ -98,7 +97,6 @@ headers = main_headers | detail_headers | eigen_headers | stl_headers
 src_files = headers | cmake_files | pkgconfig_files
 all_files = src_files | py_files
 
-
 sdist_files = {
     "pybind11",
     "pybind11/include",
@@ -164,8 +162,8 @@ def test_build_sdist(monkeypatch, tmpdir):
         )
 
     assert (
-        'set(pybind11_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include")'
-        in cmake_cfg.decode("utf-8")
+            'set(pybind11_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include")'
+            in cmake_cfg.decode("utf-8")
     )
 
     files = {f"pybind11/{n}" for n in all_files}
@@ -214,8 +212,8 @@ def test_build_global_dist(monkeypatch, tmpdir):
         )
 
     assert (
-        'set(pybind11_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include")'
-        in cmake_cfg.decode("utf-8")
+            'set(pybind11_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include")'
+            in cmake_cfg.decode("utf-8")
     )
 
     files = {f"pybind11/{n}" for n in all_files}
@@ -291,6 +289,6 @@ def tests_build_global_wheel(monkeypatch, tmpdir):
         names = z.namelist()
 
     beginning = names[0].split("/", 1)[0].rsplit(".", 1)[0]
-    trimmed = {n[len(beginning) + 1 :] for n in names}
+    trimmed = {n[len(beginning) + 1:] for n in names}
 
     assert files == trimmed

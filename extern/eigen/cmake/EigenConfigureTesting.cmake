@@ -13,11 +13,11 @@ add_dependencies(check buildtests)
 
 # Convenience target for only building GPU tests.
 add_custom_target(buildtests_gpu)
-add_custom_target(check_gpu COMMAND "ctest" "--output-on-failure" 
-                                            "--no-compress-output"
-                                            "--build-no-clean"
-                                            "-T" "test"
-                                            "-L" "gpu")
+add_custom_target(check_gpu COMMAND "ctest" "--output-on-failure"
+        "--no-compress-output"
+        "--build-no-clean"
+        "-T" "test"
+        "-L" "gpu")
 add_dependencies(check_gpu buildtests_gpu)
 
 # check whether /bin/bash exists (disabled as not used anymore)
@@ -33,14 +33,14 @@ set(EIGEN_CTEST_ERROR_EXCEPTION "" CACHE STRING "Regular expression for build er
 # Overwrite default DartConfiguration.tcl such that ctest can build our unit tests.
 # Recall that our unit tests are not in the "all" target, so we have to explicitly ask ctest to build our custom 'buildtests' target.
 # At this stage, we can also add custom flags to the build tool through the user defined EIGEN_TEST_BUILD_FLAGS variable.
-file(READ  "${CMAKE_CURRENT_BINARY_DIR}/DartConfiguration.tcl" EIGEN_DART_CONFIG_FILE)
+file(READ "${CMAKE_CURRENT_BINARY_DIR}/DartConfiguration.tcl" EIGEN_DART_CONFIG_FILE)
 # try to grab the default flags
 string(REGEX MATCH "MakeCommand:.*-- (.*)\nDefaultCTestConfigurationType" EIGEN_DUMMY ${EIGEN_DART_CONFIG_FILE})
-if(NOT CMAKE_MATCH_1)
-string(REGEX MATCH "MakeCommand:.*[^c]make (.*)\nDefaultCTestConfigurationType" EIGEN_DUMMY ${EIGEN_DART_CONFIG_FILE})
-endif()
+if (NOT CMAKE_MATCH_1)
+    string(REGEX MATCH "MakeCommand:.*[^c]make (.*)\nDefaultCTestConfigurationType" EIGEN_DUMMY ${EIGEN_DART_CONFIG_FILE})
+endif ()
 string(REGEX REPLACE "MakeCommand:.*DefaultCTestConfigurationType" "MakeCommand: ${CMAKE_COMMAND} --build . --target ${EIGEN_DASHBOARD_BUILD_TARGET} --config \"\${CTEST_CONFIGURATION_TYPE}\" -- ${CMAKE_MATCH_1} ${EIGEN_TEST_BUILD_FLAGS}\nDefaultCTestConfigurationType"
-       EIGEN_DART_CONFIG_FILE2 ${EIGEN_DART_CONFIG_FILE})
+        EIGEN_DART_CONFIG_FILE2 ${EIGEN_DART_CONFIG_FILE})
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/DartConfiguration.tcl" ${EIGEN_DART_CONFIG_FILE2})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
@@ -52,16 +52,16 @@ ei_init_testing()
 option(EIGEN_NO_ASSERTION_CHECKING "Disable checking of assertions using exceptions" OFF)
 option(EIGEN_DEBUG_ASSERTS "Enable advanced debugging of assertions" OFF)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-  option(EIGEN_COVERAGE_TESTING "Enable/disable gcov" OFF)
-  if(EIGEN_COVERAGE_TESTING)
-    set(COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage")
-    set(CTEST_CUSTOM_COVERAGE_EXCLUDE "/test/")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}")
-  endif()
-  
-elseif(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS")
-endif()
+if (CMAKE_COMPILER_IS_GNUCXX)
+    option(EIGEN_COVERAGE_TESTING "Enable/disable gcov" OFF)
+    if (EIGEN_COVERAGE_TESTING)
+        set(COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage")
+        set(CTEST_CUSTOM_COVERAGE_EXCLUDE "/test/")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}")
+    endif ()
+
+elseif (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS")
+endif ()
 
 

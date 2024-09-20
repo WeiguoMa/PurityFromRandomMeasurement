@@ -51,7 +51,8 @@ private:
 // track and print out the actual class (e.g. ref<MyObject>), and *also* add a fake tracker for
 // ref_tag.  This lets us check that the total number of ref<Anything> constructors/destructors is
 // correct without having to check each individual ref<Whatever> type individually.
-class ref_tag {};
+class ref_tag {
+};
 
 /**
  * \brief Reference counting helper
@@ -63,7 +64,7 @@ class ref_tag {};
  *
  * \ingroup libcore
  */
-template <typename T>
+template<typename T>
 class ref {
 public:
     /// Create a nullptr reference
@@ -93,7 +94,7 @@ public:
     }
 
     /// Move constructor
-    ref(ref &&r) noexcept : m_ptr(r.m_ptr) {
+    ref(ref &&r) noexcept: m_ptr(r.m_ptr) {
         r.m_ptr = nullptr;
 
         print_move_created(this, "with pointer", m_ptr);

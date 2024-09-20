@@ -39,7 +39,7 @@ def build_expected_version_hex(matches: dict[str, str]) -> str:
             level_serial = flds[1]
             for level in ("a", "b", "c", "dev"):
                 if level_serial.startswith(level):
-                    serial = int(level_serial[len(level) :])
+                    serial = int(level_serial[len(level):])
                     break
     if serial is None:
         msg = f'Invalid PYBIND11_VERSION_PATCH: "{patch_level_serial}"'
@@ -62,7 +62,6 @@ to_src = (
     (Path("pyproject.toml"), Path("tools/pyproject.toml")),
     (Path("setup.py"), setup_py),
 )
-
 
 # Read the listed version
 loc: dict[str, str] = {}

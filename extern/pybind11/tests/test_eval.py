@@ -3,9 +3,9 @@ from __future__ import annotations
 import os
 
 import pytest
+from pybind11_tests import eval_ as m
 
 import env  # noqa: F401
-from pybind11_tests import eval_ as m
 
 
 def test_evals(capture):

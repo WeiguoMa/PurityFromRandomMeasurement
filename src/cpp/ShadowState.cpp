@@ -49,7 +49,7 @@ MatrixType ShadowState::kroneckerProduct(const MatrixType &A, const MatrixType &
                          static_cast<LoopIndexType>(j) * static_cast<LoopIndexType>(colsB),
                          static_cast<LoopIndexType>(rowsB),
                          static_cast<LoopIndexType>(colsB))
-                         = A(static_cast<LoopIndexType>(i), static_cast<LoopIndexType>(j)) * B;
+                    = A(static_cast<LoopIndexType>(i), static_cast<LoopIndexType>(j)) * B;
         }
     }
     return result;
@@ -102,7 +102,7 @@ MatrixXcd ShadowState::stateEstimation(
             localSumMatrix += ShadowState::measureResult2state(
                     measureOperations[static_cast<LoopIndexType>(idx)],
                     measureResults[static_cast<LoopIndexType>(idx)]
-                    );
+            );
         }
 
     #pragma omp critical

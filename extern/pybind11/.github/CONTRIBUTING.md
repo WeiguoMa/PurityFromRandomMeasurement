@@ -50,7 +50,6 @@ license to install, use, modify, prepare derivative works, incorporate into
 other computer software, distribute, and sublicense such enhancements or
 derivative works thereof, in binary and source code form.
 
-
 ## Development of pybind11
 
 ### Quick setup
@@ -124,7 +123,6 @@ The valid options are:
   master project)
 * `-DUSE_PYTHON_INSTALL_DIR=ON`: Try to install into the python dir
 
-
 <details><summary>A few standard CMake tricks: (click to expand)</summary><p>
 
 * Use `cmake --build build -v` to see the commands used to build the files.
@@ -134,8 +132,8 @@ The valid options are:
 * Use `cmake --build build -j12` to build with 12 cores (for example).
 * Use `-G` and the name of a generator to use something different. `cmake
   --help` lists the generators available.
-      - On Unix, setting `CMAKE_GENERATER=Ninja` in your environment will give
-        you automatic multithreading on all your CMake projects!
+  - On Unix, setting `CMAKE_GENERATER=Ninja` in your environment will give
+  you automatic multithreading on all your CMake projects!
 * Open the `CMakeLists.txt` with QtCreator to generate for that IDE.
 * You can use `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` to generate the `.json` file
   that some tools expect.
@@ -153,7 +151,7 @@ cmake --build build --target check
 tests with these targets:
 
 * `pytest`: Python tests only, using the
-[pytest](https://docs.pytest.org/en/stable/) framework
+  [pytest](https://docs.pytest.org/en/stable/) framework
 * `cpptest`: C++ tests only
 * `test_cmake_build`: Install / subdirectory tests
 
@@ -301,9 +299,8 @@ you want the more invasive but discoverable file locations.
 
 If you want to install or package the GitHub source, it is best to have Pip 10
 or newer on Windows, macOS, or Linux (manylinux1 compatible, includes most
-distributions).  You can then build the SDists, or run any procedure that makes
+distributions). You can then build the SDists, or run any procedure that makes
 SDists internally, like making wheels or installing.
-
 
 ```bash
 # Editable development install example
@@ -380,9 +377,15 @@ if you really want to.
 
 
 [pre-commit]: https://pre-commit.com
+
 [clang-format]: https://clang.llvm.org/docs/ClangFormat.html
+
 [clang-tidy]: https://clang.llvm.org/extra/clang-tidy/
+
 [pybind11.readthedocs.org]: http://pybind11.readthedocs.org/en/latest
+
 [issue tracker]: https://github.com/pybind/pybind11/issues
+
 [gitter]: https://gitter.im/pybind/Lobby
+
 [using pull requests]: https://help.github.com/articles/using-pull-requests

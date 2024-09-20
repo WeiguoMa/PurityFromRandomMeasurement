@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import sys
 
-import pytest
-
-import env
 import pybind11_cross_module_tests as cm
 import pybind11_tests
+import pytest
 from pybind11_tests import exceptions as m
+
+import env
 
 
 def test_std_exception(msg):
@@ -20,8 +20,8 @@ def test_error_already_set(msg):
     with pytest.raises(RuntimeError) as excinfo:
         m.throw_already_set(False)
     assert (
-        msg(excinfo.value)
-        == "Internal error: pybind11::error_already_set called while Python error indicator not set."
+            msg(excinfo.value)
+            == "Internal error: pybind11::error_already_set called while Python error indicator not set."
     )
 
     with pytest.raises(ValueError) as excinfo:
@@ -147,8 +147,8 @@ def test_custom(msg):
     with pytest.raises(m.MyExceptionUseDeprecatedOperatorCall) as excinfo:
         m.throws1d()
     assert (
-        msg(excinfo.value)
-        == "this error should go to py::exception<MyExceptionUseDeprecatedOperatorCall>"
+            msg(excinfo.value)
+            == "this error should go to py::exception<MyExceptionUseDeprecatedOperatorCall>"
     )
 
     # Can we translate to standard Python exceptions?
@@ -170,7 +170,7 @@ def test_custom(msg):
     with pytest.raises(RuntimeError) as excinfo:
         m.throws_logic_error()
     assert (
-        msg(excinfo.value) == "this error should fall through to the standard handler"
+            msg(excinfo.value) == "this error should fall through to the standard handler"
     )
 
     # OverFlow error translation.
@@ -325,7 +325,7 @@ class FlakyException(Exception):
     ],
 )
 def test_error_already_set_what_with_happy_exceptions(
-    exc_type, exc_value, expected_what
+        exc_type, exc_value, expected_what
 ):
     what, py_err_set_after_what = m.error_already_set_what(exc_type, exc_value)
     assert not py_err_set_after_what
@@ -383,14 +383,14 @@ def test_flaky_exception_failure_point_str():
     lines = what.splitlines()
     n = 3 if env.PYPY and len(lines) == 3 else 5
     assert (
-        lines[:n]
-        == [
-            "FlakyException: <MESSAGE UNAVAILABLE DUE TO ANOTHER EXCEPTION>",
-            "",
-            "MESSAGE UNAVAILABLE DUE TO EXCEPTION: ValueError: triggered_failure_point_str",
-            "",
-            "At:",
-        ][:n]
+            lines[:n]
+            == [
+                   "FlakyException: <MESSAGE UNAVAILABLE DUE TO ANOTHER EXCEPTION>",
+                   "",
+                   "MESSAGE UNAVAILABLE DUE TO EXCEPTION: ValueError: triggered_failure_point_str",
+                   "",
+                   "At:",
+               ][:n]
     )
 
 

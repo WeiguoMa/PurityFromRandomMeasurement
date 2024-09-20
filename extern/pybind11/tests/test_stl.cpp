@@ -15,6 +15,7 @@
 #ifndef PYBIND11_HAS_FILESYSTEM_IS_OPTIONAL
 #    define PYBIND11_HAS_FILESYSTEM_IS_OPTIONAL
 #endif
+
 #include <pybind11/stl/filesystem.h>
 
 #include <string>
@@ -63,23 +64,26 @@ PYBIND11_MAKE_OPAQUE(std::vector<std::string, std::allocator<std::string>>);
 
 /// Issue #528: templated constructor
 struct TplCtorClass {
-    template <typename T>
+    template<typename T>
     explicit TplCtorClass(const T &) {}
+
     bool operator==(const TplCtorClass &) const { return true; }
 };
 
 namespace std {
-template <>
-struct hash<TplCtorClass> {
-    size_t operator()(const TplCtorClass &) const { return 0; }
-};
+    template<>
+    struct hash<TplCtorClass> {
+        size_t operator()(const TplCtorClass &) const { return 0; }
+    };
 } // namespace std
 
-template <template <typename> class OptionalImpl, typename T>
+template<template<typename> class OptionalImpl, typename T>
 struct OptionalHolder {
     // NOLINTNEXTLINE(modernize-use-equals-default): breaks GCC 4.8
     OptionalHolder() {};
+
     bool member_initialized() const { return member && member->initialized; }
+
     OptionalImpl<T> member = T{};
 };
 
@@ -92,12 +96,13 @@ enum class EnumType {
 // handled properly for optional types. This is a regression test for a dangling
 // reference issue. The issue seemed to require the enum value type to
 // reproduce - it didn't seem to happen if the value type is just an integer.
-template <template <typename> class OptionalImpl>
+template<template<typename> class OptionalImpl>
 class OptionalProperties {
 public:
     using OptionalEnumValue = OptionalImpl<EnumType>;
 
     OptionalProperties() : value(EnumType::kSet) {}
+
     ~OptionalProperties() {
         // Reset value to detect use-after-destruction.
         // This is set to a specific value rather than nullopt to ensure that
@@ -106,6 +111,7 @@ public:
     }
 
     OptionalEnumValue &access_by_ref() { return value; }
+
     OptionalEnumValue access_by_copy() { return value; }
 
 private:
@@ -118,26 +124,30 @@ private:
 // affected by the same issue. This is meant to be a minimal implementation
 // required to reproduce the issue, not fully standard-compliant.
 // See issue #3330 for more details.
-template <typename T>
+template<typename T>
 class ReferenceSensitiveOptional {
 public:
     using value_type = T;
 
     ReferenceSensitiveOptional() = default;
+
     // NOLINTNEXTLINE(google-explicit-constructor)
     ReferenceSensitiveOptional(const T &value) : storage{value} {}
+
     // NOLINTNEXTLINE(google-explicit-constructor)
     ReferenceSensitiveOptional(T &&value) : storage{std::move(value)} {}
+
     ReferenceSensitiveOptional &operator=(const T &value) {
         storage = {value};
         return *this;
     }
+
     ReferenceSensitiveOptional &operator=(T &&value) {
         storage = {std::move(value)};
         return *this;
     }
 
-    template <typename... Args>
+    template<typename... Args>
     T &emplace(Args &&...args) {
         storage.clear();
         storage.emplace_back(std::forward<Args>(args)...);
@@ -160,10 +170,11 @@ private:
 };
 
 namespace PYBIND11_NAMESPACE {
-namespace detail {
-template <typename T>
-struct type_caster<ReferenceSensitiveOptional<T>>
-    : optional_caster<ReferenceSensitiveOptional<T>> {};
+    namespace detail {
+        template<typename T>
+        struct type_caster<ReferenceSensitiveOptional < T>>
+        : optional_caster<ReferenceSensitiveOptional < T>> {
+    };
 } // namespace detail
 } // namespace PYBIND11_NAMESPACE
 
@@ -177,13 +188,13 @@ TEST_SUBMODULE(stl, m) {
           [](const std::vector<bool> &v) { return v.at(0) == true && v.at(1) == false; });
     // Unnumbered regression (caused by #936): pointers to stl containers aren't castable
     m.def(
-        "cast_ptr_vector",
-        []() {
-            // Using no-destructor idiom to side-step warnings from overzealous compilers.
-            static auto *v = new std::vector<RValueCaster>{2};
-            return v;
-        },
-        py::return_value_policy::reference);
+            "cast_ptr_vector",
+            []() {
+                // Using no-destructor idiom to side-step warnings from overzealous compilers.
+                static auto *v = new std::vector<RValueCaster>{2};
+                return v;
+            },
+            py::return_value_policy::reference);
 
     // test_deque
     m.def("cast_deque", []() { return std::deque<int>{1}; });
@@ -206,7 +217,7 @@ TEST_SUBMODULE(stl, m) {
     });
 
     // test_set
-    m.def("cast_set", []() { return std::set<std::string>{"key1", "key2"}; });
+    m.def("cast_set", []() { return std::set < std::string > {"key1", "key2"}; });
     m.def("load_set", [](const std::set<std::string> &set) {
         return (set.count("key1") != 0u) && (set.count("key2") != 0u) && (set.count("key3") != 0u);
     });
@@ -233,7 +244,7 @@ TEST_SUBMODULE(stl, m) {
     static std::unordered_map<std::string, RValueCaster> lvm{{"a", RValueCaster{}},
                                                              {"b", RValueCaster{}}};
     static std::unordered_map<std::string, std::vector<std::list<std::array<RValueCaster, 2>>>>
-        lvn;
+            lvn;
     lvn["a"].emplace_back();        // add a list
     lvn["a"].back().emplace_back(); // add an array
     lvn["a"].emplace_back();        // another list
@@ -255,49 +266,60 @@ TEST_SUBMODULE(stl, m) {
     });
 
     pybind11::enum_<EnumType>(m, "EnumType")
-        .value("kSet", EnumType::kSet)
-        .value("kUnset", EnumType::kUnset);
+            .value("kSet", EnumType::kSet)
+            .value("kUnset", EnumType::kUnset);
 
     // test_move_out_container
     struct MoveOutContainer {
         struct Value {
             int value;
         };
-        std::list<Value> move_list() const { return {{0}, {1}, {2}}; }
+
+        std::list<Value> move_list() const {
+            return {{0},
+                    {1},
+                    {2}};
+        }
     };
     py::class_<MoveOutContainer::Value>(m, "MoveOutContainerValue")
-        .def_readonly("value", &MoveOutContainer::Value::value);
+            .def_readonly("value", &MoveOutContainer::Value::value);
     py::class_<MoveOutContainer>(m, "MoveOutContainer")
-        .def(py::init<>())
-        .def_property_readonly("move_list", &MoveOutContainer::move_list);
+            .def(py::init<>())
+            .def_property_readonly("move_list", &MoveOutContainer::move_list);
 
     // Class that can be move- and copy-constructed, but not assigned
     struct NoAssign {
         int value;
 
         explicit NoAssign(int value = 0) : value(value) {}
+
         NoAssign(const NoAssign &) = default;
+
         NoAssign(NoAssign &&) = default;
 
         NoAssign &operator=(const NoAssign &) = delete;
+
         NoAssign &operator=(NoAssign &&) = delete;
     };
     py::class_<NoAssign>(m, "NoAssign", "Class with no C++ assignment operators")
-        .def(py::init<>())
-        .def(py::init<int>());
+            .def(py::init<>())
+            .def(py::init<int>());
 
     struct MoveOutDetector {
         MoveOutDetector() = default;
+
         MoveOutDetector(const MoveOutDetector &) = default;
-        MoveOutDetector(MoveOutDetector &&other) noexcept : initialized(other.initialized) {
+
+        MoveOutDetector(MoveOutDetector &&other) noexcept: initialized(other.initialized) {
             // steal underlying resource
             other.initialized = false;
         }
+
         bool initialized = true;
     };
     py::class_<MoveOutDetector>(m, "MoveOutDetector", "Class with move tracking")
-        .def(py::init<>())
-        .def_readonly("initialized", &MoveOutDetector::initialized);
+            .def(py::init<>())
+            .def_readonly("initialized", &MoveOutDetector::initialized);
 
 #ifdef PYBIND11_HAS_OPTIONAL
     // test_optional
@@ -308,28 +330,28 @@ TEST_SUBMODULE(stl, m) {
     m.def("double_or_zero", [](const opt_int &x) -> int { return x.value_or(0) * 2; });
     m.def("half_or_none", [](int x) -> opt_int { return x != 0 ? opt_int(x / 2) : opt_int(); });
     m.def(
-        "test_nullopt",
-        [](opt_int x) { return x.value_or(42); },
-        py::arg_v("x", std::nullopt, "None"));
+            "test_nullopt",
+            [](opt_int x) { return x.value_or(42); },
+            py::arg_v("x", std::nullopt, "None"));
     m.def(
-        "test_no_assign",
-        [](const opt_no_assign &x) { return x ? x->value : 42; },
-        py::arg_v("x", std::nullopt, "None"));
+            "test_no_assign",
+            [](const opt_no_assign &x) { return x ? x->value : 42; },
+            py::arg_v("x", std::nullopt, "None"));
 
     m.def("nodefer_none_optional", [](std::optional<int>) { return true; });
     m.def("nodefer_none_optional", [](const py::none &) { return false; });
 
     using opt_holder = OptionalHolder<std::optional, MoveOutDetector>;
     py::class_<opt_holder>(m, "OptionalHolder", "Class with optional member")
-        .def(py::init<>())
-        .def_readonly("member", &opt_holder::member)
-        .def("member_initialized", &opt_holder::member_initialized);
+            .def(py::init<>())
+            .def_readonly("member", &opt_holder::member)
+            .def("member_initialized", &opt_holder::member_initialized);
 
     using opt_props = OptionalProperties<std::optional>;
     pybind11::class_<opt_props>(m, "OptionalProperties")
-        .def(pybind11::init<>())
-        .def_property_readonly("access_by_ref", &opt_props::access_by_ref)
-        .def_property_readonly("access_by_copy", &opt_props::access_by_copy);
+            .def(pybind11::init<>())
+            .def_property_readonly("access_by_ref", &opt_props::access_by_ref)
+            .def_property_readonly("access_by_copy", &opt_props::access_by_copy);
 #endif
 
 #ifdef PYBIND11_HAS_EXP_OPTIONAL
@@ -403,27 +425,27 @@ TEST_SUBMODULE(stl, m) {
         return x != 0 ? refsensitive_opt_int(x / 2) : refsensitive_opt_int();
     });
     m.def(
-        "test_nullopt_refsensitive",
-        // NOLINTNEXTLINE(performance-unnecessary-value-param)
-        [](refsensitive_opt_int x) { return x ? x.value() : 42; },
-        py::arg_v("x", refsensitive_opt_int(), "None"));
+            "test_nullopt_refsensitive",
+            // NOLINTNEXTLINE(performance-unnecessary-value-param)
+            [](refsensitive_opt_int x) { return x ? x.value() : 42; },
+            py::arg_v("x", refsensitive_opt_int(), "None"));
     m.def(
-        "test_no_assign_refsensitive",
-        [](const refsensitive_opt_no_assign &x) { return x ? x->value : 42; },
-        py::arg_v("x", refsensitive_opt_no_assign(), "None"));
+            "test_no_assign_refsensitive",
+            [](const refsensitive_opt_no_assign &x) { return x ? x->value : 42; },
+            py::arg_v("x", refsensitive_opt_no_assign(), "None"));
 
     using opt_refsensitive_holder = OptionalHolder<ReferenceSensitiveOptional, MoveOutDetector>;
     py::class_<opt_refsensitive_holder>(
-        m, "OptionalRefSensitiveHolder", "Class with optional member")
-        .def(py::init<>())
-        .def_readonly("member", &opt_refsensitive_holder::member)
-        .def("member_initialized", &opt_refsensitive_holder::member_initialized);
+            m, "OptionalRefSensitiveHolder", "Class with optional member")
+            .def(py::init<>())
+            .def_readonly("member", &opt_refsensitive_holder::member)
+            .def("member_initialized", &opt_refsensitive_holder::member_initialized);
 
     using opt_refsensitive_props = OptionalProperties<ReferenceSensitiveOptional>;
     pybind11::class_<opt_refsensitive_props>(m, "OptionalRefSensitiveProperties")
-        .def(pybind11::init<>())
-        .def_property_readonly("access_by_ref", &opt_refsensitive_props::access_by_ref)
-        .def_property_readonly("access_by_copy", &opt_refsensitive_props::access_by_copy);
+            .def(pybind11::init<>())
+            .def_property_readonly("access_by_ref", &opt_refsensitive_props::access_by_ref)
+            .def_property_readonly("access_by_copy", &opt_refsensitive_props::access_by_copy);
 
 #ifdef PYBIND11_HAS_FILESYSTEM
     // test_fs_path
@@ -439,11 +461,17 @@ TEST_SUBMODULE(stl, m) {
         using result_type = const char *;
 
         result_type operator()(int) { return "int"; }
+
         result_type operator()(const std::string &) { return "std::string"; }
+
         result_type operator()(double) { return "double"; }
+
         result_type operator()(std::nullptr_t) { return "std::nullptr_t"; }
+
 #    if defined(PYBIND11_HAS_VARIANT)
+
         result_type operator()(std::monostate) { return "std::monostate"; }
+
 #    endif
     };
 
@@ -492,7 +520,7 @@ TEST_SUBMODULE(stl, m) {
     m.def("return_vec_of_reference_wrapper", [](std::reference_wrapper<UserType> p4) {
         static UserType p1{1}, p2{2}, p3{3};
         return std::vector<std::reference_wrapper<UserType>>{
-            std::ref(p1), std::ref(p2), std::ref(p3), p4};
+                std::ref(p1), std::ref(p2), std::ref(p3), p4};
     });
 
     // test_stl_pass_by_pointer
@@ -508,20 +536,22 @@ TEST_SUBMODULE(stl, m) {
     class Placeholder {
     public:
         Placeholder() { print_created(this); }
+
         Placeholder(const Placeholder &) = delete;
+
         ~Placeholder() { print_destroyed(this); }
     };
     py::class_<Placeholder>(m, "Placeholder");
 
     /// test_stl_vector_ownership
     m.def(
-        "test_stl_ownership",
-        []() {
-            std::vector<Placeholder *> result;
-            result.push_back(new Placeholder());
-            return result;
-        },
-        py::return_value_policy::take_ownership);
+            "test_stl_ownership",
+            []() {
+                std::vector<Placeholder *> result;
+                result.push_back(new Placeholder());
+                return result;
+            },
+            py::return_value_policy::take_ownership);
 
     m.def("array_cast_sequence", [](std::array<int, 3> x) { return x; });
 
@@ -534,16 +564,16 @@ TEST_SUBMODULE(stl, m) {
     };
 
     py::class_<Issue1561Inner>(m, "Issue1561Inner")
-        .def(py::init<std::string>())
-        .def_readwrite("data", &Issue1561Inner::data);
+            .def(py::init<std::string>())
+            .def_readwrite("data", &Issue1561Inner::data);
 
     py::class_<Issue1561Outer>(m, "Issue1561Outer")
-        .def(py::init<>())
-        .def_readwrite("list", &Issue1561Outer::list);
+            .def(py::init<>())
+            .def_readwrite("list", &Issue1561Outer::list);
 
     m.def(
-        "return_vector_bool_raw_ptr",
-        []() { return new std::vector<bool>(4513); },
-        // Without explicitly specifying `take_ownership`, this function leaks.
-        py::return_value_policy::take_ownership);
+            "return_vector_bool_raw_ptr",
+            []() { return new std::vector<bool>(4513); },
+            // Without explicitly specifying `take_ownership`, this function leaks.
+            py::return_value_policy::take_ownership);
 }

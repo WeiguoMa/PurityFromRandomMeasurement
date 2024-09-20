@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from pybind11_tests import ConstructorStats, UserType
 from pybind11_tests import stl as m
 
@@ -43,8 +42,8 @@ def test_array(doc):
 
     assert doc(m.cast_array) == "cast_array() -> Annotated[list[int], FixedSize(2)]"
     assert (
-        doc(m.load_array)
-        == "load_array(arg0: Annotated[list[int], FixedSize(2)]) -> bool"
+            doc(m.load_array)
+            == "load_array(arg0: Annotated[list[int], FixedSize(2)]) -> bool"
     )
 
 
@@ -269,7 +268,7 @@ def test_variant(doc):
     assert m.cast_variant() == (5, "Hello")
 
     assert (
-        doc(m.load_variant) == "load_variant(arg0: Union[int, str, float, None]) -> str"
+            doc(m.load_variant) == "load_variant(arg0: Union[int, str, float, None]) -> str"
     )
 
 
@@ -284,16 +283,16 @@ def test_variant_monostate(doc):
     assert m.cast_monostate_variant() == (None, 5, "Hello")
 
     assert (
-        doc(m.load_monostate_variant)
-        == "load_monostate_variant(arg0: Union[None, int, str]) -> str"
+            doc(m.load_monostate_variant)
+            == "load_monostate_variant(arg0: Union[None, int, str]) -> str"
     )
 
 
 def test_vec_of_reference_wrapper():
     """#171: Can't return reference wrappers (or STL structures containing them)"""
     assert (
-        str(m.return_vec_of_reference_wrapper(UserType(4)))
-        == "[UserType(1), UserType(2), UserType(3), UserType(4)]"
+            str(m.return_vec_of_reference_wrapper(UserType(4)))
+            == "[UserType(1), UserType(2), UserType(3), UserType(4)]"
     )
 
 
@@ -302,8 +301,8 @@ def test_stl_pass_by_pointer(msg):
     with pytest.raises(TypeError) as excinfo:
         m.stl_pass_by_pointer()  # default value is `nullptr`
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         stl_pass_by_pointer(): incompatible function arguments. The following argument types are supported:
             1. (v: list[int] = None) -> list[int]
 
@@ -314,8 +313,8 @@ def test_stl_pass_by_pointer(msg):
     with pytest.raises(TypeError) as excinfo:
         m.stl_pass_by_pointer(None)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         stl_pass_by_pointer(): incompatible function arguments. The following argument types are supported:
             1. (v: list[int] = None) -> list[int]
 

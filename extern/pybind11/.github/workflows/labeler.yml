@@ -1,9 +1,9 @@
 name: Labeler
 on:
   pull_request_target:
-    types: [closed]
+    types: [ closed ]
 
-permissions: {}
+permissions: { }
 
 jobs:
   label:
@@ -14,12 +14,12 @@ jobs:
       pull-requests: write
     steps:
 
-    - uses: actions/labeler@v5
-      if: >
-        github.event.pull_request.merged == true &&
-        !startsWith(github.event.pull_request.title, 'chore(deps):') &&
-        !startsWith(github.event.pull_request.title, 'ci(fix):') &&
-        !startsWith(github.event.pull_request.title, 'docs(changelog):')
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        configuration-path: .github/labeler_merged.yml
+      - uses: actions/labeler@v5
+        if: >
+          github.event.pull_request.merged == true &&
+          !startsWith(github.event.pull_request.title, 'chore(deps):') &&
+          !startsWith(github.event.pull_request.title, 'ci(fix):') &&
+          !startsWith(github.event.pull_request.title, 'docs(changelog):')
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler_merged.yml

@@ -16,60 +16,65 @@ struct ConstRefCasted {
 };
 
 PYBIND11_NAMESPACE_BEGIN(pybind11)
-PYBIND11_NAMESPACE_BEGIN(detail)
-template <>
-class type_caster<ConstRefCasted> {
-public:
-    static constexpr auto name = const_name<ConstRefCasted>();
+    PYBIND11_NAMESPACE_BEGIN(detail)
 
-    // Input is unimportant, a new value will always be constructed based on the
-    // cast operator.
-    bool load(handle, bool) { return true; }
+        template<>
+        class type_caster<ConstRefCasted> {
+        public:
+            static constexpr auto name = const_name<ConstRefCasted>();
 
-    explicit operator ConstRefCasted &&() {
-        value = {1};
-        // NOLINTNEXTLINE(performance-move-const-arg)
-        return std::move(value);
-    }
-    explicit operator ConstRefCasted &() {
-        value = {2};
-        return value;
-    }
-    explicit operator ConstRefCasted *() {
-        value = {3};
-        return &value;
-    }
+            // Input is unimportant, a new value will always be constructed based on the
+            // cast operator.
+            bool load(handle, bool) { return true; }
 
-    explicit operator const ConstRefCasted &() {
-        value = {4};
-        return value;
-    }
-    explicit operator const ConstRefCasted *() {
-        value = {5};
-        return &value;
-    }
+            explicit operator ConstRefCasted &&() {
+                value = {1};
+                // NOLINTNEXTLINE(performance-move-const-arg)
+                return std::move(value);
+            }
 
-    // custom cast_op to explicitly propagate types to the conversion operators.
-    template <typename T_>
-    using cast_op_type =
-        /// const
-        conditional_t<
-            std::is_same<remove_reference_t<T_>, const ConstRefCasted *>::value,
-            const ConstRefCasted *,
-            conditional_t<
-                std::is_same<T_, const ConstRefCasted &>::value,
-                const ConstRefCasted &,
-                /// non-const
-                conditional_t<std::is_same<remove_reference_t<T_>, ConstRefCasted *>::value,
-                              ConstRefCasted *,
-                              conditional_t<std::is_same<T_, ConstRefCasted &>::value,
-                                            ConstRefCasted &,
-                                            /* else */ ConstRefCasted &&>>>>;
+            explicit operator ConstRefCasted &() {
+                value = {2};
+                return value;
+            }
 
-private:
-    ConstRefCasted value = {0};
-};
-PYBIND11_NAMESPACE_END(detail)
+            explicit operator ConstRefCasted *() {
+                value = {3};
+                return &value;
+            }
+
+            explicit operator const ConstRefCasted &() {
+                value = {4};
+                return value;
+            }
+
+            explicit operator const ConstRefCasted *() {
+                value = {5};
+                return &value;
+            }
+
+            // custom cast_op to explicitly propagate types to the conversion operators.
+            template<typename T_>
+            using cast_op_type =
+                /// const
+                    conditional_t<
+                            std::is_same<remove_reference_t<T_>, const ConstRefCasted *>::value,
+                            const ConstRefCasted *,
+                            conditional_t<
+                                    std::is_same<T_, const ConstRefCasted &>::value,
+                                    const ConstRefCasted &,
+                                    /// non-const
+                                    conditional_t<std::is_same<remove_reference_t<T_>, ConstRefCasted *>::value,
+                                            ConstRefCasted *,
+                                            conditional_t<std::is_same<T_, ConstRefCasted &>::value,
+                                                    ConstRefCasted &,
+                                                    /* else */ ConstRefCasted &&>>>>;
+
+        private:
+            ConstRefCasted value = {0};
+        };
+
+    PYBIND11_NAMESPACE_END(detail)
 PYBIND11_NAMESPACE_END(pybind11)
 
 TEST_SUBMODULE(builtin_casters, m) {
@@ -83,9 +88,9 @@ TEST_SUBMODULE(builtin_casters, m) {
     // Some test characters in utf16 and utf32 encodings.  The last one (the 𝐀) contains a null
     // byte
     char32_t a32 = 0x61 /*a*/, z32 = 0x7a /*z*/, ib32 = 0x203d /*‽*/, cake32 = 0x1f382 /*🎂*/,
-             mathbfA32 = 0x1d400 /*𝐀*/;
+            mathbfA32 = 0x1d400 /*𝐀*/;
     char16_t b16 = 0x62 /*b*/, z16 = 0x7a, ib16 = 0x203d, cake16_1 = 0xd83c, cake16_2 = 0xdf82,
-             mathbfA16_1 = 0xd835, mathbfA16_2 = 0xdc00;
+            mathbfA16_1 = 0xd835, mathbfA16_2 = 0xdc00;
     std::wstring wstr;
     wstr.push_back(0x61);   // a
     wstr.push_back(0x2e18); // ⸘
@@ -148,7 +153,10 @@ TEST_SUBMODULE(builtin_casters, m) {
                                                "def");
     });
 
-    m.def("u8_char8_Z", []() -> char8_t { return u8'Z'; });
+    m.def("u8_char8_Z", []() -> char8_t {
+        return u8
+        'Z';
+    });
 
     // test_single_char_arguments
     m.def("ord_char8", [](char8_t c) -> int { return static_cast<unsigned char>(c); });
@@ -163,21 +171,21 @@ TEST_SUBMODULE(builtin_casters, m) {
     m.def("string_view32_print", [](std::u32string_view s) { py::print(s, s.size()); });
     m.def("string_view_chars", [](std::string_view s) {
         py::list l;
-        for (auto c : s) {
+        for (auto c: s) {
             l.append((std::uint8_t) c);
         }
         return l;
     });
     m.def("string_view16_chars", [](std::u16string_view s) {
         py::list l;
-        for (auto c : s) {
+        for (auto c: s) {
             l.append((int) c);
         }
         return l;
     });
     m.def("string_view32_chars", [](std::u32string_view s) {
         py::list l;
-        for (auto c : s) {
+        for (auto c: s) {
             l.append((int) c);
         }
         return l;
@@ -206,7 +214,7 @@ TEST_SUBMODULE(builtin_casters, m) {
     m.def("string_view8_print", [](std::u8string_view s) { py::print(s, s.size()); });
     m.def("string_view8_chars", [](std::u8string_view s) {
         py::list l;
-        for (auto c : s)
+        for (auto c: s)
             l.append((std::uint8_t) c);
         return l;
     });
@@ -217,6 +225,7 @@ TEST_SUBMODULE(builtin_casters, m) {
     struct TypeWithBothOperatorStringAndStringView {
         // NOLINTNEXTLINE(google-explicit-constructor)
         operator std::string() const { return "success"; }
+
         // NOLINTNEXTLINE(google-explicit-constructor)
         operator std::string_view() const { return "failure"; }
     };
@@ -238,22 +247,22 @@ TEST_SUBMODULE(builtin_casters, m) {
 
     // test_tuple
     m.def(
-        "pair_passthrough",
-        [](const std::pair<bool, std::string> &input) {
-            return std::make_pair(input.second, input.first);
-        },
-        "Return a pair in reversed order");
+            "pair_passthrough",
+            [](const std::pair<bool, std::string> &input) {
+                return std::make_pair(input.second, input.first);
+            },
+            "Return a pair in reversed order");
     m.def(
-        "tuple_passthrough",
-        [](std::tuple<bool, std::string, int> input) {
-            return std::make_tuple(std::get<2>(input), std::get<1>(input), std::get<0>(input));
-        },
-        "Return a triple in reversed order");
+            "tuple_passthrough",
+            [](std::tuple<bool, std::string, int> input) {
+                return std::make_tuple(std::get<2>(input), std::get<1>(input), std::get<0>(input));
+            },
+            "Return a triple in reversed order");
     m.def("empty_tuple", []() { return std::tuple<>(); });
     static std::pair<RValueCaster, RValueCaster> lvpair;
     static std::tuple<RValueCaster, RValueCaster, RValueCaster> lvtuple;
     static std::pair<RValueCaster, std::tuple<RValueCaster, std::pair<RValueCaster, RValueCaster>>>
-        lvnested;
+            lvnested;
     m.def("rvalue_pair", []() { return std::make_pair(RValueCaster{}, RValueCaster{}); });
     m.def("lvalue_pair", []() -> const decltype(lvpair) & { return lvpair; });
     m.def("rvalue_tuple",
@@ -261,19 +270,19 @@ TEST_SUBMODULE(builtin_casters, m) {
     m.def("lvalue_tuple", []() -> const decltype(lvtuple) & { return lvtuple; });
     m.def("rvalue_nested", []() {
         return std::make_pair(
-            RValueCaster{},
-            std::make_tuple(RValueCaster{}, std::make_pair(RValueCaster{}, RValueCaster{})));
+                RValueCaster{},
+                std::make_tuple(RValueCaster{}, std::make_pair(RValueCaster{}, RValueCaster{})));
     });
     m.def("lvalue_nested", []() -> const decltype(lvnested) & { return lvnested; });
 
     m.def(
-        "int_string_pair",
-        []() {
-            // Using no-destructor idiom to side-step warnings from overzealous compilers.
-            static auto *int_string_pair = new std::pair<int, std::string>{2, "items"};
-            return int_string_pair;
-        },
-        py::return_value_policy::reference);
+            "int_string_pair",
+            []() {
+                // Using no-destructor idiom to side-step warnings from overzealous compilers.
+                static auto *int_string_pair = new std::pair<int, std::string>{2, "items"};
+                return int_string_pair;
+            },
+            py::return_value_policy::reference);
 
     // test_builtins_cast_return_none
     m.def("return_none_string", []() -> std::string * { return nullptr; });
@@ -330,17 +339,17 @@ TEST_SUBMODULE(builtin_casters, m) {
     // m.def("refwrap_pair", [](std::reference_wrapper<std::pair<int, int>>) { });
 
     m.def(
-        "refwrap_list",
-        [](bool copy) {
-            static IncType x1(1), x2(2);
-            py::list l;
-            for (const auto &f : {std::ref(x1), std::ref(x2)}) {
-                l.append(py::cast(
-                    f, copy ? py::return_value_policy::copy : py::return_value_policy::reference));
-            }
-            return l;
-        },
-        "copy"_a);
+            "refwrap_list",
+            [](bool copy) {
+                static IncType x1(1), x2(2);
+                py::list l;
+                for (const auto &f: {std::ref(x1), std::ref(x2)}) {
+                    l.append(py::cast(
+                            f, copy ? py::return_value_policy::copy : py::return_value_policy::reference));
+                }
+                return l;
+            },
+            "copy"_a);
 
     m.def("refwrap_iiw", [](const IncType &w) { return w.value(); });
     m.def("refwrap_call_iiw", [](IncType &w, const py::function &f) {

@@ -22,7 +22,6 @@ ENTRY = re.compile(
 
 print()
 
-
 api = ghapi.all.GhApi(owner="pybind", repo="pybind11")
 
 issues_pages = ghapi.page.paged(

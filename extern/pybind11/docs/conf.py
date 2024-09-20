@@ -121,7 +121,6 @@ default_role = "any"
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -345,7 +344,7 @@ def prepare(app):
 
     if app.builder.name == "latex":
         # Remove badges and stuff from start
-        contents = contents[contents.find(r".. start") :]
+        contents = contents[contents.find(r".. start"):]
 
         # Filter out section titles for index.rst for LaTeX
         contents = re.sub(r"^(.*)\n[-~]{3,}$", r"**\1**", contents, flags=re.MULTILINE)

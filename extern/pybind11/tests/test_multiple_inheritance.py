@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import pytest
-
-import env  # noqa: F401
 from pybind11_tests import ConstructorStats
 from pybind11_tests import multiple_inheritance as m
+
+import env  # noqa: F401
 
 
 def test_multiple_inheritance_cpp():

@@ -4,9 +4,9 @@ import gc
 import weakref
 
 import pytest
+from pybind11_tests import custom_type_setup as m
 
 import env  # noqa: F401
-from pybind11_tests import custom_type_setup as m
 
 
 @pytest.fixture()

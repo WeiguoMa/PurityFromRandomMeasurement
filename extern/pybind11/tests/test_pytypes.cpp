@@ -14,40 +14,40 @@
 #include <utility>
 
 namespace external {
-namespace detail {
-bool check(PyObject *o) { return PyFloat_Check(o) != 0; }
+    namespace detail {
+        bool check(PyObject *o) { return PyFloat_Check(o) != 0; }
 
-PyObject *conv(PyObject *o) {
-    PyObject *ret = nullptr;
-    if (PyLong_Check(o)) {
-        double v = PyLong_AsDouble(o);
-        if (!(v == -1.0 && PyErr_Occurred())) {
-            ret = PyFloat_FromDouble(v);
+        PyObject *conv(PyObject *o) {
+            PyObject *ret = nullptr;
+            if (PyLong_Check(o)) {
+                double v = PyLong_AsDouble(o);
+                if (!(v == -1.0 && PyErr_Occurred())) {
+                    ret = PyFloat_FromDouble(v);
+                }
+            } else {
+                py::set_error(PyExc_TypeError, "Unexpected type");
+            }
+            return ret;
         }
-    } else {
-        py::set_error(PyExc_TypeError, "Unexpected type");
-    }
-    return ret;
-}
 
-PyObject *default_constructed() { return PyFloat_FromDouble(0.0); }
-} // namespace detail
-class float_ : public py::object {
+        PyObject *default_constructed() { return PyFloat_FromDouble(0.0); }
+    } // namespace detail
+    class float_ : public py::object {
     PYBIND11_OBJECT_CVT(float_, py::object, external::detail::check, external::detail::conv)
 
-    float_() : py::object(external::detail::default_constructed(), stolen_t{}) {}
+        float_() : py::object(external::detail::default_constructed(), stolen_t{}) {}
 
-    double get_value() const { return PyFloat_AsDouble(this->ptr()); }
-};
+        double get_value() const { return PyFloat_AsDouble(this->ptr()); }
+    };
 } // namespace external
 
 namespace pybind11 {
-namespace detail {
-template <>
-struct handle_type_name<external::float_> {
-    static constexpr auto name = const_name("float");
-};
-} // namespace detail
+    namespace detail {
+        template<>
+        struct handle_type_name<external::float_> {
+            static constexpr auto name = const_name("float");
+        };
+    } // namespace detail
 } // namespace pybind11
 
 namespace implicit_conversion_from_0_to_handle {
@@ -78,34 +78,38 @@ namespace handle_from_move_only_type_with_operator_PyObject {
 
 // Reduced from
 // https://github.com/pytorch/pytorch/blob/279634f384662b7c3a9f8bf7ccc3a6afd2f05657/torch/csrc/utils/object_ptr.h
-struct operator_ncnst {
-    operator_ncnst() = default;
-    operator_ncnst(operator_ncnst &&) = default;
-    operator PyObject *() /* */ { return Py_None; } // NOLINT(google-explicit-constructor)
-};
+    struct operator_ncnst {
+        operator_ncnst() = default;
 
-struct operator_const {
-    operator_const() = default;
-    operator_const(operator_const &&) = default;
-    operator PyObject *() const { return Py_None; } // NOLINT(google-explicit-constructor)
-};
+        operator_ncnst(operator_ncnst &&) = default;
 
-bool from_ncnst() {
-    operator_ncnst obj;
-    auto h = py::handle(obj);  // Critical part of test: does this compile?
-    return h.ptr() == Py_None; // Just something.
-}
+        operator PyObject *() /* */ { return Py_None; } // NOLINT(google-explicit-constructor)
+    };
 
-bool from_const() {
-    operator_const obj;
-    auto h = py::handle(obj);  // Critical part of test: does this compile?
-    return h.ptr() == Py_None; // Just something.
-}
+    struct operator_const {
+        operator_const() = default;
 
-void m_defs(py::module_ &m) {
-    m.def("handle_from_move_only_type_with_operator_PyObject_ncnst", from_ncnst);
-    m.def("handle_from_move_only_type_with_operator_PyObject_const", from_const);
-}
+        operator_const(operator_const &&) = default;
+
+        operator PyObject *() const { return Py_None; } // NOLINT(google-explicit-constructor)
+    };
+
+    bool from_ncnst() {
+        operator_ncnst obj;
+        auto h = py::handle(obj);  // Critical part of test: does this compile?
+        return h.ptr() == Py_None; // Just something.
+    }
+
+    bool from_const() {
+        operator_const obj;
+        auto h = py::handle(obj);  // Critical part of test: does this compile?
+        return h.ptr() == Py_None; // Just something.
+    }
+
+    void m_defs(py::module_ &m) {
+        m.def("handle_from_move_only_type_with_operator_PyObject_ncnst", from_ncnst);
+        m.def("handle_from_move_only_type_with_operator_PyObject_const", from_const);
+    }
 
 } // namespace handle_from_move_only_type_with_operator_PyObject
 
@@ -167,7 +171,7 @@ TEST_SUBMODULE(pytypes, m) {
     });
     m.def("print_list", [](const py::list &list) {
         int index = 0;
-        for (auto item : list) {
+        for (auto item: list) {
             py::print("list item {}: {}"_s.format(index++, item));
         }
     });
@@ -191,7 +195,7 @@ TEST_SUBMODULE(pytypes, m) {
         return py::frozenset(set);
     });
     m.def("print_anyset", [](const py::anyset &set) {
-        for (auto item : set) {
+        for (auto item: set) {
             py::print("key:", item);
         }
     });
@@ -207,7 +211,7 @@ TEST_SUBMODULE(pytypes, m) {
     // test_dict
     m.def("get_dict", []() { return py::dict("key"_a = "value"); });
     m.def("print_dict", [](const py::dict &dict) {
-        for (auto item : dict) {
+        for (auto item: dict) {
             py::print("key: {}, value={}"_s.format(item.first, item.second));
         }
     });
@@ -317,7 +321,7 @@ TEST_SUBMODULE(pytypes, m) {
             if (ptr) {
                 const auto *name = PyCapsule_GetName(ptr);
                 py::print("destructing capsule ({}, '{}')"_s.format(
-                    (size_t) PyCapsule_GetPointer(ptr, name), name));
+                        (size_t) PyCapsule_GetPointer(ptr, name), name));
             }
         });
 
@@ -333,7 +337,7 @@ TEST_SUBMODULE(pytypes, m) {
         auto result3 = reinterpret_cast<size_t>(contents3);
 
         py::print(
-            "created capsule ({}, '{}')"_s.format(result1 & result2 & result3, capsule.name()));
+                "created capsule ({}, '{}')"_s.format(result1 & result2 & result3, capsule.name()));
         return capsule;
     });
 
@@ -350,7 +354,7 @@ TEST_SUBMODULE(pytypes, m) {
         d["basic_attr"] = o.attr("basic_attr");
 
         auto l = py::list();
-        for (auto item : o.attr("begin_end")) {
+        for (auto item: o.attr("begin_end")) {
             l.append(item);
         }
         d["begin_end"] = l;
@@ -579,7 +583,7 @@ TEST_SUBMODULE(pytypes, m) {
         py::print("flush", "flush"_a = true);
 
         py::print(
-            "{a} + {b} = {c}"_s.format("a"_a = "py::print", "b"_a = "str.format", "c"_a = "this"));
+                "{a} + {b} = {c}"_s.format("a"_a = "py::print", "b"_a = "str.format", "c"_a = "this"));
     });
 
     m.def("print_failure", []() { py::print(42, UnregisteredType()); });
@@ -700,7 +704,7 @@ TEST_SUBMODULE(pytypes, m) {
     m.def("tuple_iterator", []() {
         auto tup = py::make_tuple(5, 7);
         int tup_sum = 0;
-        for (PYBIND11_AUTO_IT : tup) {
+        for (PYBIND11_AUTO_IT: tup) {
             tup_sum += it.cast<int>();
         }
         return tup_sum;
@@ -711,7 +715,7 @@ TEST_SUBMODULE(pytypes, m) {
         dct[py::int_(3)] = 5;
         dct[py::int_(7)] = 11;
         int kv_sum = 0;
-        for (PYBIND11_AUTO_IT : dct) {
+        for (PYBIND11_AUTO_IT: dct) {
             kv_sum += it.first.cast<int>() * 100 + it.second.cast<int>();
         }
         return kv_sum;
@@ -719,7 +723,7 @@ TEST_SUBMODULE(pytypes, m) {
 
     m.def("passed_iterator", [](const py::iterator &py_it) {
         int elem_sum = 0;
-        for (PYBIND11_AUTO_IT : py_it) {
+        for (PYBIND11_AUTO_IT: py_it) {
             elem_sum += it.cast<int>();
         }
         return elem_sum;
@@ -881,7 +885,7 @@ TEST_SUBMODULE(pytypes, m) {
 
     m.def("union_typing_only",
           [](py::typing::List<py::typing::Union<py::str>> &l)
-              -> py::typing::List<py::typing::Union<py::int_>> { return l; });
+                  -> py::typing::List<py::typing::Union<py::int_>> { return l; });
 
     m.def("annotate_union_to_object",
           [](py::typing::Union<int, py::str> &o) -> py::object { return o; });

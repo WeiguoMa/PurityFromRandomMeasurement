@@ -21,6 +21,7 @@
 class MyException : public std::exception {
 public:
     explicit MyException(const char *m) : message{m} {}
+
     const char *what() const noexcept override { return message.c_str(); }
 
 private:
@@ -35,6 +36,7 @@ class MyExceptionUseDeprecatedOperatorCall : public MyException {
 class MyException2 : public std::exception {
 public:
     explicit MyException2(const char *m) : message{m} {}
+
     const char *what() const noexcept override { return message.c_str(); }
 
 private:
@@ -45,12 +47,18 @@ private:
 class MyException3 {
 public:
     explicit MyException3(const char *m) : message{m} {}
+
     virtual const char *what() const noexcept { return message.c_str(); }
+
     // Rule of 5 BEGIN: to preempt compiler warnings.
     MyException3(const MyException3 &) = default;
+
     MyException3(MyException3 &&) = default;
+
     MyException3 &operator=(const MyException3 &) = default;
+
     MyException3 &operator=(MyException3 &&) = default;
+
     virtual ~MyException3() = default;
     // Rule of 5 END.
 private:
@@ -62,6 +70,7 @@ private:
 class MyException4 : public std::exception {
 public:
     explicit MyException4(const char *m) : message{m} {}
+
     const char *what() const noexcept override { return message.c_str(); }
 
 private:
@@ -83,6 +92,7 @@ class MyException5_1 : public MyException5 {
 class MyException6 : public std::exception {
 public:
     explicit MyException6(const char *m) : message{m} {}
+
     const char *what() const noexcept override { return message.c_str(); }
 
 private:
@@ -91,6 +101,7 @@ private:
 
 struct PythonCallInDestructor {
     explicit PythonCallInDestructor(const py::dict &d) : d(d) {}
+
     ~PythonCallInDestructor() { d["good"] = true; }
 
     py::dict d;
@@ -98,6 +109,7 @@ struct PythonCallInDestructor {
 
 struct PythonAlreadySetInDestructor {
     explicit PythonAlreadySetInDestructor(const py::str &s) : s(s) {}
+
     ~PythonAlreadySetInDestructor() {
         py::dict foo;
         try {
@@ -118,7 +130,7 @@ TEST_SUBMODULE(exceptions, m) {
     // PLEASE KEEP IN SYNC with docs/advanced/exceptions.rst
     PYBIND11_CONSTINIT static py::gil_safe_call_once_and_store<py::object> ex_storage;
     ex_storage.call_once_and_store_result(
-        [&]() { return py::exception<MyException>(m, "MyException"); });
+            [&]() { return py::exception<MyException>(m, "MyException"); });
     py::register_exception_translator([](std::exception_ptr p) {
         try {
             if (p) {
@@ -133,7 +145,7 @@ TEST_SUBMODULE(exceptions, m) {
     // Same as above, but using the deprecated `py::exception<>::operator()`
     // We want to be sure it still works, until it's removed.
     static const auto *const exd = new py::exception<MyExceptionUseDeprecatedOperatorCall>(
-        m, "MyExceptionUseDeprecatedOperatorCall");
+            m, "MyExceptionUseDeprecatedOperatorCall");
     py::register_exception_translator([](std::exception_ptr p) {
         try {
             if (p) {
@@ -203,7 +215,7 @@ TEST_SUBMODULE(exceptions, m) {
           []() { throw MyException("this error should go to py::exception<MyException>"); });
     m.def("throws1d", []() {
         throw MyExceptionUseDeprecatedOperatorCall(
-            "this error should go to py::exception<MyExceptionUseDeprecatedOperatorCall>");
+                "this error should go to py::exception<MyExceptionUseDeprecatedOperatorCall>");
     });
     m.def("throws2",
           []() { throw MyException2("this error should go to a standard Python exception"); });
@@ -268,8 +280,8 @@ TEST_SUBMODULE(exceptions, m) {
             if ((err && e.what() != std::string("ValueError: foo"))
                 || (!err
                     && e.what()
-                           != std::string("Internal error: pybind11::error_already_set called "
-                                          "while Python error indicator not set."))) {
+                       != std::string("Internal error: pybind11::error_already_set called "
+                                      "while Python error indicator not set."))) {
                 PyErr_Clear();
                 throw std::runtime_error("error message mismatch");
             }
@@ -354,7 +366,7 @@ TEST_SUBMODULE(exceptions, m) {
     m.def("test_cross_module_interleaved_error_already_set", []() {
         auto cm = py::module_::import("cross_module_interleaved_error_already_set");
         auto interleaved_error_already_set
-            = reinterpret_cast<void (*)()>(PyLong_AsVoidPtr(cm.attr("funcaddr").ptr()));
+                = reinterpret_cast<void (*)()>(PyLong_AsVoidPtr(cm.attr("funcaddr").ptr()));
         interleaved_error_already_set();
     });
 

@@ -12,6 +12,7 @@ from setuptools import setup
 
 from distutils.command.install_headers import install_headers
 
+
 class InstallHeadersNested(install_headers):
     def run(self):
         headers = self.distribution.headers or []

@@ -3,9 +3,9 @@ from __future__ import annotations
 import datetime
 
 import pytest
+from pybind11_tests import chrono as m
 
 import env  # noqa: F401
-from pybind11_tests import chrono as m
 
 
 def test_chrono_system_clock():

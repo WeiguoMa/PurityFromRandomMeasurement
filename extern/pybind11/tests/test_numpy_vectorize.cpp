@@ -58,16 +58,17 @@ TEST_SUBMODULE(numpy_vectorize, m) {
     // the function definition below, only `b`, `d`, and `g` are vectorized):
     struct NonPODClass {
         explicit NonPODClass(int v) : value{v} {}
+
         int value;
     };
     py::class_<NonPODClass>(m, "NonPODClass")
-        .def(py::init<int>())
-        .def_readwrite("value", &NonPODClass::value);
+            .def(py::init<int>())
+            .def_readwrite("value", &NonPODClass::value);
     m.def("vec_passthrough",
           py::vectorize([](const double *a,
                            double b,
-                           // Changing this broke things
-                           // NOLINTNEXTLINE(performance-unnecessary-value-param)
+                  // Changing this broke things
+                  // NOLINTNEXTLINE(performance-unnecessary-value-param)
                            py::array_t<double> c,
                            const int &d,
                            int &e,
@@ -77,7 +78,9 @@ TEST_SUBMODULE(numpy_vectorize, m) {
     // test_method_vectorization
     struct VectorizeTestClass {
         explicit VectorizeTestClass(int v) : value{v} {};
+
         float method(int x, float y) const { return y + (float) (x + value); }
+
         int value = 0;
     };
     py::class_<VectorizeTestClass> vtc(m, "VectorizeTestClass");
@@ -89,9 +92,9 @@ TEST_SUBMODULE(numpy_vectorize, m) {
     // test_trivial_broadcasting
     // Internal optimization test for whether the input is trivially broadcastable:
     py::enum_<py::detail::broadcast_trivial>(m, "trivial")
-        .value("f_trivial", py::detail::broadcast_trivial::f_trivial)
-        .value("c_trivial", py::detail::broadcast_trivial::c_trivial)
-        .value("non_trivial", py::detail::broadcast_trivial::non_trivial);
+            .value("f_trivial", py::detail::broadcast_trivial::f_trivial)
+            .value("c_trivial", py::detail::broadcast_trivial::c_trivial)
+            .value("non_trivial", py::detail::broadcast_trivial::non_trivial);
     m.def("vectorized_is_trivial",
           [](const py::array_t<int, py::array::forcecast> &arg1,
              const py::array_t<float, py::array::forcecast> &arg2,
@@ -99,7 +102,7 @@ TEST_SUBMODULE(numpy_vectorize, m) {
               py::ssize_t ndim = 0;
               std::vector<py::ssize_t> shape;
               std::array<py::buffer_info, 3> buffers{
-                  {arg1.request(), arg2.request(), arg3.request()}};
+                      {arg1.request(), arg2.request(), arg3.request()}};
               return py::detail::broadcast(buffers, ndim, shape);
           });
 

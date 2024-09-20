@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from pybind11_tests import ConstructorStats, UserType
 from pybind11_tests import opaque_types as m
 
@@ -35,8 +34,8 @@ def test_pointers(msg):
     with pytest.raises(TypeError) as excinfo:
         m.get_void_ptr_value([1, 2, 3])  # This should not work
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         get_void_ptr_value(): incompatible function arguments. The following argument types are supported:
             1. (arg0: capsule) -> int
 

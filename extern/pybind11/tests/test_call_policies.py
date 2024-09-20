@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import pytest
-
-import env  # noqa: F401
 from pybind11_tests import ConstructorStats
 from pybind11_tests import call_policies as m
+
+import env  # noqa: F401
 
 
 @pytest.mark.xfail("env.PYPY", reason="sometimes comes out 1 off on PyPy", strict=False)
@@ -17,8 +17,8 @@ def test_keep_alive_argument(capture):
         p.addChild(m.Child())
         assert ConstructorStats.detail_reg_inst() == n_inst + 1
     assert (
-        capture
-        == """
+            capture
+            == """
         Allocating child.
         Releasing child.
     """
@@ -39,8 +39,8 @@ def test_keep_alive_argument(capture):
         del p
         assert ConstructorStats.detail_reg_inst() == n_inst
     assert (
-        capture
-        == """
+            capture
+            == """
         Releasing parent.
         Releasing child.
     """
@@ -69,8 +69,8 @@ def test_keep_alive_return_value(capture):
         p.returnChild()
         assert ConstructorStats.detail_reg_inst() == n_inst + 1
     assert (
-        capture
-        == """
+            capture
+            == """
         Allocating child.
         Releasing child.
     """
@@ -91,8 +91,8 @@ def test_keep_alive_return_value(capture):
         del p
         assert ConstructorStats.detail_reg_inst() == n_inst
     assert (
-        capture
-        == """
+            capture
+            == """
         Releasing parent.
         Releasing child.
     """
@@ -108,8 +108,8 @@ def test_keep_alive_return_value(capture):
         del p
         assert ConstructorStats.detail_reg_inst() == n_inst
     assert (
-        capture
-        == """
+            capture
+            == """
         Releasing parent.
         Releasing child.
     """
@@ -129,8 +129,8 @@ def test_alive_gc(capture):
         del p, lst
         assert ConstructorStats.detail_reg_inst() == n_inst
     assert (
-        capture
-        == """
+            capture
+            == """
         Releasing parent.
         Releasing child.
     """
@@ -151,8 +151,8 @@ def test_alive_gc_derived(capture):
         del p, lst
         assert ConstructorStats.detail_reg_inst() == n_inst
     assert (
-        capture
-        == """
+            capture
+            == """
         Releasing parent.
         Releasing child.
     """
@@ -176,8 +176,8 @@ def test_alive_gc_multi_derived(capture):
         del p, lst
         assert ConstructorStats.detail_reg_inst() == n_inst
     assert (
-        capture
-        == """
+            capture
+            == """
         Releasing parent.
         Releasing child.
         Releasing child.
@@ -219,8 +219,8 @@ def test_keep_alive_constructor(capture):
         p = m.Parent(m.Child())
         assert ConstructorStats.detail_reg_inst() == n_inst + 2
     assert (
-        capture
-        == """
+            capture
+            == """
         Allocating child.
         Allocating parent.
     """
@@ -229,8 +229,8 @@ def test_keep_alive_constructor(capture):
         del p
         assert ConstructorStats.detail_reg_inst() == n_inst
     assert (
-        capture
-        == """
+            capture
+            == """
         Releasing parent.
         Releasing child.
     """

@@ -3,10 +3,10 @@ from __future__ import annotations
 from unittest import mock
 
 import pytest
-
-import env
 from pybind11_tests import PYBIND11_REFCNT_IMMORTAL, ConstructorStats, UserType
 from pybind11_tests import class_ as m
+
+import env
 
 
 def test_obj_class_name():
@@ -91,8 +91,8 @@ def test_docstrings(doc):
     assert UserType.get_value.__module__ == "pybind11_tests"
 
     assert (
-        doc(UserType.get_value)
-        == """
+            doc(UserType.get_value)
+            == """
         get_value(self: m.UserType) -> int
 
         Get value using a method
@@ -101,8 +101,8 @@ def test_docstrings(doc):
     assert doc(UserType.value) == "Get/set value using a property"
 
     assert (
-        doc(m.NoConstructor.new_instance)
-        == """
+            doc(m.NoConstructor.new_instance)
+            == """
         new_instance() -> m.class_.NoConstructor
 
         Return an instance
@@ -117,32 +117,32 @@ def test_qualname(doc):
     assert m.NestBase.Nested.__qualname__ == "NestBase.Nested"
 
     assert (
-        doc(m.NestBase.__init__)
-        == """
+            doc(m.NestBase.__init__)
+            == """
         __init__(self: m.class_.NestBase) -> None
     """
     )
     assert (
-        doc(m.NestBase.g)
-        == """
+            doc(m.NestBase.g)
+            == """
         g(self: m.class_.NestBase, arg0: m.class_.NestBase.Nested) -> None
     """
     )
     assert (
-        doc(m.NestBase.Nested.__init__)
-        == """
+            doc(m.NestBase.Nested.__init__)
+            == """
         __init__(self: m.class_.NestBase.Nested) -> None
     """
     )
     assert (
-        doc(m.NestBase.Nested.fn)
-        == """
+            doc(m.NestBase.Nested.fn)
+            == """
         fn(self: m.class_.NestBase.Nested, arg0: int, arg1: m.class_.NestBase, arg2: m.class_.NestBase.Nested) -> None
     """
     )
     assert (
-        doc(m.NestBase.Nested.fa)
-        == """
+            doc(m.NestBase.Nested.fa)
+            == """
         fa(self: m.class_.NestBase.Nested, a: int, b: m.class_.NestBase, c: m.class_.NestBase.Nested) -> None
     """
     )
@@ -171,8 +171,8 @@ def test_inheritance(msg):
     with pytest.raises(TypeError) as excinfo:
         m.dog_bark(polly)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         dog_bark(): incompatible function arguments. The following argument types are supported:
             1. (arg0: m.class_.Dog) -> str
 
@@ -212,7 +212,7 @@ def test_inheritance_init(msg):
 )
 def test_mock_new(mock_return_value):
     with mock.patch.object(
-        m.Pet, "__new__", return_value=mock_return_value
+            m.Pet, "__new__", return_value=mock_return_value
     ) as mock_new:
         obj = m.Pet("Noname", "Nospecies")
     assert obj is mock_return_value
@@ -289,8 +289,8 @@ def test_operator_new_delete(capture):
         b = m.HasOpNewDelSize()
         d = m.HasOpNewDelBoth()
     assert (
-        capture
-        == """
+            capture
+            == """
         A new 8
         B new 4
         D new 32
@@ -311,8 +311,8 @@ def test_operator_new_delete(capture):
         del d
         pytest.gc_collect()
     assert (
-        capture
-        == """
+            capture
+            == """
         A delete
         B delete 4
         D delete
@@ -380,7 +380,7 @@ def test_class_refcount():
 
         assert refcount_1 == refcount_3
         assert (refcount_2 > refcount_1) or (
-            refcount_2 == refcount_1 == PYBIND11_REFCNT_IMMORTAL
+                refcount_2 == refcount_1 == PYBIND11_REFCNT_IMMORTAL
         )
 
 
@@ -389,8 +389,8 @@ def test_reentrant_implicit_conversion_failure(msg):
     with pytest.raises(TypeError) as excinfo:
         m.BogusImplicitConversion(0)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         __init__(): incompatible constructor arguments. The following argument types are supported:
             1. m.class_.BogusImplicitConversion(arg0: m.class_.BogusImplicitConversion)
 
@@ -417,7 +417,6 @@ def test_aligned():
 @pytest.mark.xfail("env.PYPY")
 def test_final():
     with pytest.raises(TypeError) as exc_info:
-
         class PyFinalChild(m.IsFinal):
             pass
 
@@ -428,7 +427,6 @@ def test_final():
 @pytest.mark.xfail("env.PYPY")
 def test_non_final_final():
     with pytest.raises(TypeError) as exc_info:
-
         class PyNonFinalFinalChild(m.IsNonFinalFinal):
             pass
 
@@ -498,6 +496,6 @@ def test_register_duplicate_class():
 
 def test_pr4220_tripped_over_this():
     assert (
-        m.Empty0().get_msg()
-        == "This is really only meant to exercise successful compilation."
+            m.Empty0().get_msg()
+            == "This is really only meant to exercise successful compilation."
     )

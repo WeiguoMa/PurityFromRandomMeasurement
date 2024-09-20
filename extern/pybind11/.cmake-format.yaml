@@ -58,7 +58,7 @@ format:
   keyword_case: 'upper'
 
   # A list of command names which should always be wrapped
-  always_wrap: []
+  always_wrap: [ ]
 
   # If true, the argument lists which are known to be sortable
   # will be sorted lexicographically

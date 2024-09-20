@@ -39,8 +39,8 @@ def test_override(capture, msg):
     with capture:
         assert m.runExampleVirt(ex12, 20) == 30
     assert (
-        capture
-        == """
+            capture
+            == """
         Original implementation of ExampleVirt::run(state=10, value=20, str1=default1, str2=default2)
     """
     )
@@ -48,16 +48,16 @@ def test_override(capture, msg):
     with pytest.raises(RuntimeError) as excinfo:
         m.runExampleVirtVirtual(ex12)
     assert (
-        msg(excinfo.value)
-        == 'Tried to call pure virtual function "ExampleVirt::pure_virtual"'
+            msg(excinfo.value)
+            == 'Tried to call pure virtual function "ExampleVirt::pure_virtual"'
     )
 
     ex12p = ExtendedExampleVirt(10)
     with capture:
         assert m.runExampleVirt(ex12p, 20) == 32
     assert (
-        capture
-        == """
+            capture
+            == """
         ExtendedExampleVirt::run(20), calling parent..
         Original implementation of ExampleVirt::run(state=11, value=21, str1=override1, str2=default2)
     """
@@ -73,8 +73,8 @@ def test_override(capture, msg):
     with capture:
         assert m.runExampleVirt(ex12p2, 50) == 68
     assert (
-        capture
-        == """
+            capture
+            == """
         ExtendedExampleVirt::run(50), calling parent..
         Original implementation of ExampleVirt::run(state=17, value=51, str1=override1, str2=override2)
     """
@@ -118,8 +118,8 @@ def test_alias_delay_initialization1(capture):
         del b
         pytest.gc_collect()
     assert (
-        capture
-        == """
+            capture
+            == """
         PyA.PyA()
         PyA.f()
         In python f()
@@ -154,8 +154,8 @@ def test_alias_delay_initialization2(capture):
         del a3
         pytest.gc_collect()
     assert (
-        capture
-        == """
+            capture
+            == """
         PyA2.PyA2()
         PyA2.f()
         A2.f()
@@ -174,8 +174,8 @@ def test_alias_delay_initialization2(capture):
         del b2
         pytest.gc_collect()
     assert (
-        capture
-        == """
+            capture
+            == """
         PyA2.PyA2()
         PyA2.f()
         In python B2.f()
@@ -247,8 +247,8 @@ def test_dispatch_issue(msg):
             with pytest.raises(RuntimeError) as excinfo:
                 super().dispatch()
             assert (
-                msg(excinfo.value)
-                == 'Tried to call pure virtual function "Base::dispatch"'
+                    msg(excinfo.value)
+                    == 'Tried to call pure virtual function "Base::dispatch"'
             )
 
             return m.dispatch_issue_go(PyClass1())

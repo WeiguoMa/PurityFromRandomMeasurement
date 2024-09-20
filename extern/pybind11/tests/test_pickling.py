@@ -4,9 +4,9 @@ import pickle
 import re
 
 import pytest
+from pybind11_tests import pickling as m
 
 import env
-from pybind11_tests import pickling as m
 
 
 def test_pickle_simple_callable():

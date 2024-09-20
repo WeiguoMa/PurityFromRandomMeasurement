@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 
 import pytest
-
 from pybind11_tests import ConstructorStats
 from pybind11_tests import factory_constructors as m
 from pybind11_tests.factory_constructors import tag
@@ -48,7 +47,7 @@ def test_init_factory_basic():
         with pytest.raises(TypeError) as excinfo:
             m.TestFactory3(null_ptr_kind)
         assert (
-            str(excinfo.value) == "pybind11::init(): factory function returned nullptr"
+                str(excinfo.value) == "pybind11::init(): factory function returned nullptr"
         )
 
     assert [i.alive() for i in cstats] == [3, 3, 3]
@@ -73,8 +72,8 @@ def test_init_factory_signature(msg):
     with pytest.raises(TypeError) as excinfo:
         m.TestFactory1("invalid", "constructor", "arguments")
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         __init__(): incompatible constructor arguments. The following argument types are supported:
             1. m.factory_constructors.TestFactory1(arg0: m.factory_constructors.tag.unique_ptr_tag, arg1: int)
             2. m.factory_constructors.TestFactory1(arg0: str)
@@ -86,8 +85,8 @@ def test_init_factory_signature(msg):
     )
 
     assert (
-        msg(m.TestFactory1.__init__.__doc__)
-        == """
+            msg(m.TestFactory1.__init__.__doc__)
+            == """
         __init__(*args, **kwargs)
         Overloaded function.
 
@@ -281,9 +280,9 @@ def test_init_factory_dual():
     with pytest.raises(TypeError) as excinfo:
         PythFactory7(tag.shared_ptr, tag.invalid_base, 14)
     assert (
-        str(excinfo.value)
-        == "pybind11::init(): construction failed: returned holder-wrapped instance is not an "
-        "alias instance"
+            str(excinfo.value)
+            == "pybind11::init(): construction failed: returned holder-wrapped instance is not an "
+               "alias instance"
     )
 
     assert [i.alive() for i in cstats] == [13, 7]
@@ -360,8 +359,8 @@ def test_reallocation_a(capture, msg):
     with capture:
         create_and_destroy(1)
     assert (
-        msg(capture)
-        == """
+            msg(capture)
+            == """
         noisy new
         noisy placement new
         NoisyAlloc(int 1)
@@ -505,14 +504,14 @@ def test_invalid_self():
         with pytest.raises(TypeError) as excinfo:
             BrokenTF1(arg)
         assert (
-            str(excinfo.value)
-            == "__init__(self, ...) called with invalid or missing `self` argument"
+                str(excinfo.value)
+                == "__init__(self, ...) called with invalid or missing `self` argument"
         )
 
     for arg in (0, 1, 2, 3, 4):
         with pytest.raises(TypeError) as excinfo:
             BrokenTF6(arg)
         assert (
-            str(excinfo.value)
-            == "__init__(self, ...) called with invalid or missing `self` argument"
+                str(excinfo.value)
+                == "__init__(self, ...) called with invalid or missing `self` argument"
         )

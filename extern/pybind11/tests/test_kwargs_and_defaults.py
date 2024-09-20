@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from pybind11_tests import kwargs_and_defaults as m
 
 
@@ -15,51 +14,51 @@ def test_function_signatures(doc):
     assert doc(m.kw_func_udl_z) == "kw_func_udl_z(x: int, y: int = 0) -> str"
     assert doc(m.args_function) == "args_function(*args) -> tuple"
     assert (
-        doc(m.args_kwargs_function) == "args_kwargs_function(*args, **kwargs) -> tuple"
+            doc(m.args_kwargs_function) == "args_kwargs_function(*args, **kwargs) -> tuple"
     )
     assert (
-        doc(m.KWClass.foo0)
-        == "foo0(self: m.kwargs_and_defaults.KWClass, arg0: int, arg1: float) -> None"
+            doc(m.KWClass.foo0)
+            == "foo0(self: m.kwargs_and_defaults.KWClass, arg0: int, arg1: float) -> None"
     )
     assert (
-        doc(m.KWClass.foo1)
-        == "foo1(self: m.kwargs_and_defaults.KWClass, x: int, y: float) -> None"
+            doc(m.KWClass.foo1)
+            == "foo1(self: m.kwargs_and_defaults.KWClass, x: int, y: float) -> None"
     )
     assert (
-        doc(m.kw_lb_func0)
-        == "kw_lb_func0(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
+            doc(m.kw_lb_func0)
+            == "kw_lb_func0(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
     )
     assert (
-        doc(m.kw_lb_func1)
-        == "kw_lb_func1(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
+            doc(m.kw_lb_func1)
+            == "kw_lb_func1(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
     )
     assert (
-        doc(m.kw_lb_func2)
-        == "kw_lb_func2(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
+            doc(m.kw_lb_func2)
+            == "kw_lb_func2(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
     )
     assert (
-        doc(m.kw_lb_func3)
-        == "kw_lb_func3(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
+            doc(m.kw_lb_func3)
+            == "kw_lb_func3(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
     )
     assert (
-        doc(m.kw_lb_func4)
-        == "kw_lb_func4(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
+            doc(m.kw_lb_func4)
+            == "kw_lb_func4(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
     )
     assert (
-        doc(m.kw_lb_func5)
-        == "kw_lb_func5(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
+            doc(m.kw_lb_func5)
+            == "kw_lb_func5(custom: m.kwargs_and_defaults.CustomRepr = array([[A, B], [C, D]])) -> None"
     )
     assert (
-        doc(m.kw_lb_func6)
-        == "kw_lb_func6(custom: m.kwargs_and_defaults.CustomRepr = ) -> None"
+            doc(m.kw_lb_func6)
+            == "kw_lb_func6(custom: m.kwargs_and_defaults.CustomRepr = ) -> None"
     )
     assert (
-        doc(m.kw_lb_func7)
-        == "kw_lb_func7(str_arg: str = 'First line.\\n  Second line.') -> None"
+            doc(m.kw_lb_func7)
+            == "kw_lb_func7(str_arg: str = 'First line.\\n  Second line.') -> None"
     )
     assert (
-        doc(m.kw_lb_func8)
-        == "kw_lb_func8(custom: m.kwargs_and_defaults.CustomRepr = ) -> None"
+            doc(m.kw_lb_func8)
+            == "kw_lb_func8(custom: m.kwargs_and_defaults.CustomRepr = ) -> None"
     )
 
 
@@ -111,8 +110,8 @@ def test_mixed_args_and_kwargs(msg):
     with pytest.raises(TypeError) as excinfo:
         assert mpa(1)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         mixed_plus_args(): incompatible function arguments. The following argument types are supported:
             1. (arg0: int, arg1: float, *args) -> tuple
 
@@ -122,8 +121,8 @@ def test_mixed_args_and_kwargs(msg):
     with pytest.raises(TypeError) as excinfo:
         assert mpa()
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         mixed_plus_args(): incompatible function arguments. The following argument types are supported:
             1. (arg0: int, arg1: float, *args) -> tuple
 
@@ -156,8 +155,8 @@ def test_mixed_args_and_kwargs(msg):
     with pytest.raises(TypeError) as excinfo:
         assert mpakd(1, i=1)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         mixed_plus_args_kwargs_defaults(): incompatible function arguments. The following argument types are supported:
             1. (i: int = 1, j: float = 3.14159, *args, **kwargs) -> tuple
 
@@ -167,8 +166,8 @@ def test_mixed_args_and_kwargs(msg):
     with pytest.raises(TypeError) as excinfo:
         assert mpakd(1, 2, j=1)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         mixed_plus_args_kwargs_defaults(): incompatible function arguments. The following argument types are supported:
             1. (i: int = 1, j: float = 3.14159, *args, **kwargs) -> tuple
 
@@ -184,8 +183,8 @@ def test_mixed_args_and_kwargs(msg):
     with pytest.raises(TypeError) as excinfo:
         assert m.args_kwonly(2, 2.5, 22)  # missing z= keyword
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         args_kwonly(): incompatible function arguments. The following argument types are supported:
             1. (i: int, j: float, *args, z: int) -> tuple
 
@@ -208,13 +207,13 @@ def test_mixed_args_and_kwargs(msg):
         {"y": 12},
     )
     assert (
-        m.args_kwonly_kwargs.__doc__
-        == "args_kwonly_kwargs(i: int, j: float, *args, z: int, **kwargs) -> tuple\n"
+            m.args_kwonly_kwargs.__doc__
+            == "args_kwonly_kwargs(i: int, j: float, *args, z: int, **kwargs) -> tuple\n"
     )
 
     assert (
-        m.args_kwonly_kwargs_defaults.__doc__
-        == "args_kwonly_kwargs_defaults(i: int = 1, j: float = 3.14159, *args, z: int = 42, **kwargs) -> tuple\n"
+            m.args_kwonly_kwargs_defaults.__doc__
+            == "args_kwonly_kwargs_defaults(i: int = 1, j: float = 3.14159, *args, z: int = 42, **kwargs) -> tuple\n"
     )
     assert m.args_kwonly_kwargs_defaults() == (1, 3.14159, (), 42, {})
     assert m.args_kwonly_kwargs_defaults(2) == (2, 3.14159, (), 42, {})
@@ -258,8 +257,8 @@ def test_keyword_only_args(msg):
     with pytest.raises(RuntimeError) as excinfo:
         m.register_invalid_kw_only(m)
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         arg(): cannot specify an unnamed argument after a kw_only() annotation or args() argument
     """
     )
@@ -269,12 +268,12 @@ def test_keyword_only_args(msg):
     x.method()
     x.method(i=1, j=2)
     assert (
-        m.first_arg_kw_only.__init__.__doc__
-        == "__init__(self: pybind11_tests.kwargs_and_defaults.first_arg_kw_only, *, i: int = 0) -> None\n"
+            m.first_arg_kw_only.__init__.__doc__
+            == "__init__(self: pybind11_tests.kwargs_and_defaults.first_arg_kw_only, *, i: int = 0) -> None\n"
     )
     assert (
-        m.first_arg_kw_only.method.__doc__
-        == "method(self: pybind11_tests.kwargs_and_defaults.first_arg_kw_only, *, i: int = 1, j: int = 2) -> None\n"
+            m.first_arg_kw_only.method.__doc__
+            == "method(self: pybind11_tests.kwargs_and_defaults.first_arg_kw_only, *, i: int = 1, j: int = 2) -> None\n"
     )
 
 
@@ -319,8 +318,8 @@ def test_positional_only_args():
 
     # Mix it with args and kwargs:
     assert (
-        m.args_kwonly_full_monty.__doc__
-        == "args_kwonly_full_monty(arg0: int = 1, arg1: int = 2, /, j: float = 3.14159, *args, z: int = 42, **kwargs) -> tuple\n"
+            m.args_kwonly_full_monty.__doc__
+            == "args_kwonly_full_monty(arg0: int = 1, arg1: int = 2, /, j: float = 3.14159, *args, z: int = 42, **kwargs) -> tuple\n"
     )
     assert m.args_kwonly_full_monty() == (1, 2, 3.14159, (), 42, {})
     assert m.args_kwonly_full_monty(8) == (8, 2, 3.14159, (), 42, {})
@@ -362,8 +361,8 @@ def test_positional_only_args():
     # this is fairly useless in practice).  Related to:
     # https://github.com/pybind/pybind11/pull/3402#issuecomment-963341987
     assert (
-        m.first_arg_kw_only.pos_only.__doc__
-        == "pos_only(self: pybind11_tests.kwargs_and_defaults.first_arg_kw_only, /, i: int, j: int) -> None\n"
+            m.first_arg_kw_only.pos_only.__doc__
+            == "pos_only(self: pybind11_tests.kwargs_and_defaults.first_arg_kw_only, /, i: int, j: int) -> None\n"
     )
 
 
@@ -373,8 +372,8 @@ def test_signatures():
     assert m.pos_only_all.__doc__ == "pos_only_all(i: int, j: int, /) -> tuple\n"
     assert m.pos_only_mix.__doc__ == "pos_only_mix(i: int, /, j: int) -> tuple\n"
     assert (
-        m.pos_kw_only_mix.__doc__
-        == "pos_kw_only_mix(i: int, /, j: int, *, k: int) -> tuple\n"
+            m.pos_kw_only_mix.__doc__
+            == "pos_kw_only_mix(i: int, /, j: int, *, k: int) -> tuple\n"
     )
 
 

@@ -6,9 +6,9 @@ import threading
 import time
 
 import pytest
+from pybind11_tests import gil_scoped as m
 
 import env
-from pybind11_tests import gil_scoped as m
 
 
 class ExtendedVirtClass(m.VirtClass):

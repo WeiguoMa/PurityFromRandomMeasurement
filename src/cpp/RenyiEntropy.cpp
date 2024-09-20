@@ -100,10 +100,8 @@ public:
         #pragma omp parallel for
         for (LoopIndexType m = 0; m < static_cast<LoopIndexType>(M); ++m) {
             rhoMatrices[m] = shadowState.stateEstimation(
-                    {
-                        measurementScheme[static_cast<LoopIndexType>(m)]},
-                        {measurementResults[static_cast<LoopIndexType>(m)]
-                        }
+                    {measurementScheme[static_cast<LoopIndexType>(m)]},
+                    {measurementResults[static_cast<LoopIndexType>(m)]}
             );
         }
 

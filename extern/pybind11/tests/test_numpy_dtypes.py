@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 
 import pytest
-
-import env  # noqa: F401
 from pybind11_tests import PYBIND11_NUMPY_1_ONLY
 from pybind11_tests import numpy_dtypes as m
+
+import env  # noqa: F401
 
 np = pytest.importorskip("numpy")
 
@@ -33,9 +33,9 @@ def dt_fmt():
 
     e = "<" if byteorder == "little" else ">"
     return (
-        "{{'names':['bool_','uint_','float_','ldbl_'],"
-        "'formats':['?','" + e + "u4','" + e + "f4','" + e + "f{}'],"
-        "'offsets':[0,4,8,{}],'itemsize':{}}}"
+            "{{'names':['bool_','uint_','float_','ldbl_'],"
+            "'formats':['?','" + e + "u4','" + e + "f4','" + e + "f{}'],"
+                                                                 "'offsets':[0,4,8,{}],'itemsize':{}}}"
     )
 
 
@@ -55,10 +55,10 @@ def packed_dtype_fmt():
 
 def partial_ld_offset():
     return (
-        12
-        + 4 * (np.dtype("uint64").alignment > 4)
-        + 8
-        + 8 * (np.dtype("longdouble").alignment > 8)
+            12
+            + 4 * (np.dtype("uint64").alignment > 4)
+            + 8
+            + 8 * (np.dtype("longdouble").alignment > 8)
     )
 
 
@@ -99,10 +99,10 @@ def test_format_descriptors():
     dbl = np.dtype("double")
     end_padding = ld.itemsize % np.dtype("uint64").alignment
     partial_fmt = (
-        "^T{?:bool_:3xI:uint_:f:float_:"
-        + str(4 * (dbl.alignment > 4) + dbl.itemsize + 8 * (ld.alignment > 8))
-        + "xg:ldbl_:"
-        + (str(end_padding) + "x}" if end_padding > 0 else "}")
+            "^T{?:bool_:3xI:uint_:f:float_:"
+            + str(4 * (dbl.alignment > 4) + dbl.itemsize + 8 * (ld.alignment > 8))
+            + "xg:ldbl_:"
+            + (str(end_padding) + "x}" if end_padding > 0 else "}")
     )
     nested_extra = str(max(8, ld.alignment))
     assert m.print_format_descriptors() == [
@@ -350,8 +350,8 @@ def test_complex_array():
 
 def test_signature(doc):
     assert (
-        doc(m.create_rec_nested)
-        == "create_rec_nested(arg0: int) -> numpy.ndarray[NestedStruct]"
+            doc(m.create_rec_nested)
+            == "create_rec_nested(arg0: int) -> numpy.ndarray[NestedStruct]"
     )
 
 

@@ -21,7 +21,7 @@ TEST_SUBMODULE(buffers, m) {
               // https://google.github.io/styleguide/cppguide.html#Static_and_Global_Variables
               static auto *format_table = new std::map<std::string, std::string>;
               static auto *equiv_table
-                  = new std::map<std::string, bool (py::buffer_info::*)() const>;
+                      = new std::map<std::string, bool (py::buffer_info::*)() const>;
               if (format_table->empty()) {
 #define PYBIND11_ASSIGN_HELPER(...)                                                               \
     (*format_table)[#__VA_ARGS__] = py::format_descriptor<__VA_ARGS__>::format();                 \
@@ -45,7 +45,7 @@ TEST_SUBMODULE(buffers, m) {
 #undef PYBIND11_ASSIGN_HELPER
               }
               return std::pair<std::string, bool>(
-                  (*format_table)[cpp_name], (buffer.request().*((*equiv_table)[cpp_name]))());
+                      (*format_table)[cpp_name], (buffer.request().*((*equiv_table)[cpp_name]))());
           });
 
     // test_from_python / test_to_python:
@@ -66,7 +66,7 @@ TEST_SUBMODULE(buffers, m) {
             memcpy(m_data, s.m_data, sizeof(float) * (size_t) (m_rows * m_cols));
         }
 
-        Matrix(Matrix &&s) noexcept : m_rows(s.m_rows), m_cols(s.m_cols), m_data(s.m_data) {
+        Matrix(Matrix &&s) noexcept: m_rows(s.m_rows), m_cols(s.m_cols), m_data(s.m_data) {
             print_move_created(this);
             s.m_rows = 0;
             s.m_cols = 0;
@@ -119,6 +119,7 @@ TEST_SUBMODULE(buffers, m) {
         float *data() { return m_data; }
 
         py::ssize_t rows() const { return m_rows; }
+
         py::ssize_t cols() const { return m_cols; }
 
     private:
@@ -127,45 +128,45 @@ TEST_SUBMODULE(buffers, m) {
         float *m_data;
     };
     py::class_<Matrix>(m, "Matrix", py::buffer_protocol())
-        .def(py::init<py::ssize_t, py::ssize_t>())
-        /// Construct from a buffer
-        .def(py::init([](const py::buffer &b) {
-            py::buffer_info info = b.request();
-            if (info.format != py::format_descriptor<float>::format() || info.ndim != 2) {
-                throw std::runtime_error("Incompatible buffer format!");
-            }
+            .def(py::init<py::ssize_t, py::ssize_t>())
+                    /// Construct from a buffer
+            .def(py::init([](const py::buffer &b) {
+                py::buffer_info info = b.request();
+                if (info.format != py::format_descriptor<float>::format() || info.ndim != 2) {
+                    throw std::runtime_error("Incompatible buffer format!");
+                }
 
-            auto *v = new Matrix(info.shape[0], info.shape[1]);
-            memcpy(v->data(), info.ptr, sizeof(float) * (size_t) (v->rows() * v->cols()));
-            return v;
-        }))
+                auto *v = new Matrix(info.shape[0], info.shape[1]);
+                memcpy(v->data(), info.ptr, sizeof(float) * (size_t) (v->rows() * v->cols()));
+                return v;
+            }))
 
-        .def("rows", &Matrix::rows)
-        .def("cols", &Matrix::cols)
+            .def("rows", &Matrix::rows)
+            .def("cols", &Matrix::cols)
 
-        /// Bare bones interface
-        .def("__getitem__",
-             [](const Matrix &m, std::pair<py::ssize_t, py::ssize_t> i) {
-                 if (i.first >= m.rows() || i.second >= m.cols()) {
-                     throw py::index_error();
-                 }
-                 return m(i.first, i.second);
-             })
-        .def("__setitem__",
-             [](Matrix &m, std::pair<py::ssize_t, py::ssize_t> i, float v) {
-                 if (i.first >= m.rows() || i.second >= m.cols()) {
-                     throw py::index_error();
-                 }
-                 m(i.first, i.second) = v;
-             })
-        /// Provide buffer access
-        .def_buffer([](Matrix &m) -> py::buffer_info {
-            return py::buffer_info(
-                m.data(),                          /* Pointer to buffer */
-                {m.rows(), m.cols()},              /* Buffer dimensions */
-                {sizeof(float) * size_t(m.cols()), /* Strides (in bytes) for each index */
-                 sizeof(float)});
-        });
+                    /// Bare bones interface
+            .def("__getitem__",
+                 [](const Matrix &m, std::pair<py::ssize_t, py::ssize_t> i) {
+                     if (i.first >= m.rows() || i.second >= m.cols()) {
+                         throw py::index_error();
+                     }
+                     return m(i.first, i.second);
+                 })
+            .def("__setitem__",
+                 [](Matrix &m, std::pair<py::ssize_t, py::ssize_t> i, float v) {
+                     if (i.first >= m.rows() || i.second >= m.cols()) {
+                         throw py::index_error();
+                     }
+                     m(i.first, i.second) = v;
+                 })
+                    /// Provide buffer access
+            .def_buffer([](Matrix &m) -> py::buffer_info {
+                return py::buffer_info(
+                        m.data(),                          /* Pointer to buffer */
+                        {m.rows(), m.cols()},              /* Buffer dimensions */
+                        {sizeof(float) * size_t(m.cols()), /* Strides (in bytes) for each index */
+                         sizeof(float)});
+            });
 
     // test_inherited_protocol
     class SquareMatrix : public Matrix {
@@ -183,48 +184,51 @@ TEST_SUBMODULE(buffers, m) {
 
         py::buffer_info get_buffer_info() {
             return py::buffer_info(
-                &value, sizeof(value), py::format_descriptor<int32_t>::format(), 1);
+                    &value, sizeof(value), py::format_descriptor<int32_t>::format(), 1);
         }
     };
     py::class_<Buffer>(m, "Buffer", py::buffer_protocol())
-        .def(py::init<>())
-        .def_readwrite("value", &Buffer::value)
-        .def_buffer(&Buffer::get_buffer_info);
+            .def(py::init<>())
+            .def_readwrite("value", &Buffer::value)
+            .def_buffer(&Buffer::get_buffer_info);
 
     class ConstBuffer {
         std::unique_ptr<int32_t> value;
 
     public:
         int32_t get_value() const { return *value; }
+
         void set_value(int32_t v) { *value = v; }
 
         py::buffer_info get_buffer_info() const {
             return py::buffer_info(
-                value.get(), sizeof(*value), py::format_descriptor<int32_t>::format(), 1);
+                    value.get(), sizeof(*value), py::format_descriptor<int32_t>::format(), 1);
         }
 
         ConstBuffer() : value(new int32_t{0}) {}
     };
     py::class_<ConstBuffer>(m, "ConstBuffer", py::buffer_protocol())
-        .def(py::init<>())
-        .def_property("value", &ConstBuffer::get_value, &ConstBuffer::set_value)
-        .def_buffer(&ConstBuffer::get_buffer_info);
+            .def(py::init<>())
+            .def_property("value", &ConstBuffer::get_value, &ConstBuffer::set_value)
+            .def_buffer(&ConstBuffer::get_buffer_info);
 
-    struct DerivedBuffer : public Buffer {};
+    struct DerivedBuffer : public Buffer {
+    };
     py::class_<DerivedBuffer>(m, "DerivedBuffer", py::buffer_protocol())
-        .def(py::init<>())
-        .def_readwrite("value", (int32_t DerivedBuffer::*) &DerivedBuffer::value)
-        .def_buffer(&DerivedBuffer::get_buffer_info);
+            .def(py::init<>())
+            .def_readwrite("value", (int32_t DerivedBuffer::*) &DerivedBuffer::value)
+            .def_buffer(&DerivedBuffer::get_buffer_info);
 
     struct BufferReadOnly {
         const uint8_t value = 0;
+
         explicit BufferReadOnly(uint8_t value) : value(value) {}
 
         py::buffer_info get_buffer_info() { return py::buffer_info(&value, 1); }
     };
     py::class_<BufferReadOnly>(m, "BufferReadOnly", py::buffer_protocol())
-        .def(py::init<uint8_t>())
-        .def_buffer(&BufferReadOnly::get_buffer_info);
+            .def(py::init<uint8_t>())
+            .def_buffer(&BufferReadOnly::get_buffer_info);
 
     struct BufferReadOnlySelect {
         uint8_t value = 0;
@@ -233,27 +237,27 @@ TEST_SUBMODULE(buffers, m) {
         py::buffer_info get_buffer_info() { return py::buffer_info(&value, 1, readonly); }
     };
     py::class_<BufferReadOnlySelect>(m, "BufferReadOnlySelect", py::buffer_protocol())
-        .def(py::init<>())
-        .def_readwrite("value", &BufferReadOnlySelect::value)
-        .def_readwrite("readonly", &BufferReadOnlySelect::readonly)
-        .def_buffer(&BufferReadOnlySelect::get_buffer_info);
+            .def(py::init<>())
+            .def_readwrite("value", &BufferReadOnlySelect::value)
+            .def_readwrite("readonly", &BufferReadOnlySelect::readonly)
+            .def_buffer(&BufferReadOnlySelect::get_buffer_info);
 
     // Expose buffer_info for testing.
     py::class_<py::buffer_info>(m, "buffer_info")
-        .def(py::init<>())
-        .def_readonly("itemsize", &py::buffer_info::itemsize)
-        .def_readonly("size", &py::buffer_info::size)
-        .def_readonly("format", &py::buffer_info::format)
-        .def_readonly("ndim", &py::buffer_info::ndim)
-        .def_readonly("shape", &py::buffer_info::shape)
-        .def_readonly("strides", &py::buffer_info::strides)
-        .def_readonly("readonly", &py::buffer_info::readonly)
-        .def("__repr__", [](py::handle self) {
-            return py::str("itemsize={0.itemsize!r}, size={0.size!r}, format={0.format!r}, "
-                           "ndim={0.ndim!r}, shape={0.shape!r}, strides={0.strides!r}, "
-                           "readonly={0.readonly!r}")
-                .format(self);
-        });
+            .def(py::init<>())
+            .def_readonly("itemsize", &py::buffer_info::itemsize)
+            .def_readonly("size", &py::buffer_info::size)
+            .def_readonly("format", &py::buffer_info::format)
+            .def_readonly("ndim", &py::buffer_info::ndim)
+            .def_readonly("shape", &py::buffer_info::shape)
+            .def_readonly("strides", &py::buffer_info::strides)
+            .def_readonly("readonly", &py::buffer_info::readonly)
+            .def("__repr__", [](py::handle self) {
+                return py::str("itemsize={0.itemsize!r}, size={0.size!r}, format={0.format!r}, "
+                               "ndim={0.ndim!r}, shape={0.shape!r}, strides={0.strides!r}, "
+                               "readonly={0.readonly!r}")
+                        .format(self);
+            });
 
     m.def("get_buffer_info", [](const py::buffer &buffer) { return buffer.request(); });
 }

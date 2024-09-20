@@ -17,10 +17,13 @@ Note that we are a team of volunteers; we appreciate your patience during the re
 Again, thanks for contributing! -->
 
 ### Reference issue
+
 <!-- You can link to a specific issue using the gitlab syntax #<issue number>  -->
 
 ### What does this implement/fix?
+
 <!--Please explain your changes.-->
 
 ### Additional information
+
 <!--Any additional information you think is important.-->

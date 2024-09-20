@@ -15,7 +15,7 @@ QNUMBER = 4
 # TIME_LIST = [0, 5, 8, 10, 14, 20]
 # TEST_DM = state_qutip_evolution(QNUMBER, TIME_LIST)
 
-TEST_DM = pseudo_random_DM(QNUMBER, numPure=1, numMixed=3)
+TEST_DM = pseudo_random_DM(QNUMBER, numPure=2, numMixed=6)
 
 FAKESAMPLER = FakeSampler(QNUMBER)
 RANDOM_MEASUREMENT_SCHEME = random_measurementScheme(QNUMBER, amount=M)
@@ -29,7 +29,6 @@ def calculate_renyi2_IDEAL(dm):
 
 STANDARD_PURITY = [calculate_renyi2_IDEAL(dm) for dm in TEST_DM]
 STANDARD_TRACE = [np.trace(dm).real for dm in TEST_DM]
-
 
 measurementDMs: List[List[List[List[int]]]] = []
 """

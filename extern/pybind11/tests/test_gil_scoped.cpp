@@ -21,34 +21,39 @@
 class VirtClass {
 public:
     virtual ~VirtClass() = default;
+
     VirtClass() = default;
+
     VirtClass(const VirtClass &) = delete;
+
     virtual void virtual_func() {}
+
     virtual void pure_virtual_func() = 0;
 };
 
 class PyVirtClass : public VirtClass {
-    void virtual_func() override { PYBIND11_OVERRIDE(void, VirtClass, virtual_func, ); }
+    void virtual_func() override { PYBIND11_OVERRIDE(void, VirtClass, virtual_func,); }
+
     void pure_virtual_func() override {
-        PYBIND11_OVERRIDE_PURE(void, VirtClass, pure_virtual_func, );
+        PYBIND11_OVERRIDE_PURE(void, VirtClass, pure_virtual_func,);
     }
 };
 
 TEST_SUBMODULE(gil_scoped, m) {
     m.attr("defined_THREAD_SANITIZER") =
 #if defined(THREAD_SANITIZER)
-        true;
+            true;
 #else
-        false;
+            false;
 #endif
 
     m.def("intentional_deadlock",
           []() { std::thread([]() { py::gil_scoped_acquire gil_acquired; }).join(); });
 
     py::class_<VirtClass, PyVirtClass>(m, "VirtClass")
-        .def(py::init<>())
-        .def("virtual_func", &VirtClass::virtual_func)
-        .def("pure_virtual_func", &VirtClass::pure_virtual_func);
+            .def(py::init<>())
+            .def("virtual_func", &VirtClass::virtual_func)
+            .def("pure_virtual_func", &VirtClass::pure_virtual_func);
 
     m.def("test_callback_py_obj", [](py::object &func) { func(); });
     m.def("test_callback_std_func", [](const std::function<void()> &func) { func(); });
@@ -124,7 +129,7 @@ TEST_SUBMODULE(gil_scoped, m) {
                 py::gil_scoped_acquire gil_acquired;
                 auto cm = py::module_::import("cross_module_gil_utils");
                 auto target = reinterpret_cast<std::string (*)(unsigned)>(
-                    PyLong_AsVoidPtr(cm.attr("gil_multi_acquire_release_funcaddr").ptr()));
+                        PyLong_AsVoidPtr(cm.attr("gil_multi_acquire_release_funcaddr").ptr()));
                 std::string cm_internals_id = target(bits >> 3);
                 internals_ids.add(cm_internals_id);
             };

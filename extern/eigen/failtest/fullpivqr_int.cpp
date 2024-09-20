@@ -9,5 +9,5 @@
 using namespace Eigen;
 
 int main() {
-  FullPivHouseholderQR<Matrix<SCALAR, Dynamic, Dynamic> > qr(Matrix<SCALAR, Dynamic, Dynamic>::Random(10, 10));
+    FullPivHouseholderQR<Matrix<SCALAR, Dynamic, Dynamic> > qr(Matrix<SCALAR, Dynamic, Dynamic>::Random(10, 10));
 }

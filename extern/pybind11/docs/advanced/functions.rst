@@ -295,9 +295,9 @@ Such functions can also be created using pybind11:
 
    void generic(py::args args, const py::kwargs& kwargs) {
        /// .. do something with args
-       if (kwargs)
-           /// .. do something with kwargs
-   }
+if (kwargs)
+/// .. do something with kwargs
+}
 
    /// Binding code
    m.def("generic", &generic);

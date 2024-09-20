@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import pytest
+from pybind11_tests import numpy_array as m
 
 import env  # noqa: F401
-from pybind11_tests import numpy_array as m
 
 np = pytest.importorskip("numpy")
 
@@ -80,14 +80,14 @@ def test_index_offset(arr, args, ret):
 
 def test_dim_check_fail(arr):
     for func in (
-        m.index_at,
-        m.index_at_t,
-        m.offset_at,
-        m.offset_at_t,
-        m.data,
-        m.data_t,
-        m.mutate_data,
-        m.mutate_data_t,
+            m.index_at,
+            m.index_at_t,
+            m.offset_at,
+            m.offset_at_t,
+            m.data,
+            m.data_t,
+            m.mutate_data,
+            m.mutate_data_t,
     ):
         with pytest.raises(IndexError) as excinfo:
             func(arr, 1, 2, 3)
@@ -107,8 +107,8 @@ def test_data(arr, args, ret):
     from sys import byteorder
 
     assert all(m.data_t(arr, *args) == ret)
-    assert all(m.data(arr, *args)[(0 if byteorder == "little" else 1) :: 2] == ret)
-    assert all(m.data(arr, *args)[(1 if byteorder == "little" else 0) :: 2] == 0)
+    assert all(m.data(arr, *args)[(0 if byteorder == "little" else 1):: 2] == ret)
+    assert all(m.data(arr, *args)[(1 if byteorder == "little" else 0):: 2] == 0)
 
 
 @pytest.mark.parametrize("dim", [0, 1, 3])
@@ -130,9 +130,9 @@ def test_at(arr):
 def test_mutate_readonly(arr):
     arr.flags.writeable = False
     for func, args in (
-        (m.mutate_data, ()),
-        (m.mutate_data_t, ()),
-        (m.mutate_at_t, (0, 0)),
+            (m.mutate_data, ()),
+            (m.mutate_data_t, ()),
+            (m.mutate_at_t, (0, 0)),
     ):
         with pytest.raises(ValueError) as excinfo:
             func(arr, *args)
@@ -155,14 +155,14 @@ def test_mutate_data(arr):
 
 def test_bounds_check(arr):
     for func in (
-        m.index_at,
-        m.index_at_t,
-        m.data,
-        m.data_t,
-        m.mutate_data,
-        m.mutate_data_t,
-        m.at_t,
-        m.mutate_at_t,
+            m.index_at,
+            m.index_at_t,
+            m.data,
+            m.data_t,
+            m.mutate_data,
+            m.mutate_data_t,
+            m.at_t,
+            m.mutate_at_t,
     ):
         with pytest.raises(IndexError) as excinfo:
             func(arr, 2, 0)
@@ -251,8 +251,8 @@ def test_numpy_view(capture):
         del ac
         pytest.gc_collect()
     assert (
-        capture
-        == """
+            capture
+            == """
         ArrayClass()
         ArrayClass::numpy_view()
         ArrayClass::numpy_view()
@@ -268,8 +268,8 @@ def test_numpy_view(capture):
         pytest.gc_collect()
         pytest.gc_collect()
     assert (
-        capture
-        == """
+            capture
+            == """
         ~ArrayClass()
     """
     )
@@ -317,8 +317,8 @@ def test_overload_resolution(msg):
     with pytest.raises(TypeError) as excinfo:
         m.overloaded("not an array")
     assert (
-        msg(excinfo.value)
-        == """
+            msg(excinfo.value)
+            == """
         overloaded(): incompatible function arguments. The following argument types are supported:
             1. (arg0: numpy.ndarray[numpy.float64]) -> str
             2. (arg0: numpy.ndarray[numpy.float32]) -> str
@@ -387,7 +387,7 @@ def test_array_unchecked_fixed_dims(msg):
     with pytest.raises(ValueError) as excinfo:
         m.proxy_add2(np.array([1.0, 2, 3]), 5.0)
     assert (
-        msg(excinfo.value) == "array has incorrect number of dimensions: 1; expected 2"
+            msg(excinfo.value) == "array has incorrect number of dimensions: 1; expected 2"
     )
 
     expect_c = np.ndarray(shape=(3, 3, 3), buffer=np.array(range(3, 30)), dtype="int")
@@ -536,9 +536,9 @@ def test_format_descriptors_for_floating_point_types(test_func):
 @pytest.mark.filterwarnings(
     "ignore:Casting complex values to real discards the imaginary part:"
     + (
-        "numpy.exceptions.ComplexWarning"
-        if hasattr(np, "exceptions")
-        else "numpy.ComplexWarning"
+            "numpy.exceptions.ComplexWarning"
+            if hasattr(np, "exceptions")
+            else "numpy.ComplexWarning"
     )
 )
 def test_argument_conversions(forcecast, contiguity, noconvert):
@@ -567,9 +567,9 @@ def test_argument_conversions(forcecast, contiguity, noconvert):
                     # trivially contiguous.
                     trivially_contiguous = sum(1 for d in shape if d > 1) <= 1
                     should_raise = dtype.name != "float64" or (
-                        contiguity is not None
-                        and contiguity != order
-                        and not trivially_contiguous
+                            contiguity is not None
+                            and contiguity != order
+                            and not trivially_contiguous
                     )
 
                 array = np.zeros(shape, dtype=dtype, order=order)
@@ -577,7 +577,7 @@ def test_argument_conversions(forcecast, contiguity, noconvert):
                     function(array)
                 else:
                     with pytest.raises(
-                        TypeError, match="incompatible function arguments"
+                            TypeError, match="incompatible function arguments"
                     ):
                         function(array)
 
@@ -631,20 +631,20 @@ def UnwrapPyValueHolder(vhs):
 def test_pass_array_pyobject_ptr_return_sum_str_values_ndarray():
     # Intentionally all temporaries, do not change.
     assert (
-        m.pass_array_pyobject_ptr_return_sum_str_values(
-            np.array(WrapWithPyValueHolder(-3, "four", 5.0), dtype=object)
-        )
-        == "-3four5.0"
+            m.pass_array_pyobject_ptr_return_sum_str_values(
+                np.array(WrapWithPyValueHolder(-3, "four", 5.0), dtype=object)
+            )
+            == "-3four5.0"
     )
 
 
 def test_pass_array_pyobject_ptr_return_sum_str_values_list():
     # Intentionally all temporaries, do not change.
     assert (
-        m.pass_array_pyobject_ptr_return_sum_str_values(
-            WrapWithPyValueHolder(2, "three", -4.0)
-        )
-        == "2three-4.0"
+            m.pass_array_pyobject_ptr_return_sum_str_values(
+                WrapWithPyValueHolder(2, "three", -4.0)
+            )
+            == "2three-4.0"
     )
 
 

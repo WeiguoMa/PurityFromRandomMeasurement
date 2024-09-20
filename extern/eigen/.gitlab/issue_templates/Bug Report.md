@@ -11,10 +11,13 @@ filtered by "bug::confirmed" or "bug::unconfirmed" and "bugzilla" label:
 and verify the issue you're about to submit isn't a duplicate. -->
 
 ### Summary
+
 <!-- Summarize the bug encountered concisely. -->
 
 ### Environment
+
 <!-- Please provide your development environment here -->
+
 - **Operating System** : Windows/Linux
 - **Architecture** : x64/Arm64/PowerPC ...
 - **Eigen Version** : 3.3.9
@@ -23,6 +26,7 @@ and verify the issue you're about to submit isn't a duplicate. -->
 - **Vector Extension** : SSE/AVX/NEON ...
 
 ### Minimal Example
+
 <!-- If possible, please create a minimal example here that exhibits the problematic behavior.
 You can also link to [godbolt](https://godbolt.org). But please note that you need to click 
 the "Share" button in the top right-hand corner of the godbolt page where you reproduce the sample 
@@ -36,30 +40,39 @@ on how to create a good minimal example. -->
 ```
 
 ### Steps to reproduce
+
 <!-- Describe how one can reproduce the issue - this is very important. Please use an ordered list. -->
 
 1. first step
 2. second step
-3. ... 
+3. ...
 
 ### What is the current *bug* behavior?
+
 <!-- Describe what actually happens. -->
 
 ### What is the expected *correct* behavior?
+
 <!-- Describe what you should see instead. -->
 
 ### Relevant logs
+
 <!-- Add relevant code snippets or program output within blocks marked by " ``` " -->
 
 <!-- OPTIONAL: remove this section if you are not reporting a compilation warning issue.-->
+
 ### Warning Messages
+
 <!-- Show us the warning messages you got! -->
 
 <!-- OPTIONAL: remove this section if you are not reporting a performance issue. -->
+
 ### Benchmark scripts and results
+
 <!-- Please share any benchmark scripts - either standalone, or using [Google Benchmark](https://github.com/google/benchmark). -->
 
 ### Anything else that might help
+
 <!-- It will be better to provide us more information to help narrow down the cause. 
 Including but not limited to the following: 
 - lines of code that might help us diagnose the problem. 

@@ -10,10 +10,10 @@ typedef unsigned int uinteger;
 typedef float real;
 typedef double doublereal;
 typedef struct {
-  real r, i;
+    real r, i;
 } complex;
 typedef struct {
-  doublereal r, i;
+    doublereal r, i;
 } doublecomplex;
 typedef int logical;
 

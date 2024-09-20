@@ -13,20 +13,24 @@ struct CustomGuard {
     static bool enabled;
 
     CustomGuard() { enabled = true; }
+
     ~CustomGuard() { enabled = false; }
 
     static const char *report_status() { return enabled ? "guarded" : "unguarded"; }
 };
+
 bool CustomGuard::enabled = false;
 
 struct DependentGuard {
     static bool enabled;
 
     DependentGuard() { enabled = CustomGuard::enabled; }
+
     ~DependentGuard() { enabled = false; }
 
     static const char *report_status() { return enabled ? "guarded" : "unguarded"; }
 };
+
 bool DependentGuard::enabled = false;
 
 TEST_SUBMODULE(call_policies, m) {
@@ -36,8 +40,11 @@ TEST_SUBMODULE(call_policies, m) {
     class Child {
     public:
         Child() { py::print("Allocating child."); }
+
         Child(const Child &) = default;
+
         Child(Child &&) = default;
+
         ~Child() { py::print("Releasing child."); }
     };
     py::class_<Child>(m, "Child").def(py::init<>());
@@ -45,23 +52,29 @@ TEST_SUBMODULE(call_policies, m) {
     class Parent {
     public:
         Parent() { py::print("Allocating parent."); }
+
         Parent(const Parent &parent) = default;
+
         ~Parent() { py::print("Releasing parent."); }
+
         void addChild(Child *) {}
+
         Child *returnChild() { return new Child(); }
+
         Child *returnNullChild() { return nullptr; }
+
         static Child *staticFunction(Parent *) { return new Child(); }
     };
     py::class_<Parent>(m, "Parent")
-        .def(py::init<>())
-        .def(py::init([](Child *) { return new Parent(); }), py::keep_alive<1, 2>())
-        .def("addChild", &Parent::addChild)
-        .def("addChildKeepAlive", &Parent::addChild, py::keep_alive<1, 2>())
-        .def("returnChild", &Parent::returnChild)
-        .def("returnChildKeepAlive", &Parent::returnChild, py::keep_alive<1, 0>())
-        .def("returnNullChildKeepAliveChild", &Parent::returnNullChild, py::keep_alive<1, 0>())
-        .def("returnNullChildKeepAliveParent", &Parent::returnNullChild, py::keep_alive<0, 1>())
-        .def_static("staticFunction", &Parent::staticFunction, py::keep_alive<1, 0>());
+            .def(py::init<>())
+            .def(py::init([](Child *) { return new Parent(); }), py::keep_alive<1, 2>())
+            .def("addChild", &Parent::addChild)
+            .def("addChildKeepAlive", &Parent::addChild, py::keep_alive<1, 2>())
+            .def("returnChild", &Parent::returnChild)
+            .def("returnChildKeepAlive", &Parent::returnChild, py::keep_alive<1, 0>())
+            .def("returnNullChildKeepAliveChild", &Parent::returnNullChild, py::keep_alive<1, 0>())
+            .def("returnNullChildKeepAliveParent", &Parent::returnNullChild, py::keep_alive<0, 1>())
+            .def_static("staticFunction", &Parent::staticFunction, py::keep_alive<1, 0>());
 
     m.def("free_function", [](Parent *, Child *) {}, py::keep_alive<1, 2>());
     m.def("invalid_arg_index", [] {}, py::keep_alive<0, 1>());
@@ -80,20 +93,20 @@ TEST_SUBMODULE(call_policies, m) {
     m.def("guarded_call", &CustomGuard::report_status, py::call_guard<CustomGuard>());
 
     m.def(
-        "multiple_guards_correct_order",
-        []() {
-            return CustomGuard::report_status() + std::string(" & ")
-                   + DependentGuard::report_status();
-        },
-        py::call_guard<CustomGuard, DependentGuard>());
+            "multiple_guards_correct_order",
+            []() {
+                return CustomGuard::report_status() + std::string(" & ")
+                       + DependentGuard::report_status();
+            },
+            py::call_guard<CustomGuard, DependentGuard>());
 
     m.def(
-        "multiple_guards_wrong_order",
-        []() {
-            return DependentGuard::report_status() + std::string(" & ")
-                   + CustomGuard::report_status();
-        },
-        py::call_guard<DependentGuard, CustomGuard>());
+            "multiple_guards_wrong_order",
+            []() {
+                return DependentGuard::report_status() + std::string(" & ")
+                       + CustomGuard::report_status();
+            },
+            py::call_guard<DependentGuard, CustomGuard>());
 
 #if !defined(PYPY_VERSION)
     // `py::call_guard<py::gil_scoped_release>()` should work in PyPy as well,

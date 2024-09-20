@@ -3,8 +3,13 @@ matA << 2, 0, 0, 2;
 
 // Simple but not quite as efficient
 matB = matA * matA;
-cout << matB << endl << endl;
+cout << matB << endl <<
+endl;
 
 // More complicated but also more efficient
-matB.noalias() = matA * matA;
-cout << matB;
+matB.
+
+noalias() = matA * matA;
+
+cout <<
+matB;
