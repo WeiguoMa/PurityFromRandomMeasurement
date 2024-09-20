@@ -91,7 +91,7 @@ vector<vector<int>> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::
     vector<vector<int>> results;
     results.reserve(measure_times);
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int t = 0; t < measure_times; ++t) {
         std::string _state = proj_basis[dist(gen)];
         vector<int> _state_eigenValue;
@@ -99,7 +99,7 @@ vector<vector<int>> FakeSampler_backend::fakeSampling_dm(const py::array_t<std::
         for (char _value: _state) {
             _state_eigenValue.push_back(_value == '0' ? 0 : 1);
         }
-#pragma omp critical
+    #pragma omp critical
         results.push_back(_state_eigenValue);
     }
     return results;
