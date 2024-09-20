@@ -1,11 +1,6 @@
 //
 // Created by Weiguo Ma on 2024/9/18.
 //
-#include <pybind11/pybind11.h>
-#include <Eigen/Dense>
-#include <cmath>
-#include <vector>
-#include <unordered_map>
 #include "ShadowState.h"
 
 using namespace std;
@@ -82,6 +77,7 @@ public:
     double calculateP2_Hamming() {
         double sum = 0.0;
 
+        #pragma omp parallel for collapse(3) reduction(+:sum)
         for (size_t m = 0; m < M; ++m) {
             for (size_t k = 0; k < K; ++k) {
                 for (size_t k_prime = k + 1; k_prime < K; ++k_prime) {
@@ -102,14 +98,15 @@ public:
     double calculateP2_ClassicalShadow() {
         double sum = 0.0;
 
-        vector<MatrixXcd> rhoMatrices;
+        vector<MatrixXcd> rhoMatrices(M);
+        #pragma omp parallel for
         for (size_t m = 0; m < M; ++m) {
-            MatrixXcd rho_m = shadowState.stateEstimation(
+            rhoMatrices[m] = shadowState.stateEstimation(
                     {measurementScheme[m]}, {measurementResults[m]}
             );
-            rhoMatrices.push_back(rho_m);
         }
 
+        #pragma omp parallel for reduction(+:sum) collapse(2)
         for (size_t m = 0; m < M; ++m) {
             for (size_t m_prime = m + 1; m_prime < M; ++m_prime) {
                 MatrixXcd product = rhoMatrices[m] * rhoMatrices[m_prime];  // rho^{(m)} * rho^{(m')}
@@ -121,9 +118,11 @@ public:
 
     double calculateRenyiEntropy(bool cs) {
         if (cs) {
-            return -log2(calculateP2_ClassicalShadow());
+            double renyi2_cs = calculateP2_ClassicalShadow();
+            return -log2(renyi2_cs);
         } else {
-            return -log2(calculateP2_Hamming());
+            double renyi2_hamming = calculateP2_Hamming();
+            return -log2(renyi2_hamming);
         }
     }
 };
