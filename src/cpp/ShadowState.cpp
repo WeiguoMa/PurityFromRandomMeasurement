@@ -20,6 +20,7 @@ ShadowState::ShadowState(const int &qnumber) {
 
 
 void ShadowState::precomputeAll() {
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < _pauliBases.size(); ++i) {
         for (int j = 0; j < _bases.size(); ++j) {
             MatrixXcd ketResult = _pauliBases[i].adjoint() * _bases[j];
@@ -86,9 +87,21 @@ MatrixXcd ShadowState::stateEstimation(
         const vector<vector<vector<int>>> &measureResults
 ) {
     MatrixXcd sumMatrix = MatrixXcd::Zero(hilbert_dimension, hilbert_dimension);
-    for (size_t idx = 0; idx < measureOperations.size(); ++idx) {
-        sumMatrix += ShadowState::measureResult2state(measureOperations[idx], measureResults[idx]);
+    #pragma omp parallel
+    {
+        MatrixXcd localSumMatrix = MatrixXcd::Zero(sumMatrix.rows(), sumMatrix.cols());
+
+    #pragma omp for
+        for (size_t idx = 0; idx < measureOperations.size(); ++idx) {
+            localSumMatrix += ShadowState::measureResult2state(measureOperations[idx], measureResults[idx]);
+        }
+
+    #pragma omp critical
+        {
+            sumMatrix += localSumMatrix;    // Might increase the overhead
+        }
     }
+
     return sumMatrix / static_cast<int>(measureOperations.size());
 }
 
