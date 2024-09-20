@@ -62,15 +62,14 @@ def calculate_entropy_with_errorBars(DMs4Gauging: List, M: int, K: int, repeats:
         renyiEntropy_Hamming_results_repeats.append(renyiEntropy_Hamming)
 
     return {
-        'STANDARD_PURITY_DMs': [calculate_renyi2_IDEAL(dm) for dm in DMs4Gauging],
         'avg_CS_DMs': np.mean(renyiEntropy_CS_results_repeats, axis=0),
-        'std_CS_DMs': np.std(renyiEntropy_CS_results_repeats, axis=0),
+        'std_CS_DMs': np.std(renyiEntropy_CS_results_repeats, axis=0) / np.sqrt(repeats),
         'avg_hamming_DMs': np.mean(renyiEntropy_Hamming_results_repeats, axis=0),
-        'std_hamming_DMs': np.std(renyiEntropy_Hamming_results_repeats, axis=0),
+        'std_hamming_DMs': np.std(renyiEntropy_Hamming_results_repeats, axis=0) / np.sqrt(repeats),
         'avg_time_cs_DMs': np.mean(time_cs_results_repeats, axis=0),
-        'std_time_cs_DMs': np.std(time_cs_results_repeats, axis=0),
+        'std_time_cs_DMs': np.std(time_cs_results_repeats, axis=0) / np.sqrt(repeats),
         'avg_time_hamming_DMs': np.mean(time_random_results_repeats, axis=0),
-        'std_time_hamming_DMs': np.std(time_random_results_repeats, axis=0),
+        'std_time_hamming_DMs': np.std(time_random_results_repeats, axis=0) / np.sqrt(repeats),
     }
 
 
@@ -110,15 +109,15 @@ def extract_data(data: Dict) -> Dict:
     return dictDMs
 
 
-def plot_figures(data: Dict, saveLocation: Optional[str] = None):
+def plot_figures(M_values: List, data: Dict, saveLocation: Optional[str] = None):
     print('Plotting Figures...')
     for idxDM, value in enumerate(data.values()):
         print(f"------------------- CURRENT DM: {idxDM} -------------------")
         plt.figure(figsize=(10, 6), dpi=300)
 
-        plt.errorbar(K_values, value['avg_CS_Ks'], yerr=value['std_CS_Ks'], fmt='o-',
+        plt.errorbar(M_values, value['avg_CS_Ks'], yerr=value['std_CS_Ks'], fmt='o-',
                      label='Classical Shadow', capsize=5)
-        plt.errorbar(K_values, value['avg_hamming_Ks'], yerr=value['std_hamming_Ks'],
+        plt.errorbar(M_values, value['avg_hamming_Ks'], yerr=value['std_hamming_Ks'],
                      fmt='s-', label='Hamming', capsize=5)
         plt.axhline(y=STANDARD_PURITY[idxDM], color='g', linestyle='--', label='Standard Purity')
         plt.xticks(fontsize=18)
@@ -128,13 +127,13 @@ def plot_figures(data: Dict, saveLocation: Optional[str] = None):
         plt.title('Renyi Entropy vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/RenyiEntropy_DM:-{idxDM}.pdf")
+        plt.savefig(f"./figures/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}_RenyiEntropy_DM:-{idxDM}.pdf")
 
         # Plot Time consumption with error bars
         plt.figure(figsize=(10, 6))
-        plt.errorbar(K_values, value['avgTime_CS_Ks'], yerr=value['stdTime_CS_Ks'], fmt='o-',
+        plt.errorbar(M_values, value['avgTime_CS_Ks'], yerr=value['stdTime_CS_Ks'], fmt='o-',
                      label='Classical Shadow', capsize=5)
-        plt.errorbar(K_values, value['avgTime_Hamming_Ks'], yerr=value['stdTime_Hamming_Ks'],
+        plt.errorbar(M_values, value['avgTime_Hamming_Ks'], yerr=value['stdTime_Hamming_Ks'],
                      fmt='s-', label='Hamming', capsize=5)
         plt.xticks(fontsize=18)
         plt.yticks(fontsize=18)
@@ -143,7 +142,7 @@ def plot_figures(data: Dict, saveLocation: Optional[str] = None):
         plt.title('Time Consumption vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/TimeConsumption_DM-{idxDM}.pdf")
+        plt.savefig(f"./figures/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}_TimeConsumption_DM-{idxDM}.pdf")
 
 
 if __name__ == '__main__':
@@ -169,4 +168,4 @@ if __name__ == '__main__':
     with open(f"./data/M_holdK_{K}_qn_{QNUMBER}_rp_{repeats}.mat", 'wb') as f:
         pickle.dump(extractedData, f)
 
-    plot_figures(extractedData)
+    plot_figures(M_values, extractedData)

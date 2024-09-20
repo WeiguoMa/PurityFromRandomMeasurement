@@ -127,7 +127,7 @@ def plot_figures(K_values, data: Dict, saveLocation: Optional[str] = None):
         plt.title('Renyi Entropy vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/RenyiEntropy_DM:-{idxDM}.pdf")
+        plt.savefig(f"./figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_RenyiEntropy_DM:-{idxDM}.pdf")
 
         # Plot Time consumption with error bars
         plt.figure(figsize=(10, 6))
@@ -142,7 +142,7 @@ def plot_figures(K_values, data: Dict, saveLocation: Optional[str] = None):
         plt.title('Time Consumption vs K with Error Bars', fontsize=22)
         plt.legend(fontsize=16)
         plt.tight_layout()
-        plt.savefig(f"./figures/TimeConsumption_DM-{idxDM}.pdf")
+        plt.savefig(f"./figures/K_holdM_{M}_qn_{QNUMBER}_rp_{repeats}_TimeConsumption_DM-{idxDM}.pdf")
 
 
 if __name__ == '__main__':
