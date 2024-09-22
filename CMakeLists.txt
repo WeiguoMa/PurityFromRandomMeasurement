@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(PurityFromShadow)
+project(PurityFromRandomMeasurement)
 
 # Set C++ standard and build options
 set(CMAKE_CXX_STANDARD 20)
