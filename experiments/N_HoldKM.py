@@ -66,9 +66,9 @@ def calculate_entropy_with_errorBars(DMs4Gauging: List, M, K, repeats: int = 10)
         renyiEntropy_Hamming_results_repeats.append(renyiEntropy_Hamming)
 
     return {
-        'avg_CS_DMs': np.mean(renyiEntropy_CS_results_repeats, axis=0) - STANDARD_PURITY,
+        'avg_CS_DMs': np.abs(np.mean(renyiEntropy_CS_results_repeats, axis=0) - STANDARD_PURITY),
         'std_CS_DMs': np.std(renyiEntropy_CS_results_repeats, axis=0) / np.sqrt(repeats),
-        'avg_hamming_DMs': np.mean(renyiEntropy_Hamming_results_repeats, axis=0) - STANDARD_PURITY,
+        'avg_hamming_DMs': np.abs(np.mean(renyiEntropy_Hamming_results_repeats, axis=0) - STANDARD_PURITY),
         'std_hamming_DMs': np.std(renyiEntropy_Hamming_results_repeats, axis=0) / np.sqrt(repeats),
         'avg_time_cs_DMs': np.mean(time_cs_results_repeats, axis=0),
         'std_time_cs_DMs': np.std(time_cs_results_repeats, axis=0) / np.sqrt(repeats),
