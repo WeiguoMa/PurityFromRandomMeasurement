@@ -129,7 +129,6 @@ def plot_figures(K_values, data: Dict, saveLocation: Optional[str] = None):
 
         plt.xticks(fontsize=18)
         plt.yticks(fontsize=18)
-        plt.ylim(-0.05, 1.05)
         plt.xlabel('N (Number of Qubits)', fontsize=20)
         plt.ylabel('Renyi Entropy', fontsize=20)
         plt.title('Error of Renyi Entropy vs N with Error Bars', fontsize=22)
@@ -154,10 +153,10 @@ def plot_figures(K_values, data: Dict, saveLocation: Optional[str] = None):
 
 
 if __name__ == '__main__':
-    K = 1000
-    M = 1000
-    repeats = 10
-    QNUMBER_LIST = [3, 4, 5, 6]
+    K = 2000
+    M = 2000
+    repeats = 30
+    QNUMBER_LIST = [3, 4, 5, 6, 7, 8, 9]
 
     dataNs = {}
     for QNUMBER in QNUMBER_LIST:
