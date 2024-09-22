@@ -5,10 +5,13 @@ project(PurityFromShadow)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
 
-if (MSVC)
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox")  # Maximum optimization for MSVC
+# Use different optimization flags based on the compiler
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fopenmp")  # Clang optimization with OpenMP
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fopenmp")  # GCC optimization with OpenMP
 else ()
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Optimize for GCC or Clang
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Generic optimization for other compilers
 endif ()
 
 # Output separator for better visibility
@@ -92,6 +95,10 @@ else ()
     message(STATUS "Building ShadowState_backend without OpenMP.")
 endif ()
 
-# Standalone executable (if needed in the future)
-# include_directories(/opt/homebrew/Cellar/quantum++/5.1/include/qpp)
-# add_executable(standalone src/cpp/main.cpp)
+add_executable(TESTOPEMMP src/cpp/TESTOPENMP.cpp)
+if (ENABLE_OPENMP)
+    message(STATUS "Linking TESTOPEMMP with OpenMP.")
+    target_link_libraries(TESTOPEMMP PUBLIC OpenMP::OpenMP_CXX)
+else ()
+    message(STATUS "Building TESTOPEMMP without OpenMP.")
+endif ()
