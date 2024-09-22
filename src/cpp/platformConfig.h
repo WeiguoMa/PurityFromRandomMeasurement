@@ -21,7 +21,7 @@
     using LoopIndexType = size_t;
     using randomGenerator = pcg32;
 
-    inline int countBits(uint64_t x) {
+    inline int countBits(int x) {
         return __builtin_popcountll(x);
     }
 
