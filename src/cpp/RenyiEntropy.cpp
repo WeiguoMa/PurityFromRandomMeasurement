@@ -54,7 +54,7 @@ public:
             );
         }
 
-        #pragma omp parallel for reduction(+:sum)
+        #pragma omp parallel for reduction(+:sum) collapse(2)
         for (size_t m = 0; m < M; ++m) {
             for (size_t m_prime = m + 1; m_prime < M; ++m_prime) {
                 MatrixXcd product = rhoMatrices[m] * rhoMatrices[m_prime];      // rho^{(m)} * rho^{(m')}

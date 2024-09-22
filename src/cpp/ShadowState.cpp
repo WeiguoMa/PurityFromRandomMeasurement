@@ -21,7 +21,7 @@ ShadowState::ShadowState(const int &qnumber) {
 
 
 void ShadowState::precomputeAll() {
-    #pragma omp parallel for
+    #pragma omp parallel for collapse(2)
     for (size_t i = 0; i < _pauliBases.size(); ++i) {
         for (size_t j = 0; j < _bases.size(); ++j) {
             MatrixXcd ketResult = _pauliBases[i].adjoint() * _bases[j];
@@ -41,7 +41,7 @@ MatrixType ShadowState::kroneckerProduct(const MatrixType &A, const MatrixType &
 
     MatrixType result(rowsA * rowsB, colsA * colsB);
 
-    #pragma omp parallel for
+    #pragma omp parallel for collapse(2)
     for (size_t i = 0; i < rowsA; ++i) {
         for (size_t j = 0; j < colsA; ++j) {
             result.block(i * rowsB, j * colsB, rowsB, colsB)

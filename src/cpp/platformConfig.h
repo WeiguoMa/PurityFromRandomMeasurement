@@ -9,7 +9,6 @@
     #include <bit>
     #include <random>
 
-    using LoopIndexType = int;
     using randomGenerator = std::mt19937;
 
     inline int countBits(uint64_t x) {
@@ -18,7 +17,6 @@
 #else
     #include "pcg/pcg_random.hpp"
 
-    using LoopIndexType = size_t;
     using randomGenerator = pcg32;
 
     inline int countBits(int x) {

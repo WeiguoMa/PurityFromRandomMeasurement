@@ -37,7 +37,7 @@ private:
 
         MatrixType result(rowsA * rowsB, colsA * colsB);
 
-        #pragma omp parallel for
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < rowsA; ++i) {
             for (int j = 0; j < colsA; ++j) {
                 result.block(i * rowsB, j * colsB, rowsB, colsB) = A(i, j) * B;
