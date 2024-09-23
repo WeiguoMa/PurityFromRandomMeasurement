@@ -2,8 +2,8 @@
 // Created by Weiguo Ma on 2024/9/18.
 //
 #include "ShadowState.h"
-#include "platformConfig.h"
 #include "fwht.cpp"
+#include "purityShadow.cpp"
 
 using namespace std;
 namespace py = pybind11;
@@ -64,6 +64,11 @@ public:
         }
         return (2.0 * sum) / (static_cast<int>(M) * (static_cast<int>(M) - 1));  // times 2, m != m'
     };
+
+//    double calculateP2_ClassicalShadow() {
+//        double purity = purityEstimation(measurementScheme, measurementResults);
+//        return purity;
+//    };
 
     double calculateRenyiEntropy(bool cs) {
         if (cs) {
