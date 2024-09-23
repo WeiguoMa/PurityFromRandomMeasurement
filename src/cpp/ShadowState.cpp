@@ -26,7 +26,7 @@ void ShadowState::precomputeAll() {
         for (size_t j = 0; j < _bases.size(); ++j) {
             MatrixXcd ketResult = _pauliBases[i].adjoint() * _bases[j];
             MatrixXcd rhoResult = ketResult * ketResult.adjoint();
-            precomputedResults[{i, j}] = rhoResult;
+            precomputedResults[{i, j}] = 3 * rhoResult - MatrixXcd::Identity(2, 2);
         }
     }
 }
@@ -75,7 +75,7 @@ MatrixXcd ShadowState::measureResult2state(
         _state.clear();
         for (size_t idx = 0; idx < measureOperation.size(); ++idx) {
             _state.emplace_back(
-                    3 * precomputedResults[{measureOperation[idx], measureResult_per[idx]}] - MatrixXcd::Identity(2, 2)
+                    precomputedResults[{measureOperation[idx], measureResult_per[idx]}]
             );
         }
         sum_measurements_state += kroneckerProduct(_state);
