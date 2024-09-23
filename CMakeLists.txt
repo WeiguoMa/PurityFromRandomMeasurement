@@ -7,9 +7,9 @@ set(CMAKE_BUILD_TYPE Release)
 
 # Use different optimization flags based on the compiler
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fopenmp")  # Clang optimization with OpenMP
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Clang optimization with OpenMP
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fopenmp")  # GCC optimization with OpenMP
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # GCC optimization with OpenMP
 else ()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Generic optimization for other compilers
 endif ()
@@ -95,10 +95,3 @@ else ()
     message(STATUS "Building ShadowState_backend without OpenMP.")
 endif ()
 
-add_executable(TESTOPEMMP src/cpp/TESTOPENMP.cpp)
-if (ENABLE_OPENMP)
-    message(STATUS "Linking TESTOPEMMP with OpenMP.")
-    target_link_libraries(TESTOPEMMP PUBLIC OpenMP::OpenMP_CXX)
-else ()
-    message(STATUS "Building TESTOPEMMP without OpenMP.")
-endif ()
