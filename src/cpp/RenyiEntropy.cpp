@@ -32,10 +32,11 @@ public:
 
     double calculateP2_Hamming() {
         double sum = 0.0;
+        FWHTSolver fwhtSolver(static_cast<int>(N));
 
         #pragma omp parallel for reduction(+:sum)
         for (size_t m = 0; m < M; ++m) {
-            sum += computeSumS(measurementResults[m]);
+            sum += fwhtSolver.computeSumS(measurementResults[m]);
         }
         return (pow(2.0, static_cast<double>(N)) /
                 (static_cast<double>(M) * static_cast<double>(K) * static_cast<double>(K - 1))) * sum;
