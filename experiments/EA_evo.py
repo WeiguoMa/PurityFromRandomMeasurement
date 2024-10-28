@@ -57,12 +57,16 @@ def calculatePurity(dm: Qobj):
     return (dm * dm).tr()
 
 
-def thetaRun(thetaNum: int, K: int, epoches: int = 1):
+def thetaRun(qn: int, thetaNum: int, M: int, K: int, L: int, epoches: int = 1):
     """
     Return:
         renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS, renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS
         shape -> (epoches, thetaNum, 6)
     """
+    Q = generate_Q(qn)
+    fakesampler = FakeSampler(system_size=qn)
+    MEASURE_SCHEME = random_measurementScheme(qn, amount=M)
+
     _theta_values = np.linspace(0.0, np.pi, thetaNum)
     _results_epoches = np.empty((epoches, thetaNum, 6))
 
@@ -149,16 +153,13 @@ def analyze_results(results_epoches, theta_values, fig1_loc: str, fig2_loc: str)
 if __name__ == '__main__':
     qn = 4
     M, K = 100, 100
-    fakesampler = FakeSampler(system_size=qn)
-    MEASURE_SCHEME = random_measurementScheme(qn, amount=M)
 
+    T = 50
     L = 100
-    Q = generate_Q(qn)
 
     thetaSlice = 100
-    T = 50
 
-    thetaList, results = thetaRun(thetaNum=thetaSlice, K=K, epoches=T)
+    thetaList, results = thetaRun(qn=qn, thetaNum=thetaSlice, M=M, K=K, L=L, epoches=T)
     print(results.shape)
 
     analyze_results(results, thetaList, '../figures/evolutionRhoAQ_v1.pdf', '../figures/evolutionRhoAQ_v2.pdf')
