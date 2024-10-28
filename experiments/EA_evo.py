@@ -110,17 +110,17 @@ def analyze_results(results_epoches, theta_values, fig1_loc: str, fig2_loc: str)
     v6 = np.mean(renyi_rhoAQ_hamming - renyi_rhoA_hamming, axis=0)
     v7 = np.mean(renyi_rhoAQ_CS - renyi_rhoA_CS, axis=0)
 
-    v2 = np.mean(renyi_rhoA_CS - renyi_rhoA_ideal, axis=0)
-    v3 = np.mean(renyi_rhoA_hamming - renyi_rhoA_ideal, axis=0)
-    v4 = np.mean(renyi_rhoAQ_CS - renyi_rhoAQ_ideal, axis=0)
-    v5 = np.mean(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal, axis=0)
+    v2 = np.mean(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0)
+    v3 = np.mean(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0)
+    v4 = np.mean(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0)
+    v5 = np.mean(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0)
 
-    v2_std = np.std(renyi_rhoA_CS - renyi_rhoA_ideal, axis=0) / np.sqrt(epoches)
-    v3_std = np.std(renyi_rhoA_hamming - renyi_rhoA_ideal, axis=0) / np.sqrt(epoches)
-    v4_std = np.std(renyi_rhoAQ_CS - renyi_rhoAQ_ideal, axis=0) / np.sqrt(epoches)
-    v5_std = np.std(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal, axis=0) / np.sqrt(epoches)
-    v6_std = np.std(renyi_rhoAQ_hamming - renyi_rhoA_hamming, axis=0) / np.sqrt(epoches)
-    v7_std = np.std(renyi_rhoAQ_CS - renyi_rhoA_CS, axis=0) / np.sqrt(epoches)
+    v2_std = np.std(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0) / np.sqrt(epoches)
+    v3_std = np.std(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0) / np.sqrt(epoches)
+    v4_std = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0) / np.sqrt(epoches)
+    v5_std = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0) / np.sqrt(epoches)
+    v6_std = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoA_hamming), axis=0) / np.sqrt(epoches)
+    v7_std = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoA_CS), axis=0) / np.sqrt(epoches)
 
     plt.figure(figsize=(10, 6), dpi=300)
     plt.errorbar(theta_values, v1, yerr=0, label='Ideal', fmt='o', capsize=1, linestyle='-')
@@ -130,7 +130,7 @@ def analyze_results(results_epoches, theta_values, fig1_loc: str, fig2_loc: str)
     plt.ylabel(r"$\Delta S$", fontsize=20)
     plt.xticks([0, np.pi / 2, np.pi], ['0', r'$\pi/2$', r'$\pi$'], fontsize=18)
     plt.yticks(fontsize=18)
-    plt.title("Entanglement Asymmetry with Methods", fontsize=22)
+    plt.title(f"Entanglement Asymmetry with Methods for M={M}, K={K}, L={L}", fontsize=18)
     plt.legend(fontsize=14)
     plt.tight_layout()
     plt.savefig(fig1_loc)
@@ -141,10 +141,10 @@ def analyze_results(results_epoches, theta_values, fig1_loc: str, fig2_loc: str)
     plt.errorbar(theta_values, v4, yerr=v4_std, label='AQ - Classical Shadow', fmt='*', capsize=1, linestyle='--')
     plt.errorbar(theta_values, v5, yerr=v5_std, label='AQ - Hamming', fmt='+', capsize=1, linestyle='--')
     plt.xlabel(r"$\theta$", fontsize=20)
-    plt.ylabel(r"Difference $\Delta S$", fontsize=20)
+    plt.ylabel(r"Difference of $S$", fontsize=20)
     plt.xticks([0, np.pi / 2, np.pi], ['0', r'$\pi/2$', r'$\pi$'], fontsize=18)
     plt.yticks(fontsize=18)
-    plt.title("Difference of Entanglement Asymmetry with Methods", fontsize=22)
+    plt.title(f"Difference of R\'enyi Entropy with Methods for M={M}, K={K}, L={L}", fontsize=18)
     plt.legend(fontsize=14)
     plt.tight_layout()
     plt.savefig(fig2_loc)
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     qn = 4
     M, K = 100, 100
 
-    T = 50
+    T = 10
     L = 100
 
     thetaSlice = 100
