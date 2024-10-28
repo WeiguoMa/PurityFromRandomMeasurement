@@ -14,26 +14,20 @@ from src.python.RenyiEntropy import RenyiEntropy
 
 __ket0__, __ket1__ = basis(2, 0), basis(2, 1)
 __ketDict__ = {
-    'X0': ket2dm(__ket0__ + __ket1__),
-    'X1': ket2dm(__ket0__ - __ket1__),
-    'Y0': ket2dm(__ket0__ + 1j * __ket1__),
-    'Y1': ket2dm(__ket0__ - 1j * __ket1__),
-    'Z0': ket2dm(__ket0__),
-    'Z1': ket2dm(__ket1__)
+    '0_0': ket2dm(__ket0__ + __ket1__),
+    '0_1': ket2dm(__ket0__ - __ket1__),
+    '1_0': ket2dm(__ket0__ + 1j * __ket1__),
+    '1_1': ket2dm(__ket0__ - 1j * __ket1__),
+    '2_0': ket2dm(__ket0__),
+    '2_1': ket2dm(__ket1__)
 }
 
 
-def measure_projector(schemes: List[int], outcomes: List[int]):
-    def single_projector(scheme: int, outcome: int):
-        return (qeye(2) + (-1) ** outcome * [sigmax(), sigmay(), sigmaz()][scheme]) / 2
-
-    return tensor([single_projector(scheme, outcome) for scheme, outcome in zip(schemes, outcomes)])
-
-
 def measured_state(rho, measureScheme: List[int], measureOutcome: List[int]):
-    _projector = measure_projector(measureScheme, measureOutcome)
-    _state = _projector * rho * _projector.dag()
-    return _state / _state.tr()
+    _state = tensor(
+        [__ketDict__[f'{scheme}_{outcome}'] for scheme, outcome in zip(measureScheme, measureOutcome)]
+    )
+    return _state
 
 
 def generate_Q(qnumber: int):
@@ -72,9 +66,12 @@ def approx_rhoAQ(rhoA, QA, L):
     return sumRho / L
 
 
-def MIPTBasedMeasureOutcomes(rhoA: Qobj, QA: Qobj, L: int, sampler: FakeSampler,
-                             measureSchemes: List[List[int]], measureOutcomesRhoA: List[List[List[int]]]) -> List[
-    List[List[int]]]:
+def IMBasedMeasureOutcomes(rhoA: Qobj,
+                           QA: Qobj,
+                           L: int,
+                           sampler: FakeSampler,
+                           measureSchemes: List[List[int]],
+                           measureOutcomesRhoA: List[List[List[int]]]) -> List[List[List[int]]]:
     measureOutcomesRhoAQ = []
     for idx, measureScheme in enumerate(measureSchemes):
         outcomeRhoAQ = []
@@ -102,10 +99,10 @@ if __name__ == '__main__':
     fakesampler = FakeSampler(system_size=qn)
     MEASURE_SCHEME = random_measurementScheme(qn, amount=M)
 
-    L = 15
+    L = 10
     Q = generate_Q(qn)
 
-    thetaList = np.linspace(start=0.0, stop=np.pi, num=20)
+    thetaList = np.linspace(start=0.0, stop=np.pi, num=10)
     REList = []
     REIdealList = []
     for theta in tqdm(thetaList):
@@ -115,8 +112,8 @@ if __name__ == '__main__':
                                   measurementResults=MEASURE_OUTCOMES_RhoA).calculateRenyiEntropy()
 
         rhoAQ = approx_rhoAQ(rhoA, Q, L)
-        MEASURE_OUTCOMES_RhoAQ = MIPTBasedMeasureOutcomes(rhoA, Q, L, fakesampler, MEASURE_SCHEME,
-                                                          MEASURE_OUTCOMES_RhoA)
+        MEASURE_OUTCOMES_RhoAQ = IMBasedMeasureOutcomes(rhoA, Q, L, fakesampler, MEASURE_SCHEME,
+                                                        MEASURE_OUTCOMES_RhoA)
         renyi_rhoAQ = RenyiEntropy(measurementScheme=MEASURE_SCHEME,
                                    measurementResults=MEASURE_OUTCOMES_RhoAQ).calculateRenyiEntropy()
 
@@ -124,8 +121,8 @@ if __name__ == '__main__':
         REIdealList.append(calculateRenyi2(rhoAQ) - calculateRenyi2(rhoA))
 
     plt.figure(figsize=(10, 6), dpi=300)
-    plt.plot(thetaList, REList, label='Renyi Entropy with Global dePhasing')
-    plt.plot(thetaList, REIdealList, label='Renyi Entropy Ideal')
+    plt.plot(thetaList, REIdealList, label='Ideal')
+    plt.plot(thetaList, REList, label='Global dePhasing - Intermediate Measurement')
 
     plt.xticks([0, np.pi / 2, np.pi], ['0', r'$\pi/2$', r'$\pi$'], fontsize=18)
     plt.yticks(fontsize=18)
