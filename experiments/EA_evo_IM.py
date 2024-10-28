@@ -3,6 +3,7 @@ import os
 import numpy as np
 from typing import List
 from tqdm import tqdm
+from memory_profiler import profile
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
@@ -66,6 +67,7 @@ def approx_rhoAQ(rhoA, QA, L):
     return sumRho / L
 
 
+@profile
 def IMBasedMeasureOutcomes(rhoA: Qobj,
                            QA: Qobj,
                            L: int,
@@ -102,7 +104,7 @@ if __name__ == '__main__':
     L = 10
     Q = generate_Q(qn)
 
-    thetaList = np.linspace(start=0.0, stop=np.pi, num=10)
+    thetaList = np.linspace(start=0.0, stop=np.pi, num=5)
     REList = []
     REIdealList = []
     for theta in tqdm(thetaList):
