@@ -1,9 +1,12 @@
 import os
 import sys
 import numpy as np
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Dict
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from qutip_qip.operations import ry
+import pickle
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
@@ -48,7 +51,7 @@ class EntanglementAsymmetry:
         ]
         return outcomes
 
-    def timeRun(self, rhos: List[Qobj], M: int, K: int, epoches: int = 1):
+    def slicesRun(self, rhos: List[Qobj], M: int, K: int, epoches: int = 1):
         """
         Args:
             rhos: List of density matrices of Full system.
@@ -57,7 +60,7 @@ class EntanglementAsymmetry:
             epoches: Number of epoches to run.
         Return:
             renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS, renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS
-            shape -> (epoches, thetaNum, 6)
+            shape -> (epoches, slicesNum, 6)
         """
         num_rhoAs = len(rhos)
         _results_epoches = np.empty((epoches, num_rhoAs, 6))
@@ -93,12 +96,24 @@ class EntanglementAsymmetry:
 
         return _results_epoches
 
+    def theta_timeRun(self, rhos: List[List[Qobj]], M: int, K: int, epoches: int = 1):
+        """
+        Args:
+            rhos: List of density matrices of Full system. Outer-[] for thetas; Inner-[] for timeList;
+            M: Number of measurement schemes.
+            K: Number of measurements for each scheme.
+            epoches: Number of epoches to run.
+        """
+        _results_thetas_epoches_times = np.array([self.slicesRun(rho, M, K, epoches) for rho in rhos])
+        return _results_thetas_epoches_times.transpose(1, 0, 2, 3)      # result_epoches_thetas_times
+
 
 class SimpleModel:
     def __init__(self,
                  qNumber: int,
                  subA: List[int],
                  thetas: Union[List[float], np.ndarray],
+                 coupling_strength: float = 1,
                  zzCoefficient: float = 0,
                  superposition: bool = False,
                  quench: bool = False,
@@ -115,7 +130,7 @@ class SimpleModel:
             self.ferroRho = [ket2dm(state) for state in self.ferroState]
 
         if quench:
-            self.quenchHamiltonian = self.quench_hamiltonian(zzCoefficient)
+            self.quenchHamiltonian = self.quench_hamiltonian(coupling_strength, zzCoefficient)
             if timeList is None:
                 raise ValueError('timeList is required for quench model')
             else:
@@ -132,27 +147,18 @@ class SimpleModel:
             Q += tensor([sigmaz() if i == j else qeye(2) for i in range(self.qNumber_subA)])
         return Q / 2
 
-    def ferroHamiltonian(self):
-        sy_sum: Qobj = 0
-        for j in range(self.qNumber):
-            sy_sum += tensor([sigmay() if idx == j else qeye(2) for idx in range(self.qNumber)])
-        return sy_sum
-
     def ferromagnet_state(self, thetas: Union[List[float], np.ndarray]):
-        initialState = tensor([basis(2, 0) for _ in range(self.qNumber)])
-        return [(-1j * theta / 2 * self.ferroHamiltonian()).expm() * initialState for theta in thetas]
+        return [tensor([ry(theta) * basis(2, 0) for _ in range(self.qNumber)]) for theta in thetas]
 
     def ferromagnet_state_superposition(self, thetas: Union[List[float], np.ndarray]):
-        initialState = tensor([basis(2, 0) for _ in range(self.qNumber)])
-        sy_sum = self.ferroHamiltonian()
-
         return [
             1 / np.sqrt(2) *
-            ((-1j * theta / 2 * sy_sum).expm() * initialState - (1j * theta / 2 * sy_sum).expm() * initialState)
+            (tensor([ry(theta) * basis(2, 0) for _ in range(self.qNumber)])
+                - tensor([ry(-theta) * basis(2, 0)for _ in range(self.qNumber)]))
             for theta in thetas
         ]
 
-    def quench_hamiltonian(self, zzCoefficient: float = 0.0):
+    def quench_hamiltonian(self, coupling_strength: float = 1.0, zzCoefficient: float = 0.0):
         H: Qobj = 0
         for j in range(self.qNumber - 1):
             sx_j_sx_j1 = tensor(
@@ -169,7 +175,7 @@ class SimpleModel:
 
             H += - 1 / 4 * (sx_j_sx_j1 + sy_j_sy_j1 + zzCoefficient * sz_j_sz_j1)
 
-        return H
+        return coupling_strength * H
 
     def evolveTime(self, initial_states: List[Qobj], timeList: List[float]) -> List[List[Qobj]]:
         """
@@ -190,81 +196,104 @@ class SimpleModel:
                 initial_states]
 
 
-def analyze_results(results_epoches, time_list, fig1_loc: str, fig2_loc: str):
-    epoches = results_epoches.shape[0]
+def data_preparation(results: np.ndarray, **kwargs) -> Dict:
+    """
+    Args:
+        results: Shape - (epoches, thetas, times, 6);
+    """
+    _RESULT = {
+        key: value for key, value in kwargs.items()
+    }
+    epoches = results.shape[0]
+    renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS = results[:, :, :, 0], results[:, :, :, 1], results[:, :, :, 2]
+    renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS = results[:, :, :, 3], results[:, :, :, 4], results[:, :, :, 5]
 
-    renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS = results_epoches[:, :, 0], results_epoches[:, :, 1], results_epoches[:, :, 2]
-    renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS = results_epoches[:, :, 3], results_epoches[:, :, 4], results_epoches[:, :, 5]
+    _RESULT['AQ_A_IDEAL'] = np.mean(renyi_rhoAQ_ideal - renyi_rhoA_ideal, axis=0)
 
-    v1 = np.mean(renyi_rhoAQ_ideal - renyi_rhoA_ideal, axis=0)
-    v6 = np.mean(renyi_rhoAQ_hamming - renyi_rhoA_hamming, axis=0)
-    v7 = np.mean(renyi_rhoAQ_CS - renyi_rhoA_CS, axis=0)
+    _RESULT['AQ_A_HAMMING'] = np.mean(renyi_rhoAQ_hamming - renyi_rhoA_hamming, axis=0)
+    _RESULT['AQ_A_CS'] = np.mean(renyi_rhoAQ_CS - renyi_rhoA_CS, axis=0)
+    _RESULT['AQ_A_HAMMING_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoA_hamming), axis=0) / np.sqrt(epoches)
+    _RESULT['AQ_A_CS_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoA_CS), axis=0) / np.sqrt(epoches)
 
-    v2 = np.mean(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0)
-    v3 = np.mean(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0)
-    v4 = np.mean(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0)
-    v5 = np.mean(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0)
+    _RESULT['A_CS_IDEAL'] = np.mean(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0)
+    _RESULT['A_HAMMING_IDEAL'] = np.mean(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0)
+    _RESULT['AQ_CS_IDEAL'] = np.mean(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0)
+    _RESULT['AQ_HAMMING_IDEAL'] = np.mean(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0)
+    _RESULT['A_CS_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0) / np.sqrt(epoches)
+    _RESULT['A_HAMMING_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0) / np.sqrt(epoches)
+    _RESULT['AQ_CS_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0) / np.sqrt(epoches)
+    _RESULT['AQ_HAMMING_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0) / np.sqrt(epoches)
 
-    v2_std = np.std(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0) / np.sqrt(epoches)
-    v3_std = np.std(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0) / np.sqrt(epoches)
-    v4_std = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0) / np.sqrt(epoches)
-    v5_std = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0) / np.sqrt(epoches)
-    v6_std = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoA_hamming), axis=0) / np.sqrt(epoches)
-    v7_std = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoA_CS), axis=0) / np.sqrt(epoches)
+    return _RESULT
 
+
+def plot_EA_Hamming_CS_THETAS(result, save: bool = False):
     plt.figure(figsize=(10, 6), dpi=300)
-    plt.errorbar(time_list, v1, yerr=0, label='Ideal', fmt='o', capsize=1, linestyle='-')
-    plt.errorbar(time_list, v6, yerr=v6_std, label='Hamming', fmt='^', capsize=1, linestyle='-')
-    plt.errorbar(time_list, v7, yerr=v7_std, label='Classical Shadow', fmt='*', capsize=1, linestyle='-')
-    plt.xlabel(r"Time $t$", fontsize=20)
-    plt.ylabel(r"$\Delta S$", fontsize=20)
+
+    theta_list, time_list = result.get('THETA_LIST'), [t * 1000 for t in result.get('TIME_LIST')]
+    aq_a_ideal, aq_a_hamming, aq_a_cs = result.get('AQ_A_IDEAL'), result.get('AQ_A_HAMMING'), result.get('AQ_A_CS')
+    aq_a_hamming_error, aq_a_cs_error = result.get('AQ_A_HAMMING_ERRORBAR'), result.get('AQ_A_CS_ERRORBAR')
+
+    for i, theta in enumerate(theta_list):
+        plt.errorbar(time_list, aq_a_ideal[i], label=result["THETA_LABELS"][i], fmt='o', capsize=1, linestyle='-')
+
+        plt.errorbar(time_list, aq_a_hamming[i], yerr=aq_a_hamming_error[i], fmt='^', capsize=1, linestyle='--', alpha=0.5)
+        plt.errorbar(time_list, aq_a_cs[i], yerr=aq_a_cs_error[i], fmt='*', capsize=1, linestyle='-.', alpha=0.5)
+
+    _custom_lines = [
+        Line2D([0], [0], linestyle='--', marker='^', label='Hamming'),
+        Line2D([0], [0], linestyle='-.', marker='*', label='Classical Shadow')
+    ]
+
+    plt.xlabel("Time ($ns$)", fontsize=20)
+    plt.ylabel("$\\Delta S$", fontsize=20)
     plt.xticks(fontsize=18)
     plt.yticks(fontsize=18)
-    plt.title(f"Entanglement Asymmetry for M={M}, K={K}, L={10}", fontsize=18)
-    plt.legend(fontsize=14)
+    plt.title(f"EA for N{result.get('QNUMBER_TOTAL')}-A{result.get('SUBSYSTEM_A')}, M={result['M']}, K={result['K']}", fontsize=18)
+    plt.legend(handles=plt.gca().get_legend_handles_labels()[0] + _custom_lines, fontsize=14)
     plt.tight_layout()
-    plt.savefig(fig1_loc)
 
-    plt.figure(figsize=(10, 6), dpi=300)
-    plt.errorbar(time_list, v2, yerr=v2_std, label='A - Classical Shadow', fmt='o', capsize=1, linestyle='-')
-    plt.errorbar(time_list, v3, yerr=v3_std, label='A - Hamming', fmt='^', capsize=1, linestyle='-')
-    plt.errorbar(time_list, v4, yerr=v4_std, label='AQ - Classical Shadow', fmt='*', capsize=1, linestyle='--')
-    plt.errorbar(time_list, v5, yerr=v5_std, label='AQ - Hamming', fmt='+', capsize=1, linestyle='--')
-    plt.xlabel(r"Time $t$", fontsize=20)
-    plt.ylabel(r"Difference of $S$", fontsize=20)
-    plt.xticks(fontsize=18)
-    plt.yticks(fontsize=18)
-    plt.title(f"Difference of R\'enyi Entropy for M={M}, K={K}, L={10}", fontsize=18)
-    plt.legend(fontsize=14)
-    plt.tight_layout()
-    plt.savefig(fig2_loc)
+    if save:
+        save_location = f"../figures/QMpemba_N{result.get('QNUMBER_TOTAL')}_A{result.get('SUBSYSTEM_A')}_M{result['M']}_N{result['K']}.pdf"
+        plt.savefig(save_location)
 
 
 if __name__ == '__main__':
-    QNUMBER_TOTAL, SUBSYSTEM_A = 10, [0, 1]
+    QNUMBER_TOTAL, SUBSYSTEM_A = 10, [3, 4]
+    INT_SLICES = 20
 
-    # THETA_SLICES = 100
+    ZZ_COEFFICIENT = 0
+    COUPLING_STRENGTH = 50      # MHz
 
-    INT_SLICES = 10
-    TIME_MAX, TIME_SLICES = 5, 50
+    TIME_MAX, TIME_SLICES = 50e-3, 50      # \mu s
 
     M, K = 100, 100
+    EPOCHES = 50
 
-    THETA_LIST = [np.pi/4, np.pi / 2]
+    THETA_LABELS = [r'$4/5$', r'$\pi/3$', r'$3/2$']
+    THETA_LIST = [4/5, np.pi/3, 3 / 2]
     TIME_LIST = np.linspace(0, TIME_MAX, TIME_SLICES)
 
-    model = SimpleModel(QNUMBER_TOTAL, SUBSYSTEM_A, THETA_LIST, superposition=True, quench=True, timeList=TIME_LIST)
+    print(f'QNUMBER_TOTAL: {QNUMBER_TOTAL}, SUBSYSTEM_A: {SUBSYSTEM_A},'
+          f' M: {M}, K: {K}, INT_SLICES: {INT_SLICES}, TIME_MAX: {TIME_MAX}, THETA_LABELS: {THETA_LABELS}')
+
+    model = SimpleModel(
+        QNUMBER_TOTAL, SUBSYSTEM_A, THETA_LIST,
+        coupling_strength=COUPLING_STRENGTH, zzCoefficient=ZZ_COEFFICIENT,
+        superposition=True, quench=True, timeList=TIME_LIST
+    )
 
     eaCalculator = EntanglementAsymmetry(QNUMBER_TOTAL, subA=SUBSYSTEM_A, L=INT_SLICES, Q=model.Q)
 
-    results0 = eaCalculator.timeRun(model.rhos_with_time_ferroSuperpositionRho[0], M, K, epoches=10)
-    analyze_results(results0,
-                    TIME_LIST,
-                    '../figures/evolutionRhoAQ_time_v1_theta0.pdf',
-                    '../figures/evolutionRhoAQ_time_v2_theta0.pdf')
+    results = eaCalculator.theta_timeRun(model.rhos_with_time_ferroSuperpositionRho, M, K, epoches=EPOCHES)
+    format_results = data_preparation(results=results,
+                                      M=M, K=K, INT_SLICES=INT_SLICES,
+                                      THETA_LIST=THETA_LIST, THETA_LABELS=THETA_LABELS,
+                                      QNUMBER_TOTAL=QNUMBER_TOTAL, SUBSYSTEM_A=SUBSYSTEM_A,
+                                      TIME_SLICES=TIME_SLICES, TIME_MAX=TIME_MAX, TIME_LIST=TIME_LIST,
+                                      COUPLING_STRENGTH=COUPLING_STRENGTH, EPOCHES=EPOCHES)
 
-    results1 = eaCalculator.timeRun(model.rhos_with_time_ferroSuperpositionRho[1], M, K, epoches=10)
-    analyze_results(results1,
-                    TIME_LIST,
-                    '../figures/evolutionRhoAQ_time_v1_theta1.pdf',
-                    '../figures/evolutionRhoAQ_time_v2_theta1.pdf')
+    with open(f'../data/QMpemba_M{M}_K{K}_N{QNUMBER_TOTAL}_A{SUBSYSTEM_A}.pkl', 'wb') as f:
+        pickle.dump(format_results, f)
+
+    plot_EA_Hamming_CS_THETAS(format_results, save=True)
