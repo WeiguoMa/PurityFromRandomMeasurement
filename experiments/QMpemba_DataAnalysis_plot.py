@@ -21,8 +21,7 @@ def data_preparation_EA(results: np.ndarray, **kwargs) -> Dict:
     }
     epoches = results.shape[0]
     renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS = results[:, :, :, 0], results[:, :, :, 1], results[:, :, :, 2]
-    renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS = results[:, :, :, 3], results[:, :, :, 4], results[:, :, :,
-                                                                                                       5]
+    renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS = results[:, :, :, 3], results[:, :, :, 4], results[:, :, :, 5]
 
     _RESULT['AQ_A_IDEAL'] = np.mean(renyi_rhoAQ_ideal - renyi_rhoA_ideal, axis=0)
 
@@ -315,22 +314,20 @@ def plot_MK_N(MK_values, MKs_data, N_values):
     if MKs_data.shape[1] < 12:
         raise ValueError("MKs_data must have at least 12 variables in the second dimension.")
 
-    # Define indices for data extraction and configuration
     data_indices = [(0, 2), (4, 6), (8, 10)]
     method_names = ['Classical Shadow', 'Hamming']
-    colors = ['blue', 'green', 'red']  # Colors for each N_values
+    colors = ['blue', 'green', 'red']
     linestyles = ['-', '--']
     markers = {'Classical Shadow': '^', 'Hamming': 'o'}
     subplot_titles = [r'$S(\rho_A)$', r'$S(\rho_{A,Q})$', r'$S(\rho_{A,Q}) - S(\rho_{A})$']
 
-    # Initialize figure with subplots
     fig, axs = plt.subplots(3, 1, figsize=(10, 18), sharex=True)
 
     for ax_idx, (cs_idx, err_idx) in enumerate(data_indices):
         for method_idx, method in enumerate(method_names):
             linestyle = linestyles[method_idx]
             for color_idx, N in enumerate(N_values):
-                data = MKs_data[:, cs_idx + method_idx, :][color_idx, 1:] * 100  # Convert to percentage
+                data = MKs_data[:, cs_idx + method_idx, :][color_idx, 1:] * 100
                 error = MKs_data[:, err_idx + method_idx, :][color_idx, 1:]
 
                 axs[ax_idx].errorbar(
@@ -339,21 +336,17 @@ def plot_MK_N(MK_values, MKs_data, N_values):
                     linestyle=linestyle, marker=markers[method], markersize=7, linewidth=2
                 )
 
-        # Labeling each subplot
         axs[ax_idx].text(0.55, 0.65, subplot_titles[ax_idx], transform=axs[ax_idx].transAxes, fontweight='bold',
                          fontsize=20)
         axs[ax_idx].set_ylabel(r'Error ($\%$)', fontsize=20)
         axs[ax_idx].tick_params(axis='both', labelsize=18)
 
-    # Set x-axis to logarithmic scale
     axs[-1].set_xscale('log')
     axs[-1].set_xlabel(r'$M \times K$', fontsize=20)
 
-    # Unified legend
     handles, labels = axs[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper right', fontsize=15, ncol=1, bbox_to_anchor=(0.98, 0.96))
 
-    # Super title and layout adjustments
     fig.suptitle(r"Performance Analysis for Different $l$ and $MK$ Values", fontsize=24, y=0.99, x=0.55)
     plt.tight_layout()
     plt.savefig('../figures/MKsData_subA_3.pdf', bbox_inches='tight')
