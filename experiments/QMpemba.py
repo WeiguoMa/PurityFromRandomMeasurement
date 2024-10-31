@@ -1,14 +1,9 @@
 import os
 import pickle
 import sys
-from typing import List, Union, Optional, Dict
+from typing import List, Union, Optional
 
-import matplotlib.lines as mlines
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import Normalize
-from matplotlib.lines import Line2D
-from matplotlib.patches import Polygon
 from qutip_qip.operations import ry
 from tqdm import tqdm
 
@@ -17,6 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from qutip import tensor, sigmaz, qeye, Qobj, ket2dm, sigmay, sigmax, basis, ptrace, sesolve, mesolve
 from src.python.fake_sampler import FakeSampler, random_measurementScheme
 from src.python.RenyiEntropy import RenyiEntropy
+from QMpemba_DataAnalysis_plot import data_preparation_EA
 
 
 class EntanglementAsymmetry:
@@ -200,161 +196,6 @@ class SimpleModel:
                 initial_states]
 
 
-def data_preparation_EA(results: np.ndarray, **kwargs) -> Dict:
-    """
-    Args:
-        results: Shape - (epoches, thetas, times, 6);
-    """
-    _RESULT = {
-        key: value for key, value in kwargs.items()
-    }
-    epoches = results.shape[0]
-    renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS = results[:, :, :, 0], results[:, :, :, 1], results[:, :, :, 2]
-    renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS = results[:, :, :, 3], results[:, :, :, 4], results[:, :, :,
-                                                                                                       5]
-
-    _RESULT['AQ_A_IDEAL'] = np.mean(renyi_rhoAQ_ideal - renyi_rhoA_ideal, axis=0)
-
-    _RESULT['AQ_A_HAMMING'] = np.mean(renyi_rhoAQ_hamming - renyi_rhoA_hamming, axis=0)
-    _RESULT['AQ_A_CS'] = np.mean(renyi_rhoAQ_CS - renyi_rhoA_CS, axis=0)
-
-    _RESULT['AQ_A_HAMMING_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoA_hamming), axis=0) / np.sqrt(
-        epoches)
-    _RESULT['AQ_A_CS_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoA_CS), axis=0) / np.sqrt(epoches)
-
-    _RESULT['A_IDEAL'] = np.mean(renyi_rhoA_ideal, axis=0)
-    _RESULT['AQ_IDEAL'] = np.mean(renyi_rhoAQ_ideal, axis=0)
-    _RESULT['A_CS_IDEAL'] = np.mean(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0)
-    _RESULT['A_HAMMING_IDEAL'] = np.mean(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0)
-    _RESULT['AQ_CS_IDEAL'] = np.mean(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0)
-    _RESULT['AQ_HAMMING_IDEAL'] = np.mean(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0)
-
-    _RESULT['A_CS_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0) / np.sqrt(epoches)
-    _RESULT['A_HAMMING_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0) / np.sqrt(
-        epoches)
-    _RESULT['AQ_CS_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0) / np.sqrt(epoches)
-    _RESULT['AQ_HAMMING_IDEAL_ERRORBAR'] = np.std(np.abs(renyi_rhoAQ_hamming - renyi_rhoAQ_ideal), axis=0) / np.sqrt(
-        epoches)
-
-    return _RESULT
-
-
-def data_preparation_MK_error(MLIST, KLIST):
-    def process_Errors(file_name):
-        """
-        Errors with ErrorBar. This function does not distinguish the errors in THETAS and TIMES.
-        """
-        try:
-            with open(file_name, 'rb') as f:
-                data = pickle.load(f)
-
-            keys = ['A_CS_IDEAL', 'A_HAMMING_IDEAL', 'AQ_CS_IDEAL', 'AQ_HAMMING_IDEAL']
-            error_keys = [key + '_ERRORBAR' for key in keys]
-
-            means = [np.mean(data[key]) for key in keys]
-            errors = [np.mean(data[key]) for key in error_keys]
-
-            return means + errors
-        except (FileNotFoundError, KeyError) as e:
-            raise e
-
-    _RESULT = np.array([
-        [
-            process_Errors(f'QMpemba/QMpemba_M{_M}_K{_K}_N10_A[3, 4]_EP50.pkl')
-            for _K in KLIST
-        ]
-        for _M in MLIST
-    ])
-
-    return _RESULT
-
-
-def plot_Errors_Hamming_CS(MLIST, KLIST, Z, Zerror, save: bool = False, **kwargs):
-    x_indices, y_indices = np.arange(len(KLIST)), np.arange(len(MLIST))
-    fig, ax = plt.subplots(figsize=(8, 6), dpi=300)
-
-    cmap = 'coolwarm'
-    norm = Normalize(vmin=min(Z[0].min(), Z[1].min()), vmax=max(Z[0].max(), Z[1].max()))
-
-    for i in range(len(MLIST)):
-        for j in range(len(KLIST)):
-            top_triangle = Polygon(np.array([(x_indices[j] - 0.5, y_indices[i] - 0.5),
-                                             (x_indices[j] + 0.5, y_indices[i] - 0.5),
-                                             (x_indices[j], y_indices[i])]),
-                                   color=plt.get_cmap(cmap)(norm(Z[0][i, j])), ec='black')
-            ax.add_patch(top_triangle)
-
-            bottom_triangle = Polygon(np.array([(x_indices[j] - 0.5, y_indices[i] + 0.5),
-                                                (x_indices[j] + 0.5, y_indices[i] + 0.5),
-                                                (x_indices[j], y_indices[i])]),
-                                      color=plt.get_cmap(cmap)(norm(Z[1][i, j])), ec='black')
-            ax.add_patch(bottom_triangle)
-
-            ax.errorbar(x_indices[j], y_indices[i] - 0.25, yerr=Zerror[0][i, j], fmt='.', color='black', capsize=6)
-            ax.errorbar(x_indices[j], y_indices[i] + 0.25, yerr=Zerror[1][i, j], fmt='.', color='#FF7F0E', capsize=6)
-
-    sm = plt.cm.ScalarMappable(cmap=plt.get_cmap(cmap), norm=norm)
-    cbar = fig.colorbar(sm, ax=ax, label="Values", orientation='vertical', fraction=0.037, pad=0.04)
-    cbar.ax.tick_params(labelsize=10)
-
-    ax.set_aspect('equal', adjustable='box')
-    ax.set_xticks(x_indices)
-    ax.set_yticks(y_indices)
-    ax.set_xticklabels(KLIST, fontsize=16)
-    ax.set_yticklabels(MLIST, fontsize=16)
-
-    ax.set_xlabel(r'$K$', fontsize=20)
-    ax.set_ylabel(r'$M$', fontsize=20)
-
-    white_error_legend = mlines.Line2D([], [], color='black', marker='.', markersize=10, linestyle='None',
-                                       label='Classical Shadow')
-    black_error_legend = mlines.Line2D([], [], color='#FF7F0E', marker='.', markersize=10, linestyle='None',
-                                       label='Hamming')
-    ax.legend(handles=[white_error_legend, black_error_legend], loc='upper center', bbox_to_anchor=(0.83, -0.065),
-              ncol=2)
-
-    plt.title('Errors of two methods with errorbars', fontsize=20)
-    plt.subplots_adjust(left=0.15, right=0.85, bottom=0.2)
-    plt.tight_layout()
-
-    if save:
-        save_location = f"../figures/QMpembaErrors_N{kwargs.get('N')}_A{kwargs.get('subA')}.pdf"
-        plt.savefig(save_location)
-
-
-def plot_EA_Hamming_CS_THETAS(result, save: bool = False):
-    plt.figure(figsize=(10, 6), dpi=300)
-
-    theta_list, time_list = result.get('THETA_LIST'), [t * 1000 for t in result.get('TIME_LIST')]
-    aq_a_ideal, aq_a_hamming, aq_a_cs = result.get('AQ_A_IDEAL'), result.get('AQ_A_HAMMING'), result.get('AQ_A_CS')
-    aq_a_hamming_error, aq_a_cs_error = result.get('AQ_A_HAMMING_ERRORBAR'), result.get('AQ_A_CS_ERRORBAR')
-
-    for i, theta in enumerate(theta_list):
-        plt.errorbar(time_list, aq_a_ideal[i], label=result["THETA_LABELS"][i], fmt='o', capsize=1, linestyle='-')
-
-        plt.errorbar(time_list, aq_a_hamming[i], yerr=aq_a_hamming_error[i], fmt='^', capsize=1, linestyle='--',
-                     alpha=0.5)
-        plt.errorbar(time_list, aq_a_cs[i], yerr=aq_a_cs_error[i], fmt='*', capsize=1, linestyle='-.', alpha=0.5)
-
-    _custom_lines = [
-        Line2D([0], [0], linestyle='--', marker='^', label='Hamming'),
-        Line2D([0], [0], linestyle='-.', marker='*', label='Classical Shadow')
-    ]
-
-    plt.xlabel("Time ($ns$)", fontsize=20)
-    plt.ylabel("$\\Delta S$", fontsize=20)
-    plt.xticks(fontsize=18)
-    plt.yticks(fontsize=18)
-    plt.title(f"EA for N{result.get('QNUMBER_TOTAL')}-A{result.get('SUBSYSTEM_A')}, M={result['M']}, K={result['K']}",
-              fontsize=18)
-    plt.legend(handles=plt.gca().get_legend_handles_labels()[0] + _custom_lines, fontsize=18)
-    plt.tight_layout()
-
-    if save:
-        save_location = f"../figures/QMpemba_N{result.get('QNUMBER_TOTAL')}_A{result.get('SUBSYSTEM_A')}_M{result['M']}_N{result['K']}.pdf"
-        plt.savefig(save_location)
-
-
 if __name__ == '__main__':
     MLIST = [10, 50, 100, 200, 500, 1000]
     KLIST = [50, 100, 200, 500, 1000]
@@ -399,5 +240,3 @@ if __name__ == '__main__':
 
             with open(f'../data/QMpemba/QMpemba_M{M}_K{K}_N{QNUMBER_TOTAL}_A{SUBSYSTEM_A}_EP{EPOCHES}.pkl', 'wb') as f:
                 pickle.dump(format_results, f)
-
-            # plot_EA_Hamming_CS_THETAS(format_results, save=True)

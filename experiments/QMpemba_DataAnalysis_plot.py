@@ -1,14 +1,14 @@
 import pickle
+from itertools import product
 from typing import Dict, List
 
-import numpy as np
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
-from itertools import product
+import numpy as np
 from matplotlib.colors import Normalize
 from matplotlib.lines import Line2D
 from matplotlib.patches import Polygon
-from matplotlib.ticker import ScalarFormatter, FuncFormatter
+from matplotlib.ticker import FuncFormatter
 
 
 def data_preparation_EA(results: np.ndarray, **kwargs) -> Dict:
@@ -21,7 +21,8 @@ def data_preparation_EA(results: np.ndarray, **kwargs) -> Dict:
     }
     epoches = results.shape[0]
     renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS = results[:, :, :, 0], results[:, :, :, 1], results[:, :, :, 2]
-    renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS = results[:, :, :, 3], results[:, :, :, 4], results[:, :, :, 5]
+    renyi_rhoAQ_ideal, renyi_rhoAQ_hamming, renyi_rhoAQ_CS = results[:, :, :, 3], results[:, :, :, 4], results[:, :, :,
+                                                                                                       5]
 
     _RESULT['AQ_A_IDEAL'] = np.mean(renyi_rhoAQ_ideal - renyi_rhoA_ideal, axis=0)
 
@@ -97,7 +98,7 @@ def prepare_data4MKs(MKCombination: Dict, subA):
     _dataMK = {
         key: np.mean(np.array(
             [
-                process_Errors(file_name=f'QMpemba/QMpemba_M{para[0]}_K{para[1]}_N10_A{subA}_EP50.pkl')
+                process_Errors(file_name=f'../data/QMpemba/QMpemba_M{para[0]}_K{para[1]}_N10_A{subA}_EP50.pkl')
                 for para in value
             ]
         ), axis=0)
@@ -211,7 +212,8 @@ def plot_EA_Hamming_CS_THETAS(result, save: bool = False):
     aq_a_hamming_error, aq_a_cs_error = result.get('AQ_A_HAMMING_ERRORBAR'), result.get('AQ_A_CS_ERRORBAR')
 
     for i, theta in enumerate(theta_list):
-        plt.errorbar(time_list, aq_a_ideal[i], label=r'$\theta=$' + result["THETA_LABELS"][i], fmt='o', capsize=1, linestyle='-')
+        plt.errorbar(time_list, aq_a_ideal[i], label=r'$\theta=$' + result["THETA_LABELS"][i], fmt='o', capsize=1,
+                     linestyle='-')
 
         plt.errorbar(time_list, aq_a_hamming[i], yerr=aq_a_hamming_error[i], fmt='^', capsize=1, linestyle='--',
                      alpha=0.5)
@@ -226,8 +228,9 @@ def plot_EA_Hamming_CS_THETAS(result, save: bool = False):
     plt.ylabel("$\\Delta S$", fontsize=22)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
-    plt.title(f"Quench EA for N{result.get('QNUMBER_TOTAL')}-A{result.get('SUBSYSTEM_A')}, M={result['M']}, K={result['K']}",
-              fontsize=24)
+    plt.title(
+        f"Quench EA for N{result.get('QNUMBER_TOTAL')}-A{result.get('SUBSYSTEM_A')}, M={result['M']}, K={result['K']}",
+        fontsize=24)
     plt.legend(handles=plt.gca().get_legend_handles_labels()[0] + _custom_lines, fontsize=20)
     plt.grid(False)
 
@@ -262,10 +265,14 @@ def plot_error_AQ_A_inDetail_combined(MLIST, KLIST, data, save: bool = False, **
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), dpi=300)
     plt.rcParams['font.family'] = 'Arial'
 
-    ax1.errorbar(MLIST, data[:, 1, -3] * 100, yerr=data[:, 1, -1] * 100, fmt='-o', capsize=6, linewidth=2, label=r'Hamming $K=100$')
-    ax1.errorbar(MLIST, data[:, 1, -4] * 100, yerr=data[:, 1, -2] * 100, fmt='-^', capsize=6, linewidth=2, label=r'Classical Shadow $K=100$')
-    ax1.errorbar(MLIST, data[:, 4, -3] * 100, yerr=data[:, 4, -1] * 100, fmt='--o', capsize=6, linewidth=2, label=r'Hamming $K=1000$')
-    ax1.errorbar(MLIST, data[:, 4, -4] * 100, yerr=data[:, 4, -2] * 100, fmt='--^', capsize=6, linewidth=2, label=r'Classical Shadow $K=1000$')
+    ax1.errorbar(MLIST, data[:, 1, -3] * 100, yerr=data[:, 1, -1] * 100, fmt='-o', capsize=6, linewidth=2,
+                 label=r'Hamming $K=100$')
+    ax1.errorbar(MLIST, data[:, 1, -4] * 100, yerr=data[:, 1, -2] * 100, fmt='-^', capsize=6, linewidth=2,
+                 label=r'Classical Shadow $K=100$')
+    ax1.errorbar(MLIST, data[:, 4, -3] * 100, yerr=data[:, 4, -1] * 100, fmt='--o', capsize=6, linewidth=2,
+                 label=r'Hamming $K=1000$')
+    ax1.errorbar(MLIST, data[:, 4, -4] * 100, yerr=data[:, 4, -2] * 100, fmt='--^', capsize=6, linewidth=2,
+                 label=r'Classical Shadow $K=1000$')
     ax1.set_xlabel(r'$M$', fontsize=20)
     ax1.set_xticks(MLIST)
     ax1.tick_params(axis='x', labelsize=14)
@@ -278,9 +285,12 @@ def plot_error_AQ_A_inDetail_combined(MLIST, KLIST, data, save: bool = False, **
     ax1.set_title(r'Errors of $S(\rho_AQ) - S(\rho_A)$', fontsize=20)
 
     ax2.errorbar(KLIST, data[2, :, -3] * 100, yerr=data[2, :, -1] * 100, fmt='-o', capsize=6, label=r'Hamming $M=100$')
-    ax2.errorbar(KLIST, data[2, :, -4] * 100, yerr=data[2, :, -2] * 100, fmt='-^', capsize=6, label=r'Classical Shadow $M=100$')
-    ax2.errorbar(KLIST, data[-1, :, -3] * 100, yerr=data[-1, :, -1] * 100, fmt='--o', capsize=6, label=r'Hamming $M=1000$')
-    ax2.errorbar(KLIST, data[-1, :, -4] * 100, yerr=data[-1, :, -2] * 100, fmt='--^', capsize=6, label=r'Classical Shadow $M=1000$')
+    ax2.errorbar(KLIST, data[2, :, -4] * 100, yerr=data[2, :, -2] * 100, fmt='-^', capsize=6,
+                 label=r'Classical Shadow $M=100$')
+    ax2.errorbar(KLIST, data[-1, :, -3] * 100, yerr=data[-1, :, -1] * 100, fmt='--o', capsize=6,
+                 label=r'Hamming $M=1000$')
+    ax2.errorbar(KLIST, data[-1, :, -4] * 100, yerr=data[-1, :, -2] * 100, fmt='--^', capsize=6,
+                 label=r'Classical Shadow $M=1000$')
     ax2.set_xlabel(r'$K$', fontsize=20)
     ax2.set_xticks(KLIST)
     ax2.tick_params(axis='x', labelsize=14)
@@ -330,7 +340,8 @@ def plot_MK_N(MK_values, MKs_data, N_values):
                 )
 
         # Labeling each subplot
-        axs[ax_idx].text(0.55, 0.65, subplot_titles[ax_idx], transform=axs[ax_idx].transAxes, fontweight='bold', fontsize=20)
+        axs[ax_idx].text(0.55, 0.65, subplot_titles[ax_idx], transform=axs[ax_idx].transAxes, fontweight='bold',
+                         fontsize=20)
         axs[ax_idx].set_ylabel(r'Error ($\%$)', fontsize=20)
         axs[ax_idx].tick_params(axis='both', labelsize=18)
 
