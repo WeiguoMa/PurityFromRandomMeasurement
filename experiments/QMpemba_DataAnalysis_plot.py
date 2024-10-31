@@ -93,31 +93,21 @@ def data_preparation_M_K_error(MLIST, KLIST, subA: List):
     return _RESULT
 
 
-def prepare_data4MKs(MLIST, KLIST, subA, **kwargs):
-    _combinations_dict = {}
-    for _m, _k in product(MLIST, KLIST):
-        _product_value = _m * _k
-        if _product_value not in _combinations_dict:
-            _combinations_dict[_product_value] = []
-        _combinations_dict[_product_value].append((_m, _k))
-    _sortedCombination = dict(sorted(_combinations_dict.items()))
-
+def prepare_data4MKs(MKCombination: Dict, subA):
     _dataMK = {
         key: np.mean(np.array(
             [
-                process_Errors(
-                    f'QMpemba/QMpemba_M{para[0]}_K{para[1]}_N{kwargs.get("N", 10)}_A{subA}_EP{kwargs.get("EP", 50)}.pkl'
-                )
+                process_Errors(file_name=f'QMpemba/QMpemba_M{para[0]}_K{para[1]}_N10_A{subA}_EP50.pkl')
                 for para in value
             ]
         ), axis=0)
-        for key, value in _sortedCombination.items()
+        for key, value in MKCombination.items()
     }
 
-    return [
+    return np.array([
         [_data[idx] for _data in _dataMK.values()]
         for idx in range(12)
-    ]
+    ])
 
 
 def MKsData_subA(MLIST, KLIST, subAList):
