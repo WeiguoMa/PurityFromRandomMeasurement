@@ -2,7 +2,6 @@ import os
 import pickle
 import sys
 from typing import List, Union, Optional
-from multiprocessing import Pool
 
 import numpy as np
 from qutip_qip.operations import ry
@@ -122,7 +121,7 @@ class EntanglementAsymmetry:
 
         rhoAs = [ptrace(rho, self.subA) for rho in rhos]
 
-        for epoch in tqdm(range(epoches)):
+        for epoch in range(epoches):
             _results = np.empty((num_rhoAs, 6))
             for i, rhoA in enumerate(rhoAs):
                 MEASURE_SCHEME = random_measurementScheme(self.qNumber, amount=M)
@@ -132,7 +131,6 @@ class EntanglementAsymmetry:
 
                 renyi_rhoA = RenyiEntropy(measurementScheme=MEASURE_SCHEME, measurementResults=MEASURE_OUTCOMES_RhoA)
                 renyi_rhoA_hamming = renyi_rhoA.calculateRenyiEntropy()
-
                 renyi_rhoA_CS = renyi_rhoA.calculateRenyiEntropy(classical_shadow=True) if self.classicalShadow else -1
 
                 if not self.intermediateMeasure:
@@ -140,7 +138,7 @@ class EntanglementAsymmetry:
                     MEASURE_OUTCOMES_RhoAQ = self.measurementOutcomes(K=K, rhoA=rhoAQ, measurementScheme=MEASURE_SCHEME)
                     renyi_rhoAQ_ideal = self.idealRenyi2(rhoAQ)
                 else:
-                    renyi_rhoAQ_ideal = None
+                    renyi_rhoAQ_ideal = -1
                     MEASURE_OUTCOMES_RhoAQ = self.IMBasedMeasureOutcomes(MEASURE_SCHEME, MEASURE_OUTCOMES_RhoA)
 
                 renyi_rhoAQ = RenyiEntropy(measurementScheme=MEASURE_SCHEME, measurementResults=MEASURE_OUTCOMES_RhoAQ)
@@ -164,7 +162,7 @@ class EntanglementAsymmetry:
             K: Number of measurements for each scheme.
             epoches: Number of epoches to run.
         """
-        _results_thetas_epoches_times = np.array([self.slicesRun(rho, M, K, epoches) for rho in rhos])
+        _results_thetas_epoches_times = np.array([self.slicesRun(rho, M, K, epoches) for rho in tqdm(rhos)])
         return _results_thetas_epoches_times.transpose(1, 0, 2, 3)  # result_epoches_thetas_times
 
 
