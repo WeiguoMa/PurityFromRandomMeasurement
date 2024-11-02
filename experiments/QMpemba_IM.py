@@ -133,7 +133,7 @@ class EntanglementAsymmetry:
                 renyi_rhoA = RenyiEntropy(measurementScheme=MEASURE_SCHEME, measurementResults=MEASURE_OUTCOMES_RhoA)
                 renyi_rhoA_hamming = renyi_rhoA.calculateRenyiEntropy()
 
-                renyi_rhoA_CS = renyi_rhoA.calculateRenyiEntropy(classical_shadow=True) if self.classicalShadow else None
+                renyi_rhoA_CS = renyi_rhoA.calculateRenyiEntropy(classical_shadow=True) if self.classicalShadow else -1
 
                 if not self.intermediateMeasure:
                     rhoAQ = self.approx_AQ(rhoA)
@@ -145,7 +145,7 @@ class EntanglementAsymmetry:
 
                 renyi_rhoAQ = RenyiEntropy(measurementScheme=MEASURE_SCHEME, measurementResults=MEASURE_OUTCOMES_RhoAQ)
                 renyi_rhoAQ_hamming = renyi_rhoAQ.calculateRenyiEntropy()
-                renyi_rhoAQ_CS = renyi_rhoAQ.calculateRenyiEntropy(classical_shadow=True) if self.classicalShadow else None
+                renyi_rhoAQ_CS = renyi_rhoAQ.calculateRenyiEntropy(classical_shadow=True) if self.classicalShadow else -1
 
                 _results[i] = [
                     renyi_rhoA_ideal, renyi_rhoA_hamming, renyi_rhoA_CS,
@@ -288,7 +288,8 @@ if __name__ == '__main__':
                 superposition=True, quench=True, timeList=TIME_LIST
             )
 
-            eaCalculator = EntanglementAsymmetry(QNUMBER_TOTAL, subA=SUBSYSTEM_A, L=INT_SLICES, Q=model.Q)
+            eaCalculator = EntanglementAsymmetry(QNUMBER_TOTAL, subA=SUBSYSTEM_A,
+                                                 L=INT_SLICES, Q=model.Q, intermediate_measure=True)
 
             results = eaCalculator.theta_timeRun(model.rhos_with_time_ferroSuperpositionRho, M, K, epoches=EPOCHES)
             format_results = data_preparation_EA(results=results,
