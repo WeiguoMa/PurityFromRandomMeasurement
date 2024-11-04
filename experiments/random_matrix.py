@@ -13,15 +13,14 @@ from src.python.Physics.generate_TEST_DM import pseudo_random_DM
 from src.python.RenyiEntropy import RenyiEntropy
 from src.python.fake_sampler import FakeSampler, random_measurementScheme
 
-K = 100
+K = 1000
 M = 1000
-QNUMBER = 4
-n_repeats = 10
+QNUMBER = 5
+n_repeats = 5
 
 TEST_DM = pseudo_random_DM(QNUMBER, numPure=1, numMixed=7)
 
 FAKESAMPLER = FakeSampler(QNUMBER)
-RANDOM_MEASUREMENT_SCHEME = random_measurementScheme(QNUMBER, amount=M)
 
 
 def calculate_renyi2_IDEAL(dm):
@@ -37,6 +36,7 @@ time_cs_repeats = []
 time_random_repeats = []
 
 for _ in tqdm(range(n_repeats), desc="Repeating Calculations"):
+    RANDOM_MEASUREMENT_SCHEME = random_measurementScheme(QNUMBER, amount=M)
     measurementDMs: List[List[List[List[int]]]] = []
     for density_matrix in TEST_DM:
         measurementDMs.append(
@@ -92,23 +92,12 @@ plt.errorbar(x_labels, renyiEntropy_CS_mean, yerr=renyiEntropy_CS_std, fmt='o', 
 plt.errorbar(x_labels, renyiEntropy_randomMeasurement_mean, yerr=renyiEntropy_randomMeasurement_std, fmt='o',
              label='Renyi Entropy Hamming', capsize=5)
 plt.ylim(-0.05, 1.05)
-plt.xlabel('Density Matrices')
-plt.ylabel('Renyi Entropy')
-plt.title('Renyi Entropy with Error Bars')
-plt.legend()
+plt.xticks(fontsize=20)
+plt.yticks(fontsize=20)
+plt.xlabel('Density Matrices', fontsize=20)
+plt.ylabel('Renyi Entropy', fontsize=20)
+plt.title('Renyi Entropy with Error Bars', fontsize=22)
+plt.legend(fontsize=17)
 plt.grid(True)
-plt.show()
-
-fig, ax = plt.subplots(figsize=(8, 5))
-bar_width = 0.35
-index = np.arange(2)
-time_means = [time_cs_mean, time_random_mean]
-
-ax.bar(index, time_means, bar_width, color=['blue', 'green'], label=['Shadow Time', 'Hamming Time'])
-
-ax.set_xlabel('Entropy Calculation Type')
-ax.set_ylabel('Time (seconds)')
-ax.set_title('Time Consumption for Renyi Entropy Calculations')
-ax.set_xticks(index)
-ax.set_xticklabels(['Shadow', 'Hamming'])
-plt.show()
+plt.tight_layout()
+plt.savefig(f"../figures/random_matrix_M_{M}_K_{K}_qn_{QNUMBER}.pdf")

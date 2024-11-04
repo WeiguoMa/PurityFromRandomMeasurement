@@ -64,3 +64,53 @@ def pseudo_random_DM(qnumber: int, numPure: int, numMixed: int):
     pureList = [random_pure_state(2 ** qnumber) for _ in range(numPure)]
     mixedList = [random_mixed_state(2 ** qnumber) for _ in range(numMixed)]
     return pureList + mixedList
+
+
+def ferromagnet_state(qnumber: int, theta: float):
+    initialState = tensor([basis(2, 0) for _ in range(qnumber)])
+    sy_sum = None
+    for j in range(qnumber):
+        op_list = [sigmay() if idx == j else qeye(2) for idx in range(qnumber)]
+        if sy_sum is None:
+            sy_sum = tensor(op_list)
+        else:
+            sy_sum += tensor(op_list)
+
+    U = (-1j * theta / 2 * sy_sum).expm()
+    return ket2dm(U * initialState)
+
+
+def ferromagnet_state_superposition(qnumber: int, theta: float):
+    initialState = tensor([basis(2, 0) for _ in range(qnumber)])
+    sy_sum = None
+    for j in range(qnumber):
+        op_list = [sigmay() if idx == j else qeye(2) for idx in range(qnumber)]
+        if sy_sum is None:
+            sy_sum = tensor(op_list)
+        else:
+            sy_sum += tensor(op_list)
+
+    U_minus = (-1j * theta / 2 * sy_sum).expm()
+    U_plus = (1j * theta / 2 * sy_sum).expm()
+    return ket2dm(1 / np.sqrt(2) * (U_minus * initialState - U_plus * initialState))
+
+
+def quench_hamiltonian(qnumber: int):
+    H = 0
+
+    for j in range(qnumber - 1):
+        sx_j_sx_j1 = tensor(
+            [sigmax() if k == j or k == j + 1 else qeye(2) for k in range(qnumber)]
+        )
+
+        sy_j_sy_j1 = tensor(
+            [sigmay() if k == j or k == j + 1 else qeye(2) for k in range(qnumber)]
+        )
+
+        sz_j_sz_j1 = tensor(
+            [sigmaz() if k == j or k == j + 1 else qeye(2) for k in range(qnumber)]
+        )
+
+        H += - 1 / 4 * (sx_j_sx_j1 + sy_j_sy_j1 + 0.4 * sz_j_sz_j1)
+
+    return H
