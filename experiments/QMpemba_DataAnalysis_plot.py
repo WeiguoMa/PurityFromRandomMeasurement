@@ -34,6 +34,13 @@ def data_preparation_EA(results: np.ndarray, **kwargs) -> Dict:
 
     _RESULT['A_IDEAL'] = np.mean(renyi_rhoA_ideal, axis=0)
     _RESULT['AQ_IDEAL'] = np.mean(renyi_rhoAQ_ideal, axis=0)
+
+    _RESULT['A_HAMMING'] = np.mean(renyi_rhoA_hamming, axis=0)
+    _RESULT['AQ_HAMMING'] = np.mean(renyi_rhoAQ_hamming, axis=0)
+
+    _RESULT['A_CS'] = np.mean(renyi_rhoA_CS, axis=0)
+    _RESULT['AQ_CS'] = np.mean(renyi_rhoAQ_CS, axis=0)
+
     _RESULT['A_CS_IDEAL'] = np.mean(np.abs(renyi_rhoA_CS - renyi_rhoA_ideal), axis=0)
     _RESULT['A_HAMMING_IDEAL'] = np.mean(np.abs(renyi_rhoA_hamming - renyi_rhoA_ideal), axis=0)
     _RESULT['AQ_CS_IDEAL'] = np.mean(np.abs(renyi_rhoAQ_CS - renyi_rhoAQ_ideal), axis=0)
