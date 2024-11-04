@@ -122,8 +122,9 @@ class EntanglementAsymmetry:
         rhoAs = [ptrace(rho, self.subA) for rho in rhos]
 
         for epoch in range(epoches):
+            print('--- Epoch:', epoch)
             _results = np.empty((num_rhoAs, 6))
-            for i, rhoA in enumerate(rhoAs):
+            for i, rhoA in tqdm(enumerate(rhoAs)):
                 MEASURE_SCHEME = random_measurementScheme(self.qNumber, amount=M)
 
                 MEASURE_OUTCOMES_RhoA = self.measurementOutcomes(K=K, rhoA=rhoA, measurementScheme=MEASURE_SCHEME)
@@ -162,7 +163,7 @@ class EntanglementAsymmetry:
             K: Number of measurements for each scheme.
             epoches: Number of epoches to run.
         """
-        _results_thetas_epoches_times = np.array([self.slicesRun(rho, M, K, epoches) for rho in tqdm(rhos)])
+        _results_thetas_epoches_times = np.array([self.slicesRun(rho, M, K, epoches) for rho in rhos])
         return _results_thetas_epoches_times.transpose(1, 0, 2, 3)  # result_epoches_thetas_times
 
 
@@ -255,47 +256,45 @@ class SimpleModel:
 
 
 if __name__ == '__main__':
-    MLIST = [10, 50, 100, 200, 500, 1000]
-    KLIST = [50, 100, 200, 500, 1000]
+    M = 100
+    K = 100
+    intermediate_measure = False
 
-    for M in MLIST:
-        print(f'========== Executing M:{M} ==========')
-        for K in KLIST:
-            print(f'----- Executing K:{K} -----')
-            INT_SLICES = 20
-            QNUMBER_TOTAL, SUBSYSTEM_A = 10, [2, 3, 4]
+    INT_SLICES = 20
+    QNUMBER_TOTAL, SUBSYSTEM_A = 10, [1, 2, 3, 4]
 
-            ZZ_COEFFICIENT = 0
-            COUPLING_STRENGTH = 50  # MHz
+    ZZ_COEFFICIENT = 0
+    COUPLING_STRENGTH = 50  # MHz
 
-            TIME_MAX, TIME_SLICES = 50e-3, 50  # \mu s
+    TIME_MAX, TIME_SLICES = 70e-3, 20  # \mu s
 
-            # M, K = 100, 100
-            EPOCHES = 50
+    # M, K = 100, 100
+    EPOCHES = 50
 
-            THETA_LABELS = [r'$4/5$', r'$\pi/3$', r'$3/2$']
-            THETA_LIST = [4 / 5, np.pi / 3, 3 / 2]
-            TIME_LIST = np.linspace(0, TIME_MAX, TIME_SLICES)
+    THETA_LABELS = [r'$4/5$', r'$\pi/3$', r'$3/2$']
+    # THETA_LIST = [4 / 5, np.pi / 3, 3 / 2]
+    # TIME_LIST = np.linspace(0, TIME_MAX, TIME_SLICES)
+    THETA_LIST = np.linspace(0, np.pi, 15)
 
-            print(f'QNUMBER_TOTAL: {QNUMBER_TOTAL}, SUBSYSTEM_A: {SUBSYSTEM_A},'
-                  f' M: {M}, K: {K}, INT_SLICES: {INT_SLICES}, TIME_MAX: {TIME_MAX}, THETA_LABELS: {THETA_LABELS}')
+    print(f'QNUMBER_TOTAL: {QNUMBER_TOTAL}, SUBSYSTEM_A: {SUBSYSTEM_A},'
+          f' M: {M}, K: {K}, INT_SLICES: {INT_SLICES}, TIME_MAX: {TIME_MAX}, THETA_LABELS: {THETA_LABELS}')
 
-            model = SimpleModel(
-                QNUMBER_TOTAL, SUBSYSTEM_A, THETA_LIST,
-                coupling_strength=COUPLING_STRENGTH, zzCoefficient=ZZ_COEFFICIENT,
-                superposition=True, quench=True, timeList=TIME_LIST
-            )
+    model = SimpleModel(
+        QNUMBER_TOTAL, SUBSYSTEM_A, THETA_LIST,
+        coupling_strength=COUPLING_STRENGTH, zzCoefficient=ZZ_COEFFICIENT,
+        superposition=False, quench=False, timeList=None
+    )
 
-            eaCalculator = EntanglementAsymmetry(QNUMBER_TOTAL, subA=SUBSYSTEM_A,
-                                                 L=INT_SLICES, Q=model.Q, intermediate_measure=True)
+    eaCalculator = EntanglementAsymmetry(QNUMBER_TOTAL, subA=SUBSYSTEM_A,
+                                         L=INT_SLICES, Q=model.Q, intermediate_measure=intermediate_measure)
 
-            results = eaCalculator.theta_timeRun(model.rhos_with_time_ferroSuperpositionRho, M, K, epoches=EPOCHES)
-            format_results = data_preparation_EA(results=results,
-                                                 M=M, K=K, INT_SLICES=INT_SLICES,
-                                                 THETA_LIST=THETA_LIST, THETA_LABELS=THETA_LABELS,
-                                                 QNUMBER_TOTAL=QNUMBER_TOTAL, SUBSYSTEM_A=SUBSYSTEM_A,
-                                                 TIME_SLICES=TIME_SLICES, TIME_MAX=TIME_MAX, TIME_LIST=TIME_LIST,
-                                                 COUPLING_STRENGTH=COUPLING_STRENGTH, EPOCHES=EPOCHES)
+    results = eaCalculator.theta_timeRun([model.ferroRho], M, K, epoches=EPOCHES)
+    format_results = data_preparation_EA(results=results,
+                                         M=M, K=K, INT_SLICES=INT_SLICES,
+                                         THETA_LIST=THETA_LIST, THETA_LABELS=THETA_LABELS,
+                                         QNUMBER_TOTAL=QNUMBER_TOTAL, SUBSYSTEM_A=SUBSYSTEM_A,
+                                         TIME_SLICES=TIME_SLICES, TIME_MAX=TIME_MAX, TIME_LIST=None,
+                                         COUPLING_STRENGTH=COUPLING_STRENGTH, EPOCHES=EPOCHES)
 
-            with open(f'../data/QMpemba/QMpemba_M{M}_K{K}_N{QNUMBER_TOTAL}_A{SUBSYSTEM_A}_EP{EPOCHES}.pkl', 'wb') as f:
-                pickle.dump(format_results, f)
+    with open(f'../data/QMpembaIM/TESTQMpemba{"IM" * intermediate_measure}_M{M}_K{K}_N{QNUMBER_TOTAL}_A{SUBSYSTEM_A}_EP{EPOCHES}.pkl', 'wb') as f:
+        pickle.dump(format_results, f)
